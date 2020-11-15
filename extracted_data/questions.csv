@@ -1,0 +1,4296 @@
+,Title,Content,Creation Date
+0,Vector building optimization using std::move,"I&#39;m building some `std::vector&lt;Obj&gt;` where `Obj` are large objects which can be move constructed and assigned (think eg of `Obj` being large vectors). The code is typically a loop such as
+
+    std::vector&lt;Obj&gt; v;
+    while (...) {
+        Obj foo = some client code(...);
+        // ... some complicated stuff modifying foo
+        v.push_back(foo);
+    }
+
+As you can see, `foo` is not needed after being pushed in the vector.
+
+My questions are
+- Does is make sense to write
+
+        v.push_back(std::move(foo));
+
+  to indicate to the compiler that it can take the contents of foo.
+- if it does, is it actually needed ? Indeed the compiler might notice that `foo` is destructed right after being pushed so that it can be moved ? Does actual compiler use those kinds of optimisation ? ",2020-11-15 13:56:14
+1,Writing data to new row when every time it updates,"So i am trying to get this done, the script executes every 5 minutes and the variable (a &amp; b) changes with it, first time the script executes the file write the value  but next time when it runs it overwrites the previous data.I want it to write the value of (a &amp; b) in next row with overwriting the previous data.
+Tried using newline=&#39;&#39; but got error.
+
+    import csv
+    
+    a = 1
+    b = 4
+    #newline=&#39;&#39;
+    with open(&#39;data.csv&#39;, mode=&#39;w&#39;) as data:
+        datawriter = csv.writer(data, delimiter=&#39;,&#39;, quotechar=&#39;&quot;&#39;, quoting=csv.QUOTE_MINIMAL)
+    
+        datawriter.writerow([a,b])
+
+Is there any easy fix where i can achieve it fast
+
+data it has:
+
+
+      A         B
+      1         6
+
+Result i want when every time it runs:
+
+      A         B
+      1         6
+      4         7
+      6         2
+      3         9
+
+Any help would be appreciated",2020-11-15 16:18:05
+2,slim 4 - multiple file upload empty $_FILES array,"I&#39;m havong some trouble to upload multiple file at once in my vue and php app. I&#39;m using slim to have an endpoint where upload request is posted: 
+On the server side I have this code to test if all works fine:
+```
+$app-&gt;post(&#39;/compress&#39;, function(Request $request, Response $response){
+
+    $files = $request-&gt;getUploadedFiles();
+    var_dump($files); // this will result in empty
+    
+    //return $response;
+});
+```
+In my javascript code, inside a vue method I have this code that is called when the file input will change:
+```
+      let formData = new FormData();
+      for(let i; i &lt; this.$refs.selectedImages.files.length; i++){
+        formData.append(&#39;images[]&#39;, this.$refs.selectedImages.files[i]);
+      }
+
+      let config = {
+        header: {
+          &#39;Content-Type&#39;: &#39;multipart/form-data&#39;,
+        },
+        withCredentials: true
+      }
+
+      axios.post(&#39;http://localhost:3000/compress&#39;, formData, config)
+      .then( (response) =&gt; {
+        console.log(response, response.data);
+      });
+```
+
+tha result is that the `var_dump` will give me empty. How I can fix?",2020-11-15 15:47:59
+3,"About Youtube iframe caption ,title, modestbranding problem","Sorry, English is not my first language.
+Have anyone can provide the above solution?
+I want to hide the caption from my iframe
+[here&#39;s my view][1]
+but I tested to set the &quot;cc_load_policy = 0or 3&quot;,it doesn&#39;t work
+and also I wanna hide the title and youtube logo, I did it but it still not working 
+
+  [1]: https://i.stack.imgur.com/UstEr.jpg",2020-11-11 07:16:16
+4,Return cluster label to the original data,"I am sorry in advance for disturbing you with my question if it is already asked. I tried many solutions presented for similar questions on the site but they didn&#39;t work!
+
+I have a data set looks like this:
+
+    head(data)
+                                                                                 
+    [1,] 0 0.2627178 0.1270191 0.24343257
+    [2,] 0 0.2668990 0.1233480 0.15586690
+    [3,] 0 0.2069686 0.1020558 0.22416813
+    [4,] 0 0.2292683 0.1615272 0.09457093
+    [5,] 0 0.2097561 0.1138032 0.28546410
+    [6,] 0 0.2243902 0.1534508 0.15936953
+
+I am doing hierarchical clustering on this data and I would like to return the cluster number for each observation&quot;row&quot; in order. In fact I want to add a column to the original data frame `&quot;data&quot;` which contains the cluster number of each observation.
+
+    hc&lt;-hclust(dist(data),method=&quot;average&quot;)
+    labels &lt;- cutree(hc, k = 6)
+    
+    head(labels)
+    [1] 1 1 1 1 1 1
+
+I am not sure if `labels` returns the cluster number in the same order as the original data frame or not! so I am not sure if doing the following is correct?
+
+    data_cl_num&lt;-cbind(data,labels)
+
+    head(data_cl_num)
+                                             labels                                    
+    [1,] 0 0.2627178 0.1270191 0.24343257       1
+    [2,] 0 0.2668990 0.1233480 0.15586690       1
+    [3,] 0 0.2069686 0.1020558 0.22416813       1
+    [4,] 0 0.2292683 0.1615272 0.09457093       1
+    [5,] 0 0.2097561 0.1138032 0.28546410       1
+    [6,] 0 0.2243902 0.1534508 0.15936953       1
+
+Are the cluster numbers in the above way matches exactly the observations order? 
+
+
+
+",2020-11-15 16:13:07
+5,How to use Observable inside http request Url?,"I am having a trouble using an Observable value inside an http get request.
+
+ 1. First I have a service that fetch the user setting which triggers if the user is authenticated and when different settings are applied.
+
+```lang-typescript
+        private userSettings: BehaviorSubject&lt;UserSettingDto&gt; = new BehaviorSubject&lt;UserSettingDto(null);
+        userSettings$ = this.userSettings.asObservable();
+    
+            loadUserSettings() {
+            return this.http.get&lt;any&gt;(``).toPromise().then(
+            data =&gt; {
+              this.userSettings.next(data);
+            });
+          }
+```
+
+   2. Second service that will fetch data which depends on the user setting.
+
+```lang-typescript
+
+  fetchData(): Observable&lt;ObjectType[]&gt;{
+    
+        return this.UserSettingService.userSettings$.subscribe(
+          settings =&gt; {
+          return this.http.get&lt;ObjectType[]&gt;(&#39;Url&#39; + settings); // This value must be returned of ObjectType[]
+        }));
+      }
+```
+
+**The main issue that I want to use `userSetting$` for the http request Url and return that request** since I am subscribing from a component where I view the fetched data, I have tried several methods and haven&#39;t achieved yet the desired results such as SwitchMap.
+
+Any help will be appreciated, Thanks in advance.
+
+",2020-11-15 16:24:35
+6,Error Message: MongoError: bad auth Authentication failed through URI string,"Very new to MongoDB and Node.js.  I&#39;m trying to connect to my mongoDB server via the connection string given to me by mongo:  
+
+```javascript
+&quot;mongodb+srv://david:password@cluster0-re3gq.mongodb.net/test?retryWrites=true&quot;
+```
+In my code I am calling the connection through mongoose like this (obviously putting in my password):
+
+    const mongoose = require(&#39;mongoose&#39;);
+    const db = &#39;mongodb+srv://david:&lt;password&gt;@cluster0-re3gq.mongodb.net/test?retryWrites=true&#39;
+    mongoose
+        .connect(db, { 
+            useNewUrlParser: true,
+            useCreateIndex: true
+          })
+        .then(() =&gt; console.log(&#39;MongoDB connected...&#39;))
+        .catch(err =&gt; console.log(err));
+
+When I run the code I am getting the following error
+
+&gt;   &quot;MongoError: bad auth Authentication failed.&quot;
+
+Any ideas of what that could mean?  Thanks!",2019-04-15 21:49:24
+7,How to change the intrinsic content size through its priority,"I want the second label (`subview2`) to stay intact and have the first label (`subview1`) shrink as the size of the container view decreases in size, but the second label is still shrink no matter how I adjust the priority:
+
+```swift
+import UIKit
+import PlaygroundSupport
+
+let containerView = UIView(frame: CGRect(origin: .zero, size: .init(width: 200, height: 300)))
+let subview1 = UILabel()
+subview1.text = &quot;Hello&quot;
+subview1.backgroundColor = .red
+containerView.addSubview(subview1)
+subview1.translatesAutoresizingMaskIntoConstraints = false
+let subview2 = UILabel()
+subview2.text = &quot;Hello&quot;
+subview2.backgroundColor = .cyan
+containerView.addSubview(subview2)
+subview2.translatesAutoresizingMaskIntoConstraints = false
+
+let views: [String: Any] = [&quot;subview1&quot;: subview1, &quot;subview2&quot;: subview2]
+let con1 = NSLayoutConstraint.constraints(withVisualFormat: &quot;V:|-(20)-[subview1]&quot;, metrics: nil, views: views)
+let con2 = NSLayoutConstraint.constraints(withVisualFormat: &quot;V:|-(20)-[subview2]&quot;, metrics: nil, views: views)
+let con3 = NSLayoutConstraint.constraints(withVisualFormat: &quot;H:|-(30)-[subview1]&quot;, metrics: nil, views: views)
+let con4 = NSLayoutConstraint.constraints(withVisualFormat: &quot;H:[subview2]-(30)-|&quot;, metrics: nil, views: views)
+let con5 = NSLayoutConstraint.constraints(withVisualFormat: &quot;H:[subview1(&gt;=100)]-(&gt;=30)-[subview2(&gt;=100)]&quot;, metrics: nil, views: views)
+NSLayoutConstraint.activate(con1 + con2 + con3 + con4 + con5)
+
+subview1.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
+subview2.setContentCompressionResistancePriority(UILayoutPriority.defaultHigh, for: .horizontal)
+
+PlaygroundPage.current.needsIndefiniteExecution = true
+PlaygroundPage.current.liveView = containerView
+```
+
+[![enter image description here][1]][1]
+
+I&#39;ve tried increasing the priority of `subview2` manually, but still didn&#39;t work:
+```swift
+let priority1 = subview2.contentCompressionResistancePriority(for: .horizontal)
+print(priority1) // 750
+let priority2 = subview2.contentCompressionResistancePriority(for: .horizontal)
+print(priority2) // 750
+subview2.setContentCompressionResistancePriority(priority2 + 100, for: .horizontal)
+```
+  [1]: https://i.stack.imgur.com/yqHkX.png",2020-11-15 02:06:13
+8,Scaling around a specific point in 2d coordinate system,"Below is an image my coordinate system: 
+[![enter image description here][1]][1]
+
+
+  [1]: http://i.stack.imgur.com/rWoEx.png
+
+
+What I am trying to do is that I want to start scaling around a specific point in the canvas, the scaling works fine but my problem is that I don&#39;t know how to calculate how much to move the canvas while scaling, note that I am not using canvas.scale.
+
+I am simply increasing the distance between each 2 units in the system while scaling and it&#39;s working just fine.  
+
+So is there any equation that can help me find out how much to offset the canvas while scaling at specific point?
+
+Suppose I want to scale around point(0,4) how to know how much to move the canvas while scaling? 
+
+",2016-07-19 01:00:57
+9,"Does anyone know how await publish () works for a Discord bot? In the official manual, I never found a specific announcement","I want to make my discord bot make an announcement to a certain channel, based on the Channel ID. But in different manuals I find only ```await publish ()``` and no comments how does it works and what is for discord.py an announcement channel. The problem is also that I need to shove in one command sending text to the channel where the command comes from and to another channel at the same time.
+
+Instead of the last line, there should be a command that sends a specific message, preferably ```Embed``` to another channel whose ID I will indicate.
+
+```
+@client.command( pass_context = True )
+async def new_deposit( ctx, opID: str = None, stID: str = None, fname: str = None, lname: str = None, deposit: str = None):
+	insert1 = (opID, stID, fname, lname, deposit)
+	cur.execute(&quot;&quot;&quot;INSERT INTO depositors( operationID, staticID, fname, lname, deposit) 
+		VALUES( ?, ?, ?, ?, ?);&quot;&quot;&quot;, insert1)
+	conn.commit()
+	emb = discord.Embed( title = &#39;Операция выполнена!&#39;)
+	emb.add_field( name = &#39;ID операции&#39;, value = &#39;{}&#39;.format( opID ))
+	emb.add_field( name = &#39;Статический ID&#39;, value = &#39;{}&#39;.format( stID ))
+	emb.add_field( name = &#39;Сумма&#39;, value = &#39;{}&#39;.format( deposit ))
+	emb.add_field( name = &#39;Имя&#39;, value = &#39;{}&#39;.format( fname ))
+	emb.add_field( name = &#39;Фамилия&#39;, value = &#39;{}&#39;.format( lname ))
+	await ctx.send( embed = emb)
+	await ctx.publish( title = &#39;Операция выполнена!&#39;)
+```
+Edited:
+Ok, got it, announcement channels can create only servers with enabled Community func.
+Then another question, how I can do this without an announcement channel?",2020-11-15 00:42:33
+10,What if JWT is stolen?,"I am trying to implement stateless authentication with JWT for my RESTful APIs.
+
+AFAIK, JWT is basically an encrypted string passed as HTTP headers during a REST call.
+
+But what if there&#39;s an eavesdropper who see the request and *steals the token*?  Then he will be able to fake request with my identity?
+
+Actually, this concern applies to all *token-based authentication*.
+
+How to prevent that? A secure channel like HTTPS?",2015-12-14 05:16:08
+11,making an HTML browser cache even with parameters,"page.html?foo=bar
+I would like to set this page to browser cache regardless of the bar, how may I do it ?, using htaccess or another mean.
+
+I have seen many posts with PHP solution but I need for HTML only.",2020-11-15 16:24:16
+12,Responsive Web Application Template User / Registration Implementation asp.net Web Form,"hi am a beginner level developer. I need some information I am using [DevExpress][1]
+
+
+I am unable to implement web form security here is my class detail 
+
+    using System.Web;
+
+    namespace SECODMS.Model {
+    
+    public class ApplicationUser {      
+    
+
+        public string UserName { get ; set; }
+        public string FirstName{ get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string AvatarUrl { get; set; }
+    }
+
+    public static class AuthHelper {
+        public static bool SignIn(string userName, string password) {         
+            HttpContext.Current.Session[&quot;User&quot;] = GetLoggedInUserInfo();
+            return true;
+        }
+        public static void SignOut() {
+            HttpContext.Current.Session[&quot;User&quot;] = null;
+        }
+        public static bool IsAuthenticated() {
+            return GetLoggedInUserInfo() != null;
+        }
+
+        public static ApplicationUser GetLoggedInUserInfo()
+        {
+            return HttpContext.Current.Session[&quot;User&quot;] as ApplicationUser;
+        }
+        private static ApplicationUser CreateDefualtUser() {
+            return new ApplicationUser {
+               
+                UserName =&quot;vvnbnbnb&quot;,
+                FirstName = &quot;Julia&quot;,
+                LastName = &quot;Bell&quot;,
+                Email = &quot;julia.bell@example.com&quot;,
+                AvatarUrl = &quot;~/Content/Photo/Julia_Bell.jpg&quot;
+            };
+        }
+    }
+    }
+
+
+here is my signing Page code 
+
+
+
+
+[Login Implementation Code][2]
+
+
+  [1]: https://docs.devexpress.com/AspNet/120713/whats-installed/visual-studio-integration/template-gallery/responsive-web-application-template
+  [2]: https://i.stack.imgur.com/zXHMO.png
+
+
+
+kindly advise us on how to implement user-based web form security. 
+
+this is my first post so in case of any mistake sorry in advance.
+
+
+",2020-11-15 16:14:51
+13,"The model item passed into ViewDataDictionary is of type &#39;System.InvalidOperationException&#39;,but ViewDataDictionary instance require model item of type","Error:
+The model item passed into the ViewDataDictionary is of type &#39;System.InvalidOperationException&#39;,but this ViewDataDictionary instance require model item of type &#39;System.Collections.Generic.IEnumerable`1[Med.Models.A_State]&#39;
+
+Hello Everyone,
+I&#39;ve tried to solve this problem in many ways. I&#39;ve also find the same error as i&#39;m getting, i had also gone through that way also. But that also doesn&#39;t workout. 
+So Please help me out.
+&lt;br /&gt;&lt;br/&gt;
+**Model**(Title = A_State.cs )
+```
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Med.Models
+{
+    public class A_State
+    {
+        [Key]
+        public int State_ID { get; set; }
+        public string State_Name { get; set; }
+
+    }
+}
+```
+**Controller**(Title = A_StateController.cs )
+```
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Med.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Med.Controllers
+{
+    public class A_StateController : Controller
+    {
+        private readonly MedicalContext _Db;
+        
+        public A_StateController(MedicalContext Db)
+        {
+            _Db = Db;
+        }
+        public IActionResult A_StateList()
+        {
+            try
+            {
+                var stList = _Db.StateTB.ToList();
+                return View(stList);
+            }
+            catch(Exception e)
+            {
+                return View(e);
+            }            
+        } 
+    }
+}
+```
+**View**(Title = A_StateList.cshtml )
+```
+@model IEnumerable&lt;Med.Models.A_State&gt;
+
+@{
+    ViewData[&quot;Title&quot;] = &quot;A_StateList&quot;;
+    Layout = &quot;~/Views/Shared/_Layout.cshtml&quot;;
+}
+&lt;div class=&quot;main-body&quot;&gt;
+    &lt;div class=&quot;page-wrapper&quot;&gt;
+        &lt;div class=&quot;page-header card&quot;&gt;
+            &lt;div class=&quot;card-block&quot;&gt;
+                &lt;h5 class=&quot;m-b-10&quot;&gt;Editable Table&lt;/h5&gt;
+                &lt;p class=&quot;text-muted m-b-10&quot;&gt;&lt;/p&gt;
+                &lt;ul class=&quot;breadcrumb-title b-t-default p-t-10&quot;&gt;
+                    &lt;li class=&quot;breadcrumb-item&quot;&gt;
+                        &lt;a href=&quot;index.html&quot;&gt; &lt;i class=&quot;fa fa-home&quot;&gt;&lt;/i&gt; &lt;/a&gt;
+                    &lt;/li&gt;
+                    &lt;li class=&quot;breadcrumb-item&quot;&gt;
+                        &lt;a href=&quot;#!&quot;&gt;Table&lt;/a&gt;
+                    &lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;page-body&quot;&gt;
+            &lt;div class=&quot;card&quot;&gt;
+                &lt;div class=&quot;card-header&quot;&gt;
+                    &lt;h5&gt;&lt;/h5&gt;
+                    &lt;span&gt;&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;card-block&quot;&gt;
+                    &lt;div class=&quot;table-responsive&quot;&gt;
+                        &lt;table class=&quot;table table-striped table-bordered&quot; id=&quot;example-2&quot;&gt;
+                            &lt;thead&gt;
+                                &lt;tr&gt;
+                                    &lt;th&gt;State ID&lt;/th&gt;
+                                    &lt;th&gt;State Name&lt;/th&gt;
+                                    &lt;th&gt;Action&lt;/th&gt;
+                                &lt;/tr&gt;
+                            &lt;/thead&gt;
+                            &lt;tbody&gt;
+                                @foreach (var item in Model)
+                                {
+                                &lt;tr&gt;
+                                    &lt;th scope=&quot;row&quot;&gt;1&lt;/th&gt;
+                                    &lt;td class=&quot;tabledit-view-mode&quot;&gt;
+                                        &lt;span class=&quot;tabledit-span&quot;&gt;@item.State_ID&lt;/span&gt;
+                                        &lt;input class=&quot;tabledit-input form-control input-sm&quot; type=&quot;text&quot; name=&quot;First&quot; value=&quot;Senem&quot;&gt;
+                                    &lt;/td&gt;
+                                    &lt;td class=&quot;tabledit-view-mode&quot;&gt;
+                                        &lt;span class=&quot;tabledit-span&quot;&gt;@item.State_Name&lt;/span&gt;
+                                        &lt;input class=&quot;tabledit-input form-control input-sm&quot; type=&quot;text&quot; name=&quot;Last&quot; value=&quot;Can&quot;&gt;
+                                    &lt;/td&gt;
+                                    &lt;td class=&quot;tabledit-view-mode&quot;&gt;
+                                        &lt;span class=&quot;tabledit-span&quot;&gt;&lt;/span&gt;                                       
+                                    &lt;/td&gt;
+                                &lt;/tr&gt;
+                                }
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;            
+        &lt;/div&gt;       
+    &lt;/div&gt;
+&lt;/div&gt;
+```
+**Context Class**(Title = MedicalContext.cs )   
+```                   
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Med.Models
+{
+    public class MedicalContext:DbContext
+    {
+        public MedicalContext(DbContextOptions&lt;MedicalContext&gt; options):base (options)
+        {
+
+        }
+        public DbSet&lt;A_State&gt; StateTB { get; set; }
+       }
+}
+
+
+
+
+",2020-11-15 16:12:51
+14,The method &#39;SurfaceAndroidWebView&#39; isn&#39;t defined for the class &#39;_WebViewExampleState&#39;,"I tried to run an example I got from https://pub.flutter-io.cn/packages/webview_flutter/example to use webview in flutter. But I have this kind of error:
+
+&gt; lib/main.dart:43:48: Error: The method &#39;SurfaceAndroidWebView&#39; isn&#39;t defined for the class &#39;_WebViewExampleState&#39;. - &#39;_WebViewExampleState&#39; is from &#39;package:webview_test/main.dart&#39; (&#39;lib/main.dart&#39;).
+Try correcting the name to the name of an existing method, or defining a method named &#39;SurfaceAndroidWebView&#39;.
+    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+                                               ^^^^^^^^^^^^^^^^^^^^^
+
+And my code had an error in SurfaceAndroidWebView:
+[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/AVUkH.png
+
+Here is my pubspec.yaml:
+
+ 
+
+    name: webview_test
+    description: A new Flutter application.
+    
+    publish_to: &#39;none&#39;
+    
+    version: 1.0.0+1
+    
+    environment:
+      sdk: &quot;&gt;=2.7.0 &lt;3.0.0&quot;
+    
+    dependencies:
+      flutter:
+        sdk: flutter
+      webview_flutter:
+      cupertino_icons: ^0.1.3
+    
+    dev_dependencies:
+      flutter_test:
+        sdk: flutter
+    
+    flutter:
+      uses-material-design: true
+      assets:
+        - assets/sample_audio.ogg
+
+Thanks in advance!",2020-10-16 11:10:44
+15,What is the integrity field in the npm package-lock.json actually for?,"I&#39;m poking around in npm at the moment. I am trying to see what sort of security risks there are to developers using npm.
+
+The main sort of attack I&#39;m interested in are supply chain attacks where either a developer or a build system (which we can consider just another developer) get something they don&#39;t expect.  
+
+I have unexpected - at least for me - behaviour when I do the following:
+
+* `npm init`
+* `npm install xxx` - doesn&#39;t matter what xxx is
+* Edit the package-lock.json file and alter the integrity - e.g. change one char
+* `rm -rf node_modules`
+* `npm install`
+
+**EXPECT**
+Some sort of complaint that the installed package&#39;s hash doesn&#39;t match
+
+**ACTUAL** 
+package-lock.json just gets updated
+
+
+Am I being dense here? I&#39;m expecting the integrity field to cause npm to somehow spot when something unexpected is installed. Why does it just get updated?",2020-11-15 16:16:08
+16,How to call spring service (RequestParam ) from in java script function (Error 400: Required String parameter &#39;flag&#39; is not present),"I want to call a spring service from script function ,but i am unable to call my service for below code. Can you please suggest me i am doing correct or wrong. 
+
+    Controller class:
+ 
+	@RequestMapping(value = &quot;/download&quot;, method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseStatus(value = HttpStatus.OK)
+	public String downloadFile(@RequestParam String flag, HttpServletResponse response) throws IOException {
+		return flag;
+	}
+
+    	&lt;script&gt;
+		function downloadPdf(flag) {
+
+			 if (flag == &#39;PRINT&#39;) {
+				redirectUrl = &quot;download.htm/flag=&quot; + flag;
+				var myWindow = window.open(redirectUrl , &#39;&#39;,
+						&#39;width=200,height=100&#39;);
+				myWindow.focus();
+				myWindow.print();
+			}
+		}
+	&lt;/script&gt;
+
+When run my code i facing issue like 
+
+&gt; Error 400: Required String parameter &#39;flag&#39; is not present",2020-11-15 16:03:25
+17,Gatsby plugin MDX and components not working,"I&#39;m learning Gatsby and MDX, but I have a problem.
+
+I installed `gatsby-plugin-mdx` and it&#39;s working, but now I can&#39;t import any component in any page (MDX or JS). It tells me that I forgot to export it from the file, except I didn&#39;t. This is how I did:
+
+index.js
+
+```
+import { Header } from &quot;../components/header&quot;
+...
+&lt;Header /&gt;
+```
+
+```
+components/header.js:
+
+export default function Header() {
+    Content
+}
+```
+
+Thanks for your answers!",2020-11-15 16:12:53
+18,How can I set CONSTANTS in TLA+ configuration file when using VS Code?,"I&#39;m learning TLA+ using VS Code and vscode-tlaplus plugin instead of TLA+ Toolbox. Now I have this TLA file where I define some constants:
+
+```
+---- MODULE test ----
+EXTENDS TLC, Integers, Sequences
+
+CONSTANTS Capacity, Items, ValueRange, SizeRange
+
+ItemParams == [size: SizeRange, value: ValueRange]
+ItemSets == [Items -&gt; ItemParams]
+===
+```
+
+I would like to set the following in the cfg file:
+
+```
+SPECIFICATION Spec
+
+CONSTANTS
+    SizeRange = 1..4
+    ValueRange = 0..3
+    Capacity = 7
+    Items = {&quot;a&quot;, &quot;b&quot;, &quot;c&quot;}
+```
+
+But this causes the following error:
+
+```
+TLC threw an unexpected exception.
+This was probably caused by an error in the spec or model.
+See the User Output or TLC Console for clues to what happened.
+The exception was a tlc2.tool.ConfigFileException
+:
+TLC found an error in the configuration file at line 5
+It was expecting = or &lt;-, but did not find it.
+```
+
+So far I only found this workaround:
+
+.tla
+```
+---- MODULE test ----
+EXTENDS TLC, Integers, Sequences
+
+CONSTANTS Capacity, Items, ValueRange, SizeRange
+
+ConstSizeRange == 1..4
+ConstValueRange == 0..3
+
+ItemParams == [size: SizeRange, value: ValueRange]
+ItemSets == [Items -&gt; ItemParams]
+====
+```
+
+.cfg
+```
+SPECIFICATION Spec
+
+CONSTANTS
+    SizeRange &lt;- ConstSizeRange
+    ValueRange &lt;- ConstValueRange
+    Capacity = 7
+    Items = {&quot;a&quot;, &quot;b&quot;, &quot;c&quot;}
+```
+
+So, it seems useless to define a CONSTANT.
+
+I&#39;m doing something wrong, or is this the expected behaviour?
+
+Thanks",2019-11-29 11:09:23
+19,Use libvlcsharp to create a dlna server,"i want to write my own dlna server to stream mostly mp4 files to remote clients using the dlna profile. Does anyone know if and how this is possible using the libvlcsharp library. Any other library is ok too, but looking on nuget vlc seems to be the mostly used one.
+
+Thanks for answering,
+Martin",2020-11-15 16:23:20
+20,JS always loads default view,"I&#39;m taking the CS50 course &quot;Web Programming with Python and Javascript&quot;.
+
+
+In one of the projects that need to be done, one have to implement a social network platform where users can post some texts, like and dislike them and follow other users.
+
+There are 3 routes a user can go: 
+
+* All posts, 
+* Following and 
+* users posts. 
+
+I&#39;ve been trying to solve this with js front end. I&#39;ve a function &quot;view_posts&quot;, that takes an argument that specifies what posts should be fetched and rendered to the html page. Consider the following part of my js file:
+
+    document.addEventListener(&#39;DOMContentLoaded&#39;, function() {
+      username = document.getElementById(&#39;username&#39;).innerText
+      document.querySelector(&#39;#posts&#39;).addEventListener(&#39;click&#39;, () =&gt; view_posts(&#39;all&#39;));
+      document.querySelector(&#39;#username&#39;).addEventListener(&#39;click&#39;, () =&gt; view_posts(username));
+      document.querySelector(&#39;#following&#39;).addEventListener(&#39;click&#39;, () =&gt; view_posts(&#39;followers&#39;));
+      document.querySelector(&#39;#post-form&#39;).style.display = &quot;none&quot;;
+    
+      view_posts(&#39;all&#39;)
+    });
+
+Fetching the data is basically working, but js is always displaying the default view &quot;view_posts(&#39;all&#39;)&quot;. Meaning, even if I click on the element whose id is #post, calling the very same function including the same argument, the function is called without displaying anything, before it calls the default view again (this time it will display the data correct).
+
+
+&lt;!-- language: lang-js --&gt;
+
+    function view_posts(selector) {
+      // document.querySelector(&#39;#post-form&#39;).style.display = &quot;none&quot;;
+
+      if (selector === &#39;all&#39;) {
+        document.querySelector(&#39;#header&#39;).innerText = &quot;All Posts&quot;;
+        document.querySelector(&#39;#post-form&#39;).style.display = &quot;block&quot;;
+      } else if (selector == &#39;following&#39;) {
+        document.querySelector(&#39;#header&#39;).innerText = &quot;Following&quot;;
+      } else {
+        document.querySelector(&#39;#header&#39;).innerText = selector;
+      }
+
+      fetch(`/network/${selector}`)
+        // .then(response =&gt; response.text())
+        // .then(posts =&gt; console.log(posts))
+        .then(response =&gt; response.json())
+        .then(posts =&gt; {
+          posts.forEach((element) =&gt; {
+            var item = document.createElement(&#39;div&#39;);
+
+            item.className = &quot;card&quot;;
+            item.innerHTML = `&lt;div class=&quot;card-body&quot; id=&quot;item-${element.id}&quot;&gt;
+        
+                ${element.author} | ${element.timestamp}
+                &lt;br&gt;
+                ${element.body}
+                &lt;/div&gt;`;
+            document.querySelector(&#39;#post-view&#39;).append(item);
+            // document.getElementById(&#39;item-${element.id}&#39;).addEventListener(&#39;click&#39;, () =&gt; view_posts(element.author))
+          });
+        });
+      // .catch(console.log.bind(console));
+    };
+
+&lt;!-- end snippet --&gt;
+
+EDIT: here is my index.html
+
+    {% extends &quot;network/layout.html&quot; %}
+    {% load static %}
+
+    {% block body %}
+    &lt;div id=&quot;post-view&quot;&gt;
+      &lt;h2 id=&quot;header&quot; style=&quot;margin:10px&quot;&gt;&lt;/h2&gt;
+        &lt;div id=post-form&gt;
+          &lt;h4&gt;New Post&lt;/h4&gt;
+          &lt;form&gt;
+            &lt;textarea class=&quot;form-control&quot; id=&quot;compose-body&quot; placeholder=&quot;Type here...&quot;&gt;&lt;/textarea&gt;
+            &lt;input onclick=&quot;create_post()&quot; type=&quot;button&quot; class=&quot;btn btn-primary&quot; value=&quot;Post&quot;/&gt;
+          &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    {% endblock %}
+
+    {% block script %}
+    &lt;script src=&quot;{% static &#39;network/index.js&#39; %}&quot;&gt;&lt;/script&gt;
+    {% endblock %}
+
+",2020-11-15 14:53:05
+21,Problem while configure a Firewall and a Startup Script with Deployment Manager template,"I want to configure a Firewall and a Startup Script with Deployment Manager template in `.yaml` file
+
+Below are the steps I need to perform
+
+ 1. A new Deployment Manager deployment has been created
+ 2. The deployment includes a virtual machine that has an embedded
+    startup-script
+ 3. The virtual machine that has a startup-script also has a tag item
+    called http
+ 4. A firewall rule exists that allows port 80 (http) traffic and is
+    applied using a tag with a value of http
+ 5. The virtual machine responds to web requests using the Apache web
+    server
+ 6. Check that Deployment manager includes startup script and firewall
+    resources
+
+Below is the sample file i have created, but while deploying the file its showing that step 3 (The virtual machine that has a startup-script also has a tag item called http) was not configured.
+
+Please help me if I missed any thing.
+
+```resources:
+- name: my-vm
+  type: compute.v1.instance
+  properties:
+    zone: us-central1-a
+    machineType: zones/us-central1-a/machineTypes/n1-standard-1
+    sourceRanges: [&quot;0.0.0.0/0&quot;]
+	targetTags: [&quot;webserver&quot;]
+    allowed:
+    - IPProtocol: TCP
+    ports: [&quot;80&quot;]
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+         #! /bin/bash
+         apt-get update
+         apt-get install -y apache2
+         cat &lt;&lt;EOF &gt; /var/www/html/index.html
+         &lt;html&gt;&lt;body&gt;&lt;h1&gt;Welcome to Apache&lt;/h1&gt;
+         &lt;p&gt;This page was created from a simple startup script!&lt;/p&gt;
+         &lt;/body&gt;&lt;/html&gt;
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-9-stretch-v20180814
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-dee231a39b26c176/global/networks/default
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+```",2019-05-20 10:15:10
+22,When is .ARM.exidx is used,"I am working on Contiki 2.7 with the mbxxx target. While building my code the linker complained about an **overlap of .ARM.exidx and .data sections**. After some tinkering around with the linker script contiki-2.7/cpu/stm32w108/gnu-stm32w108.ld I fixed the problem by replacing:
+
+    __exidx_start = .;
+    __exidx_end = .;
+
+with:
+
+    .ARM.exidx : {
+        __exidx_start = .;
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } &gt;ROM_region
+
+Later when I tried to see the header listing of some other example applications by using objdump -h I did not find this particular .ARM.exidx section, while it is present in my application. Googling about .ARM.exidx led me to the fact that it is used for some c++ exception handling. Since my code is a pure C code, why is this section present on my code? When is generally .ARM.exidx present in a code and what is its utility?
+
+==================================================================================
+
+Well no, I don&#39;t have any such compiler options. I am actually using the AxTLS api and ripped out the certificate handling code and ported it to contiki. On some further digging I found a fishy behaviour in the bigint implementation. To be brief... here is the body of a function from the bigint.c file: 
+
+    static bigint *bi_int_multiply(BI_CTX *ctx, bigint *bia, comp b)
+    {
+       int j = 0, n = bia-&gt;size;
+       bigint *biR = alloc(ctx, n + 1);
+       comp carry = 5;
+       comp *r = biR-&gt;comps;
+       comp *a = bia-&gt;comps;
+
+       check(bia);
+
+       /* clear things to start with */
+       memset(r, 0, ((n+1)*COMP_BYTE_SIZE));
+
+
+       do
+       {
+           long_comp tmp = *r + (long_comp)a[j]*b + carry;
+       //    *r++ = (comp)tmp;              /* downsize */
+           carry = (comp)(tmp &gt;&gt; COMP_BIT_SIZE);
+       } while (++j &lt; n);
+
+      // *r = carry;
+      bi_free(ctx, bia);
+
+      return trim(biR);
+    }
+
+
+if the commented out portions, (the r variable assignment) is uncommented, the .ARM.exidx thingy appears, otherwise it doesn&#39;t! Now can this be explained???
+
+==================================================================================
+
+I didn&#39;t find any thing out of the ordinary used in the implementation of `alloc()`. There were 2 references of `alloca()` used in some separate region of the code, which I replaced with `malloc()` and `free()`, but that didn&#39;t fix the problem either. `alloc()` implementation has only calls to `malloc()`,`realloc()` and `free()`",2014-02-03 14:17:23
+23,"Groupby and Aggregate over a pandas column with list as elements, and get unique values in list","I have the following dataframe
+
+```
+df = pd.DataFrame(
+    {
+        &quot;id&quot;: [1, 2, 1, 3],
+        &quot;values&quot;: [[111, 121, 131], [211, 221, 281], [111, 191], [301, 321]],
+    }
+)
+# df
+id  values
+1   [111, 121, 131]
+2   [211, 221, 281]
+1   [111, 191]
+3   [301, 321]
+```
+
+I want to get the following after groupby and aggregation step
+
+```
+id  values
+1   [111, 121, 131, 191]
+2   [211, 221, 281]
+3   [301, 321]
+```
+
+I am using the following, but it is giving me an error - 
+```
+new_df = df.groupby([&quot;id&quot;]).agg({&quot;values&quot;: lambda val: set(val)}).reset_index()
+
+TypeError: unhashable type: &#39;list&#39;
+```",2020-11-15 13:18:47
+24,Error On printing the Report in Apex Office print,"I need a bit of Help with Apex office print Using the Dynamic action. I print the Report using the Apex office print DA Plugin I already assigned the static id to the classic report and when I download the AOP template, the staring and the end of the report is shown the rest of the columns is not displayed does anyone know about the what&#39;s happening here did I miss anything.
+
+1. [Sample report Img][1]&lt;br&gt;
+2. [AOPtemplate][2]
+
+Thanks in advance 
+
+
+  [1]: https://i.stack.imgur.com/kaJbA.png
+  [2]: https://i.stack.imgur.com/E1UTK.png",2020-11-15 16:23:04
+25,Socket.io gives CORS error even if I allowed cors it on server,"My node server and client are running on different ports(3001,5347 respectively).
+On client I had used,
+
+    var socket = io(&#39;http://127.0.0.1:3001&#39;);
+
+On server I tried all of following one by one
+
+        1) io.set(&#39;origins&#39;, &#39;*:*&#39;);
+        2) io.set(&#39;origins&#39;, &#39;http://127.0.0.1:5347&#39;);
+        3) io.set(&#39;origins&#39;, &#39;*&#39;);
+        4) io.set(&#39;origins&#39;, &#39;127.0.0.1:5347&#39;);
+
+But I&#39;m getting following error:
+&gt;XMLHttpRequest cannot load http://127.0.0.1:3001/socket.io/?EIO=3&amp;transport=polling&amp;t=1456799439856-4590. A wildcard &#39;*&#39; cannot be used in the &#39;Access-Control-Allow-Origin&#39; header when the credentials flag is true. Origin &#39;null&#39; is therefore not allowed access.
+
+Note: I&#39;m using express on server and I&#39;m already using cors middleware in following way:
+
+    app.use(cors());
+Where app and cors are instances of express and cors respectively.",2016-03-01 04:36:40
+26,How to generate database from classes using EF Code First [.Net 5.0],"I&#39;m working on `C#` `winForms` project **(.NET 5.0)** , Iam a newbie in `EntityFramework` `code first`, I worked with `EF DB First` many times but I decide to go through `EF Code First`.
+
+**My Class**
+
+    class Student
+    {
+        public int    ID   { get; set; }
+        public string Name { get; set; }
+    }
+
+**My Db Context class I created**
+
+    class XMDBContext:DbContext
+    {
+        public XMDBContext() : base()
+        {
+    
+        }
+        public DbSet&lt;Student&gt; Students { get; set; }
+    }
+
+Now I want to know how can I use `Visual Studio` or `Entity Framework` to generate the `database`(preferred if in SQL Server) from these `classes` ?
+
+",2020-11-14 22:59:01
+27,How to export JSON list to Excel file,"I have json list like below, and I wanna export it into excel file using Python. Please advise.
+
+Code:
+
+    dataInJSON = [{&#39;ConfigRuleName&#39;: &#39;required-tags&#39;, &#39;ResourceType&#39;: &#39;AWS::CloudFormation::Stack&#39;, &#39;ResourceId&#39;: &#39;arn:aws:cloudformation:us-east-1:123456789:stack/security-headers/7304ffb0-8629-11ea-899e-0a5afd1032bb&#39;, &#39;OrderingTimestamp&#39;: &#39;2020-10-26 09:20:07.860000-04:00&#39;}, {&#39;ConfigRuleName&#39;: &#39;required-tags&#39;, &#39;ResourceType&#39;: &#39;AWS::CloudFormation::Stack&#39;, &#39;ResourceId&#39;: &#39;arn:aws:cloudformation:us-east-1:123456789:stack/security-wells/f1924880-8311-11ea-9a26-0af77bd56d08&#39;, &#39;OrderingTimestamp&#39;: &#39;2020-10-26 10:57:19.215000-04:00&#39;}]
+    dumpJsonString = json.dumps(dataInJSON)
+    jd = json.loads(dumpJsonString)
+    df = pd.DataFrame.from_dict(jd, orient=&#39;index&#39;)
+    excelWriter = pd.ExcelWriter(r + outputExcelNameBase, engine=&#39;xlsxwriter&#39;)
+    df.to_excel(excelWriter, sheet_name=&#39;Sheet1&#39;)
+    excelWriter.save() 
+Data:
+
+    [{&#39;ConfigRuleName&#39;: &#39;required-tags&#39;, &#39;ResourceType&#39;: &#39;AWS::CloudFormation::Stack&#39;, &#39;ResourceId&#39;: &#39;arn:aws:cloudformation:us-east-1:123456789:stack/security-headers/7304ffb0-8629-11ea-899e-0a5afd1032bb&#39;, &#39;OrderingTimestamp&#39;: &#39;2020-10-26 09:20:07.860000-04:00&#39;}, {&#39;ConfigRuleName&#39;: &#39;required-tags&#39;, &#39;ResourceType&#39;: &#39;AWS::CloudFormation::Stack&#39;, &#39;ResourceId&#39;: &#39;arn:aws:cloudformation:us-east-1:123456789:stack/security-wells/f1924880-8311-11ea-9a26-0af77bd56d08&#39;, &#39;OrderingTimestamp&#39;: &#39;2020-10-26 10:57:19.215000-04:00&#39;}]
+
+My expectation:
+[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/ZrNEa.png
+
+TIA",2020-11-15 16:18:18
+28,Is it possible to check if a computer is connected to a domain with python?,"Is it possible to check if a computer is connected to a domain?
+I want to be sure that the computer is connected to my company&#180;s network with python (means that he is inside the company, using company&#180;s network), so It would allow some scripts to run.
+
+",2020-11-15 16:08:39
+29,How do you deal with false positives from Anti virus companies ( Avast and Clama ),"&gt; **Possible Duplicate:**  
+&gt; [Antivirus False positive in my executable](https://stackoverflow.com/questions/3339136/antivirus-false-positive-in-my-executable)  
+
+&lt;!-- End of automatically inserted text --&gt;
+
+One application is currently getting detected by a false postive for virus by Avast and ClamAV ( Never heard of last one).
+
+I have contacted both and waiting for reply from them, but i guess that takes it time  (24 hours ++ now). So what im looking for a resource to check if for part of my code is being falsely detected, i personaly assume ME and the person who write a virus at one point simply have commen sample code?&lt;br&gt;
+&lt;br&gt;
+I dont have the technical ablities so i could disable the AV and find what signture is triggering ( And i assume companies protect this information). **So my question boils down to, is there any resource i can use to check part of my code is being detected?**&lt;br&gt;
+&lt;br&gt;
+**Extra information:** 
+
+ - [Link to VirusTotals][1]:   
+ - My application is digitaly signed, and &quot;my&quot; signature has a postive
+   rating at least with MS and never heard anyone complain that its
+   blacklisted.
+ - My application does have background update checking
+   and error reporting ( update check is done via http)&lt;br&gt;
+ - I have off course scanned my computer used for compiling for viruses ( Both MS and NOD32 )
+ - Application gets detected as a false positive detection even when its just zipped and not in a installer.
+ - [Link to information][2] about what my app is being falsly detected as (Thx to Flanfl )
+
+
+The ppl voiting &quot;close&quot;, please actual read the topic [https://stackoverflow.com/questions/3339136/antivirus-false-positive-in-my-executable][3], one is about Delhpi coding. Mine is generic and has a 2 actual replies that helpfull to my case.
+
+
+  [1]: http://www.virustotal.com/file-scan/report.html?id=a62c13688680fa09c55c3e94870db5d58a7932cdf82e5cb35cb553ca5df46321-1322407837
+  [2]: http://www.threatexpert.com/report.aspx?md5=58ad8b44ac111ccc53cb8f6bea959148
+  [3]: https://stackoverflow.com/questions/3339136/antivirus-false-positive-in-my-executable",2011-11-28 20:26:06
+30,Bitbucket Pipelines - Error running sh script with openjdk:11 and gradle:6.5 containers,"I have a Spring Boot Kotlin Gradle project, and I&#39;m trying to run a pipeline to build my project using docker-compose to run my CI tests, but I&#39;m not able because docker-compose does not exists
+
+So, following several posts on internet, I created a dependencies.sh file to run before gradle, that will install docker-compose for my tests, but I&#39;m getting the error
+
+```./dependencies.sh: 6: ./dependencies.sh: apk: not found```
+
+I wrote another question about bitbucket pipelines using testcontainers, but so far no one could help me, so I changed the aproach
+
+https://stackoverflow.com/questions/64716456/embedded-container-tests-spring-boot-fail-on-bitbucket-pipeline
+
+Can someone help me create a bitbucket-pipelines.yml with docker-compose for my tests, so far what I got is:
+
+bitbucket-pipelines.yml file
+```
+image: openjdk:11
+
+definitions:
+  caches:
+    gradleall: ~/.gradle
+  services:
+    docker:
+      memory: 2048
+  steps:
+    - step: &amp;Build
+        name: Build and Test
+        artifacts:
+          - build/libs/**
+          - build/reports/**
+        script:
+          - chmod +x dependencies.sh
+          - ./dependencies.sh
+          - bash ./gradlew clean build --stacktrace
+        services:
+          - docker
+
+pipelines:
+  default:
+    - step: *Build
+```
+
+and dependencies.sh file
+```
+#!/usr/bin/env sh
+
+set -eu
+
+# Add python pip and bash
+apk add --no-cache py-pip bash
+
+# Install docker-compose via pip
+pip install --no-cache-dir docker-compose
+docker-compose -v
+```
+
+The error is
+
+[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/vhyKj.jpg",2020-11-15 16:10:33
+31,Making a for loop to calculate specific cells then writing result in the last cell in row,"I&#39;m very new to JS and I&#39;m trying to learn for loops and in this case, I want to turn this into a for loop if possible. I want to calculate a static number string in cell 3, times the input number in cell 4, and output the result to a new cell 5 that has been created in the loop. Any help is much appreciated   
+
+   ```` 
+var firstRow = table.rows[1],
+    cell1 = firstRow.insertCell(5);
+var secondRow = table.rows[2],
+    cell2 = secondRow.insertCell(5);
+var thirdRow = table.rows[3],
+    cell3 = thirdRow.insertCell(5);
+var forthRow = table.rows[4],
+    cell4 = forthRow.insertCell(5);
+var fithRow = table.rows[5],
+    cell5 = fithRow.insertCell(5);
+var sixthRow = table.rows[6],
+    cell6 = sixthRow.insertCell(5);
+
+var x1 = table.rows[1].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y1 = table.rows[1].cells[3].innerHTML;
+    cell1.innerHTML = y1 * x1;
+var x2 = table.rows[2].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y2 = table.rows[2].cells[3].innerHTML;
+    cell2.innerHTML = y2 * x2;
+var x3 = table.rows[3].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y3 = table.rows[3].cells[3].innerHTML;
+    cell3.innerHTML = y3 * x3;
+var x4 = table.rows[4].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y4 = table.rows[4].cells[3].innerHTML;
+    cell4.innerHTML = y4 * x4;
+var x5 = table.rows[5].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y5 = table.rows[5].cells[3].innerHTML;
+    cell5.innerHTML = y5 * x5;
+var x6 = table.rows[6].cells[4].getElementsByTagName(&#39;input&#39;)[0].value;
+var y6 = table.rows[6].cells[3].innerHTML;
+    cell6.innerHTML = y6 * x6;
+
+    ",2020-11-15 16:22:33
+32,Convert date into format %d%m%y Python,"I have a problem in Python 3.9 64x bit.
+In a program I am writing, I need to be able to convert any inputted date into the format %d%m%y.
+For example, if the user entered 12 December 2021, the program will convert it to 121221, and if the user enters 2021 12 December, it will still convert it to 121221.",2020-11-15 15:54:11
+33,"Does closing fileoutputstream, filewriter, dataoutputstream behave like scanner?","When I close the scanner i get NoSuchElementExceptions when I make a new Scanner and according to this site, I found that the underlying readable (System.in) is closed for the rest of the code execution. Does this behave the same way for writing to files (utilizing filewriter, dataoutputstream, fileoutputstream or other similar writers)? As in if i close it i cant open a new fileoutputstream for the rest of the code?
+
+    File userfile = new File(&quot;userData.txt&quot;);
+    FileOutputStream out = new FileOutputStream(userfile);
+    
+    //write to file then close it.
+    ...
+    out.close();
+    
+    //open a new fileoutputstream which may or may not cause a NoSuchElementException?",2020-11-15 15:47:25
+34,Gatsby MDX showing title and slug but doesn&#39;t find page,"I&#39;m learning Gatsby and I wanted to use MDX for blog pages. I followed the tutorial [here](https://www.gatsbyjs.com/docs/mdx/programmatically-creating-pages/) to programmatically create pages. 
+
+I can see them in my GraphQL, and displaying the list of all the articles is working with their title and slug, but when I click on the link to open them or type their address I have a 404 page. Do you have an idea from where it can come from?
+
+This is my code:
+
+gatsby-node.js: 
+
+
+```
+exports.onCreateNode = ({ node, actions, getNode }) =&gt; {
+    const { createNodeField } = actions
+
+    if (node.internal.type === &quot;Mdx&quot;) {
+        const value = createFilePath({ node, getNode })
+
+        createNodeField({
+            name: &quot;slug&quot;,
+            node,
+            value: `/blog${value}`,
+        })
+    }
+}
+```
+
+gatsby-config.js:
+
+```
+plugins: [
+        {
+        resolve: `gatsby-plugin-mdx`,
+        options: {
+            defaultLayouts: { default: path.resolve(&#39;./src/layouts/post.js&#39;) },
+            extensions: [`.mdx`, `.md`],
+        },
+    },
+
+    {
+        resolve: `gatsby-source-filesystem`,
+        options: {
+            name: `posts`,
+            path: `${__dirname}/src/posts`
+        }
+    },
+],
+```
+
+index.js (with the list):
+```
+&lt;ul&gt;
+    {posts.map(({ node: post }) =&gt; (
+        &lt;li key={post.id}&gt;
+            &lt;Link to={post.fields.slug}&gt;
+                &lt;h2&gt;{post.frontmatter.title}&lt;/h2&gt;
+            &lt;/Link&gt;
+            &lt;p&gt;{post.excerpt}&lt;/p&gt;
+        &lt;/li&gt;
+    ))}
+&lt;/ul&gt;
+```
+
+Query in index.js
+
+```
+export const pageQuery = graphql`
+    query blogIndex {
+        allMdx {
+            edges {
+                node {
+                    id
+                    excerpt
+                    frontmatter {
+                        title
+                    }
+                    fields {
+                        slug
+                    }
+                }
+            }
+        }
+    }
+`
+```
+
+The template:
+```
+&lt;div&gt;
+    &lt;div className=&quot;content&quot; dangerouslySetInnerHTML={{ __html: post.html }}&gt;&lt;/div&gt;
+&lt;/div&gt;
+```
+
+And the query for the template:
+
+```
+export const pageQuery = graphql`
+    query BlogPostQuery($id: String) {
+        mdx(id: { eq: $id }) {
+            id
+            body
+            frontmatter {
+                title
+            }
+        }
+    }
+`
+```
+
+I made a repo if you want to test it: [https://github.com/JulSeb42/gatsby-mdx](https://github.com/JulSeb42/gatsby-mdx)
+
+Thanks for your answers!",2020-11-14 16:17:59
+35,Finding the bottom left coordinate from a list of coordinates,"I have a list of coordinates (circle objects) and I&#39;m trying to find the object on the bottom left.
+
+(top left is 0,0)
+
+I&#39;m using the logic &quot;bottom left circle is when X is minimum and Y is maximum&quot; and it works in most cases;
+
+[![enter image description here][1]][1]
+
+
+But it fails in this case for example because the bottom left coordinate (circle) is not the one with smallest X value;
+
+[![enter image description here][2]][2]
+
+
+I use something like this and it mostly works;
+
+    private static int FindBottomLeftCircle(List&lt;Circle&gt; circles)
+    {
+       return circles.IndexOf(circles.OrderBy(c =&gt; c.Center.Y).Reverse().Take(13).OrderBy(c =&gt; c.Center.X).First());
+    }
+
+It works best if the bottom row has roughly 13 circles. But as you can see this approach has problems.
+
+How can I reliably find the bottom left circle object?
+
+  [1]: https://i.stack.imgur.com/XaB1W.png
+  [2]: https://i.stack.imgur.com/Q8INT.png",2020-11-15 16:03:23
+36,"Python pandas dataframe print ValueError: could not convert string to float: &#39;1,971.25&#39;","I have a python pandas dataframe that should print with the following line:
+
+    close.loc[stock, str(j)+&#39;_days_ago&#39;] = float(stocks.iloc[[-1 - j]][&#39;Close&#39;].to_string(header=None, index=None))
+
+yet I get the following error:
+
+    ValueError: could not convert string to float: &#39;1,971.25&#39;
+
+Any ideas how to fix this error?",2020-11-15 16:22:10
+37,"difference between range(2,5) and range(2;5)","Template
+
+`range(2;5)`
+
+producing:
+
+    2
+    3
+    4
+
+isn&#39;t that interesting, as this is explained by manual. However for imperative-style programmer is only matter of time, when he will mistakenly separate parameters by comma (actually I misread the manual, so this was my first attempt), and try template:
+
+    range(2, 5)
+
+producing surprising:
+
+    0
+    1
+    0
+    1
+    2
+    3
+    4
+
+What is that? How is it defined/explained?",2020-11-13 22:38:33
+38,My Java Program ProcessBuilder hangs after calling a shell command and suddenly print output when connection lost,"I am calling shell script file from Java using ProcessBuilder. The shell script and Java Program attached. 
+
+first.sh
+
+    #!/bin/bash
+    
+    /usr/local/bin/pt-archiver --commit-each --bulk-insert  --limit 10 --progress 10  --no-delete --why-quit --statistics  --no-check-charset --no-check-columns --ignore  --source h=$1,P=$2,D=$3,t=$4,u=usr,p=pwd--dest h=$5,P=$6,D=$7,t=$8,u=usr,p=pwd --where &quot;id &gt; 1&quot;
+
+
+Java Program:
+
+
+
+
+    package com.starzplay.data.archiver.processbuilder;
+    
+    import java.io.BufferedReader;
+    import java.io.File;
+    import java.io.IOException;
+    import java.io.InputStream;
+    import java.io.InputStreamReader;
+    import java.io.OutputStream;
+    import java.io.Reader;
+    import java.io.StringWriter;
+    import java.io.Writer;
+    import java.lang.ProcessBuilder.Redirect;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Map;
+    import java.util.concurrent.TimeUnit;
+    
+    import org.apache.commons.io.IOUtils;
+    
+    
+    public class ProcessBuilderData {
+    	public static void main(String[] args) throws IOException, InterruptedException {
+    
+    
+          
+            
+            try {
+       
+           String stdout = &quot;&quot;;
+           String stderr = &quot;&quot;;
+           int timedOut;
+            
+           BufferedReader output;
+           String data;
+    
+    
+      	   
+        		   try {
+        	
+        	       ProcessBuilder pbx = new ProcessBuilder(&quot;/Users/Fahad/first.sh&quot;, &quot;54.171.109.55&quot;, &quot;3306&quot;,&quot;billing_dev&quot;, &quot;payment_retries&quot;,&quot;54.171.109.55&quot;,&quot;3306&quot;,&quot;billing_dev&quot;, &quot;payment_retries_backup&quot;);
+    
+    
+        	        pbx.redirectErrorStream(true);
+        	       
+    
+        	            Process prs = pbx.start();
+        	          BufferedReader reader =
+        	                     new BufferedReader(new InputStreamReader(prs.getInputStream()));
+    
+        	              String line;
+        	             while ((line = reader.readLine()) != null) {
+        	                 System.out.println(line);
+        	             }
+        	            
+       
+            } catch (IOException e) {
+                e.printStackTrace();
+    
+        
+    
+    	}
+            }
+            
+    	
+    		
+    
+    }
+
+
+But it never executed and never prints anything. But one thing happens that when the connection got disconnected after say 10 minutes it prints the output on console of eclipse which supposed to be printed earlier. but the tables never populated. I also tried creating separate thread but unable to get the solution as well. Basically the script is pt-archiver ",2020-11-15 16:11:05
+39,Azure devops pipelines cache python dependencies,"I want to cache the dependencies in requirement.txt. See https://docs.microsoft.com/en-us/azure/devops/pipelines/release/caching?view=azure-devops#pythonpip. Here is my azure-pipelines.yml
+
+    # Python package
+    # Create and test a Python package on multiple Python versions.
+    # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+    # https://docs.microsoft.com/azure/devops/pipelines/languages/python
+    
+    trigger:
+    - master
+    
+    pool:
+      vmImage: &#39;ubuntu-latest&#39;
+    strategy:
+      matrix:
+        Python38:
+          python.version: &#39;3.8&#39;
+    
+    variables:
+      PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
+    
+    steps:
+    
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: &#39;$(python.version)&#39;
+      displayName: &#39;Use Python $(python.version)&#39;
+    
+    - task: Cache@2
+      inputs:
+        key: &#39;python | &quot;$(Agent.OS)&quot; | requirements.txt&#39;
+        restoreKeys: | 
+          python | &quot;$(Agent.OS)&quot;
+          python
+        path: $(PIP_CACHE_DIR)
+      displayName: Cache pip packages
+    
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: &#39;Install dependencies&#39;
+    
+    - script: |
+        pip install pytest pytest-azurepipelines
+        pytest
+      displayName: &#39;pytest&#39;
+
+The dependencies specified in my requirements.txt are installed in every pipeline run.
+
+The pipeline task Cache@2 gives the following output.
+
+    Starting: Cache pip packages
+    ==============================================================================
+    Task         : Cache
+    Description  : Cache files between runs
+    Version      : 2.0.1
+    Author       : Microsoft Corporation
+    Help         : https://aka.ms/pipeline-caching-docs
+    ==============================================================================
+    Resolving key:
+     - python           [string]
+     - &quot;Linux&quot;          [string]
+     - requirements.txt [file] --&gt; EBB7474E7D5BC202D25969A2E11E0D16251F0C3F3F656F1EE6E2BB7B23868B10
+    Resolved to: python|&quot;Linux&quot;|jNwyZU113iWcGlReTrxg8kzsyeND5OIrPLaN0I1rRs0=
+    Resolving restore key:
+     - python  [string]
+     - &quot;Linux&quot; [string]
+    Resolved to: python|&quot;Linux&quot;|**
+    Resolving restore key:
+     - python [string]
+    Resolved to: python|**
+    ApplicationInsightsTelemetrySender will correlate events with X-TFS-Session 85b76fe3-b469-4330-a584-db569bc45342
+    Getting a pipeline cache artifact with one of the following fingerprints:
+    Fingerprint: `python|&quot;Linux&quot;|jNwyZU113iWcGlReTrxg8kzsyeND5OIrPLaN0I1rRs0=`
+    Fingerprint: `python|&quot;Linux&quot;|**`
+    Fingerprint: `python|**`
+    There is a cache miss.
+    ApplicationInsightsTelemetrySender correlated 1 events with X-TFS-Session 85b76fe3-b469-4330-a584-db569bc45342
+    Finishing: Cache pip packages
+
+",2020-11-15 16:21:55
+40,Deploying a pre-trained transformer model on kf-serving,"**What I want to achieve:** 
+
+Deploy a pre-trained HuggingFace transformer (for summarisation or Question answering) onto a kubernetes cluster using Kf-serving. (with separate the tokenization and prediction part; for scalability)
+
+**What I have done:**
+
+Kube Config:
+
+----------
+
+
+    apiVersion: &quot;serving.kubeflow.org/v1alpha2&quot;
+    kind: &quot;InferenceService&quot;
+    metadata:
+      name: &quot;qna&quot;
+    spec:
+      default:
+        transformer:
+          custom:
+            container:
+              name: &quot;kfserving-container&quot;
+              image: qna
+              resources:
+                limits:
+                  cpu: &quot;1&quot;
+                  memory: 4Gi
+                requests:
+                  cpu: &quot;1&quot;
+                  memory: 4Gi
+                command:
+                  - &quot;python&quot;
+                  - &quot;-m&quot;
+                  - &quot;model&quot;
+                env:
+                  - name: STORAGE_URI
+                    value: &quot;S3 link to the TOKENIZER&quot;
+        predictor:
+          triton:
+            resources:
+              limits:
+                cpu: &quot;1&quot;
+                memory: 16Gi
+              requests:
+                cpu: &quot;1&quot;
+                memory: 16Gi
+              storageUri: &quot;S3 link to the LANGUAGE MODEL&quot;
+
+Main class:    
+
+
+----------
+
+
+class HfModel(kfserving.KFModel):
+
+    def __init__(self, settings: Settings, predictor_host, is_verbose=False):
+        super().__init__(settings.model_name)
+        self.settings = settings
+        self.log = logging.getLogger()
+
+        if is_verbose:
+            self.log_level = logging.DEBUG
+        else:
+            self.log_level = logging.INFO
+
+    def load(self):
+        &quot;&quot;&quot;
+        Loads models for the Question-Answering module
+        &quot;&quot;&quot;
+
+        self.tokenizer = tokenization.FullTokenizer(vocab_file=&quot;s3://ap-east-1-sup-models/text_search/v1/tokenizer&quot;, do_lower_case=True)
+
+        # Add the pretrained tokenizer to sidecar ^
+        self.model = TFAutoModelForQuestionAnswering.from_pretrained(self.settings.qna_model)
+
+        self.ready = True
+
+    def predict_old(self, request: list) -&gt; list:
+        # You may ignore this function unless it is the correct approach. I got confused going through multiple examples.
+        inputs = request
+        results = []
+        texts = inputs[0][&quot;text&quot;]
+        questions = inputs[0][&quot;questions&quot;]
+
+        for i, text in enumerate([texts]):
+            # Preprocessing inputs
+            inputs = self.tokenizer.encode_plus(questions, text, add_special_tokens=True, return_tensors=&quot;tf&quot;)
+            input_ids = inputs[&quot;input_ids&quot;].numpy()[0]
+
+            answer_start_score, answer_end_score = self.model(inputs)
+
+            answer_start = tf.argmax(answer_start_score, axis=1).numpy()[0]
+            answer_end = (tf.argmax(answer_end_score, axis=1) + 1).numpy()[0]
+
+            answer = self.tokenizer.convert_tokens_to_string(
+                self.tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+
+            print(f&#39;Question:{questions}&#39;)
+            print(f&#39;Summary: {answer}&#39;)
+
+            results.append({&quot;question&quot;: questions, &quot;answer&quot;: answer})
+
+        return results
+
+    def preprocess(self, inputs: Dict) -&gt; Dict:
+        self.doc_tokens = data_processing.convert_doc_tokens(inputs[&#39;instances&#39;][0][&#39;text&#39;])
+        self.features = data_processing.convert_examples_to_features(self.doc_tokens,
+                                                                     inputs[&#39;instances&#39;][0][&quot;question&quot;],
+                                                                     self.tokenizer, 128, 128, 64)
+
+        return self.features
+
+    def predict(self, features: Dict) -&gt; Dict:
+        if not self.infer_context:
+            self.infer_context = InferContext(self.predictor_host, self.protocol, self.settings.qna_model_name,
+                                              self.model_version, verbose=True)
+
+        batch_size = self.settings.batch_size
+        unique_ids = np.int32([1])
+        segment_ids = features[&quot;segment_ids&quot;]
+        input_ids = features[&quot;input_ids&quot;]
+        input_mask = features[&quot;input_mask&quot;]
+
+        result = self.infer_context.run({&#39;unique_ids&#39;: (unique_ids,),
+                                         &#39;segment_ids&#39;: (segment_ids,),
+                                         &#39;input_ids&#39;: (input_ids,),
+                                         &#39;input_mask&#39;: (input_mask,)},
+                                        {&#39;end_logits&#39;: InferContext.ResultFormat.RAW,
+                                         &#39;start_logits&#39;: InferContext.ResultFormat.RAW}, batch_size)
+        return result
+
+    def postprocess(self, result: Dict) -&gt; Dict:
+        end_logits = result[&#39;end_logits&#39;][0]
+        start_logits = result[&#39;start_logits&#39;][0]
+        n_best_size = 20
+
+        # The maximum length of an answer that can be generated. This is needed
+        #  because the start and end predictions are not conditioned on one another
+        max_answer_length = 30
+
+        (prediction, nbest_json, scores_diff_json) = \
+            data_processing.get_predictions(self.doc_tokens, self.features, start_logits, end_logits, n_best_size,
+                                            max_answer_length)
+        return {&quot;predictions&quot;: prediction, &quot;prob&quot;: nbest_json[0][&#39;probability&#39;] * 100.0}
+
+
+----------
+
+-  I want to use tokenizer in the transformer part(in kf serving terms) and the language model in the predictor part. 
+- There might be issues with my understanding of how to use kube config and it might be incorrect.
+- I suspect that the predict_old function might be an incorrect way of approaching things for kf serving but I am not sure.
+- Using a triton server is not necessary. I was only following the docs, hence the usage
+
+
+**Reference:** 
+
+https://github.com/kubeflow/kfserving/tree/master/docs/samples/triton/bert
+http://www.pattersonconsultingtn.com/blog/deploying_huggingface_with_kfserving.html
+
+
+Would appreciate any help I can get! Thanks!
+",2020-11-15 16:21:53
+41,how to create new credentials in jenkins pipeline,"In short, there is a credential configured manaully for Jenkins-master to connect to `host01` as `root`. 
+
+The jenkins pipeline is to create a new ssh-login in `host01` , such as `dev01`. After creating the `dev01` by using `root`, the rest of the pipeline is to do some tasks as `dev01` instead of `root`. 
+
+The question is how to create a new credenials for `dev01@host01` in jenkins pipeline instead of creating it manually. ",2020-11-15 16:21:53
+42,Delete all users from the new firebase auth emulator,"I&#39;m playing around with the new firebase auth emulator (on the node admin SDK), and have made some tests that run perfectly if I manually delete the created users between each test, but I can&#39;t seem to automatically delete them?
+
+I&#39;ve used the endpoint defined [here](https://firebase.google.com/docs/reference/rest/auth#section-auth-emulator-clearaccounts) in my beforeEach(), but I get an &quot;Response code 401, unauthorized&quot; back from the response call?
+
+Endpoint: delete: `http://localhost:9099/emulator/v1/projects/{project-id}/accounts`
+
+I just tried using Postman to send the call, and it responded with the following:
+
+    {
+        &quot;error&quot;: {
+            &quot;code&quot;: 401,
+            &quot;message&quot;: &quot;Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.&quot;,
+            &quot;errors&quot;: [
+                {
+                    &quot;message&quot;: &quot;Login Required.&quot;,
+                    &quot;domain&quot;: &quot;global&quot;,
+                    &quot;reason&quot;: &quot;required&quot;,
+                    &quot;location&quot;: &quot;Authorization&quot;,
+                    &quot;locationType&quot;: &quot;header&quot;
+                }
+            ],
+            &quot;status&quot;: &quot;UNAUTHENTICATED&quot;
+        }
+    }
+
+The URL in the error didn&#39;t seem to give me much help beyond adding a google button to a web app, which pointed me to creating an OAuth2 web account. I entered the localhost:9099 into my existing one, but don&#39;t know where I should use the client ID and the client secret? If they are what I should use at all.
+
+I know I need some sort of Authorization header for the delete call, but I just don&#39;t get what I should put in that header, or how.
+
+Thank you for any insight into this.",2020-11-15 16:21:51
+43,Refactoring function,"Me need get html one element and overwrite other element. I have this function:
+
+    function ratings() {
+      const divInWrapper = document.getElementById(&quot;auto-mag-id&quot;);
+      const shortcode = document.getElementById(&quot;auto-mag&quot;);
+      divInWrapper.innerHTML = shortcode.innerHTML;
+    
+      const divInWrapper2 = document.getElementById(&quot;karat-id&quot;);
+      const shortcode2 = document.getElementById(&quot;karat&quot;);
+      divInWrapper2.innerHTML = shortcode2.innerHTML;
+    
+      const divInWrapper3 = document.getElementById(&quot;zebra-id&quot;);
+      const shortcode3 = document.getElementById(&quot;zebra&quot;);
+      divInWrapper3.innerHTML = shortcode3.innerHTML;
+    }
+
+on page be a lot of this elements, how can refactor this function, maybe this &quot;for&quot;?
+
+Example HTML
+
+    &lt;div&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, at?&lt;/div&gt;
+        &lt;div id=&quot;auto-mag-id&quot;&gt;Lorem ipsum dolor sit amet.&lt;/div&gt;
+        &lt;div id=&quot;karat-id&quot;&gt;Lorem ipsum dolor sit amet.&lt;/div&gt;
+        &lt;div id=&quot;zebra-id&quot;&gt;Lorem ipsum dolor sit amet.&lt;/div&gt;
+    &lt;div&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, at?&lt;/div&gt;
+        &lt;div id=&quot;auto-mag&quot;&gt;Need this text in div this id auto-mag-id&lt;/div&gt;
+        &lt;div id=&quot;karat&quot;&gt;Need this text in div this id karat-id&lt;/div&gt;
+        &lt;div id=&quot;zebra&quot;&gt;Need this text in div this id zebra-id&lt;/div&gt;
+    
+    &lt;div&gt;Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, at?&lt;/div&gt;",2020-11-15 16:01:08
+44,Declaring and accessing variables in Javascript classes,"I&#39;m learning JavaScript and I ran into an issue concerning class instance attributes. Consider the following code:
+
+```
+class MyClass {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+    a_plus_b() {
+        // My IDE (WebStorm) complains about unresolved variables a and b
+        // This also means that autocompletion doesn&#39;t work correctly
+        return this.a + this.b;
+    }
+}
+let instance = new MyClass(1,1);
+let result = instance.a_plus_b();
+console.log(result) // shows 2 as expected
+```
+
+As the comments in the above chunk of code explain, my IDE complains about unresolved variables `a` and `b` which also means that if I press tab at `instance.` I don&#39;t see these variables as attributes of my class instance. What does help is declaring these variables as class attributes right above the constructor with `a;b;`, however it doesn&#39;t seem like a sensible solution.
+
+Am I missing something about JS? Is this an IDE bug? Are there any decent workarounds without having to declare these attributes outside the constructor?
+
+Many thanks!",2020-11-15 16:21:46
+45,Unable to download file using ChromeDriver,"I am using chromedriver with selenium to download files from application. But while clicking on download button in application, it given error as &quot;`Failed-Download error.`&quot;
+&gt;Chromedriver version : 2.21
+Selenium version : 2.53.0
+
+Code for initializing chrome driver and changing download location :
+
+                String newPath = &quot;D:\\Backup&quot; + File.separator + &quot;Database &quot;;
+    			new File(newPath).mkdir();
+    			HashMap&lt;String, Object&gt; chromePrefs = new HashMap&lt;String, Object&gt;();
+    			chromePrefs.put(&quot;profile.default_content_settings.popups&quot;, 0);
+    			chromePrefs.put(&quot;download.default_directory&quot;, newPath);
+    			chromePrefs.put(&quot;safebrowsing.enabled&quot;, &quot;true&quot;);
+    			ChromeOptions options = new ChromeOptions();
+    			options.setExperimentalOption(&quot;prefs&quot;, chromePrefs);
+    			options.addArguments(&quot;--test-type&quot;);
+    			DesiredCapabilities cap = DesiredCapabilities.chrome();
+    			cap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+    			cap.setCapability(&quot;disable-popup-blocking&quot;, true);
+    			cap.setCapability(ChromeOptions.CAPABILITY, options);
+    			System.setProperty(&quot;webdriver.chrome.driver&quot;, CHROME_DRIVER_PATH);
+    			driver = new ChromeDriver(cap);
+    			// Maximize the driver window
+    			driver.manage().window().maximize();
+
+**Error is** :
+
+[![enter image description here][1]][1]
+
+
+  [1]: http://i.stack.imgur.com/thNbL.png
+
+Can someone help me with this?
+I am able to download file from Chrome manually.",2016-05-19 12:40:12
+46,Filter rows that contain a certain string across all columns (with dplyr),"I have the following data:
+```
+data &lt;- data.frame(name1 =c(&quot;John Smith&quot;, &quot;A A&quot;, &quot;A B&quot;, &quot;A C&quot;, &quot;John Donovan&quot;, &quot;A F&quot;, &quot;A D&quot;, &quot;A F&quot;, &quot;A D&quot;, &quot;A C&quot;),
+      name2 = c(&quot;A V&quot;, &quot;John Smith&quot;, &quot;A D&quot;, &quot;A R&quot;, &quot;A O&quot;, &quot;John Smith&quot;, &quot;A M&quot;, &quot;A V&quot;, &quot;A L&quot;, &quot;A Q&quot;),
+      name3 = c(&quot;John Donovan&quot;, &quot;A R&quot;, &quot;John Donovan&quot;, &quot;A L&quot;, &quot;A V&quot;, &quot;A Q&quot;, &quot;A T&quot;, &quot;A N&quot;, &quot;A L&quot;, &quot;A X&quot;))
+```
+```
+&gt; data
+          name1      name2        name3
+1    John Smith        A V John Donovan
+2           A A John Smith          A R
+3           A B        A D John Donovan
+4           A C        A R          A L
+5  John Donovan        A O          A V
+6           A F John Smith          A Q
+7           A D        A M          A T
+8           A F        A V          A N
+9           A D        A L          A L
+10          A C        A Q          A X
+```
+
+I want to filter all rows that contain the string &quot;John&quot; across all columns (the number of columns can be higher than 3).
+
+I try the following
+
+```
+data %&gt;%
+  filter(across(everything()), !str.detect(&quot;John&quot;))
+```
+However it does not work and it produces:
+
+```
+Error: Problem with `filter()` input `..1`.
+x Input `..1$name1` must be a logical vector, not a character.
+i Input `..1` is `across(everything())`.
+```
+
+Do you have any idea, especially one using the across function.",2020-11-15 15:17:11
+47,Thread safe collection or concurency for same keys in each Thread,"I have `List&lt;List&lt;File&gt;&gt;` which I divide for chunks. For each chunk I run `n` Threads. Each Thread build `TreeMap&lt;String, List&lt;String&gt;&gt;`. I wanted to connect all `TreeMap&lt;String, List&lt;String&gt;&gt;`&#39;s to single (but they can contain same key - so some comparations needs to be done) or I would to run use some thread-safe `collection` or `concurent` but I don&#39;t know which? (it needs to be possible to sort) and the `key` could be the same in each Thread but their `values` needs to be connected. 
+
+    List&lt;File&gt; filesAndFoldersList = Arrays.asList(filesAndFoldersArray);
+    
+    		List&lt;List&lt;File&gt;&gt; filesArrays = divideArrayIntoChunks(filesAndFoldersList, 100);
+    		
+    
+    		for (int i = 0; i &lt; filesArrays.size(); i++) {
+    
+    			List&lt;File&gt; filesList = filesArrays.get(i);
+    
+    			BuildNamesAndFileNamesMap buildNamesAndFileNamesMap = new BuildNamesAndFileNamesMap(... , i);
+    
+    			Thread thread = new Thread(buildNamesAndFileNamesMap, &quot;Thread &quot; + i);
+    			thread.start();
+    
+    			if (buildNamesAndFileNamesMap.hasFinished()) {
+    
+    				namesAndFileNamesPartMap = buildNamesAndFileNamesMap.getNamesAndFileNamesMap();
+                    ... // join to main TreeMap or?
+    			}
+    			
+    		}
+
+This is **BuildNamesAndFileNamesMap.class**:
+
+    private static class BuildNamesAndFileNamesMap implements Runnable {
+    
+            ....
+    		private final TreeMap&lt;String, List&lt;String&gt;&gt; namesAndFileNamesMap;
+    		private int threadNumber;
+    
+    		private boolean hasFinished = false;
+    
+    		public BuildNamesAndFileNameMap(..., int threadNumber) {
+    
+    			...
+    		}
+    
+    		public TreeMap&lt;String, List&lt;String&gt;&gt; getNamesAndFileNamesMap() {
+    			return namesAndFileNamesMap;
+    		}
+    
+    		public boolean hasFinished() {
+    			return hasFinished;
+    		}
+    
+    		@Override
+    		public void run() {
+    
+    			...
+    
+                namesAndFileNamesMap.put(...);
+    			hasFinished = true;
+    		}
+    	}",2020-11-15 16:06:20
+48,How do I use nunjucks template in nestjs framework?,How can I use nunjucks template under NestExpressApplication in right way? ,2019-05-09 13:18:40
+49,Get data and provide data from FLASK to JS,"We have a problem of passing `*.js` file through Flask.
+
+Here is a structure of our directories and files:
+
+    .
+    -- app.py    (flask)
+    |-- layouts
+       -- base.html
+       -- index.html
+    |-- static
+       | -- js
+           --script.js
+Application is running via `app.py`, so here is the `app.py` flask code:
+
+    from __future__ import print_function
+    from flask import Flask, render_template, make_response
+    from flask import redirect, request, jsonify, url_for
+    
+    import io
+    import os
+    import uuid
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    import numpy as np
+    
+    app = Flask(__name__)
+    app.debug = True
+    app._static_folder = os.path.abspath(&quot;templates/static/&quot;)
+    
+    @app.route(&#39;/&#39;, methods=[&#39;GET&#39;])
+    def index():
+        title = &#39;Create the input&#39;
+        return render_template(&#39;layouts/index.html&#39;,
+                               title=title)
+
+And the line of &#39;import&#39; via `/var/www/html/templates/layouts/base.html`:
+
+    &lt;script src=&quot;/var/www/html/templates/static/js/script.js&quot;&gt;&lt;/script&gt;
+
+Our FLASK application works on port 3000, we have the templates generated etc. but somehow flask does not recognize `/var/www/html/templates/static/js/script.js`.
+
+From the server site - NGINX configured properly, &#39;cause I can receive GET&#39;s but with 404 err.
+
+Proxy pass i set to the same port: 3000. 
+So maybe something with this port? th
+
+Help please.
+
+
+",2020-11-15 16:21:27
+50,How to use regex in cmd findstr? (Regex not working),"I just see some regex could not work in windows cmd because it doesn&#39;t support all regex commands. I&#39;ve found a regex for my [problem][1].
+
+So now I need to use `findstr` with this regex: `(?si)(?:^(?&lt;!.)|\R{2}|^Account:(?-s:.*)\R)\K(?:(?!\R{2}).)*?(?-s:\bfifa\b.*\b20\b).*?(?=\R{2}|\z)` , but windows command line can&#39;t find this, and actually skips.
+
+1. How can I use above regex, to find all matches from a txt file and output them to another txt file in a batch file?
+
+This is how I used to do it with other simple regex, but not working now:
+```
+type %LogFILE% | findstr /i /r /c:&quot;(?si)(?:^(?&lt;!.)|\R{2}|^Account:(?-s:.*)\R)\K(?:(?!\R{2}).)*?(?-s:\bfifa\b.*\b20\b).*?(?=\R{2}|\z)&quot; &gt; %LogNEW%
+```
+
+2. Can we use powershell commands in cmd? I tried to do but it closes my batch command (I don&#39;t know is this correct syntax or no):
+```
+powershell -command &quot;&amp; {Get-ChildItem -Path .\LogFILE.txt -r | Select-String &quot;(?si)(?:^(?&lt;!.)|\R{2}|^Account:(?-s:.*)\R)\K(?:(?!\R{2}).)*?(?-s:\bfifa\b.*\b20\b).*?(?=\R{2}|\z)&quot; &gt; LogNEW.txt}&quot;
+```
+
+
+EDITED: I want to select hits including fifa (as string not a single word) from a txt file, and output them to another txt file (separate solutions for 1 and 2 pattern):
+
+Pattern 1 Solved:
+`powershell -command &quot;&amp; {Get-ChildItem .\LogFILE.txt -r | Get-Content -Raw | Foreach-Object { $_ -Split &#39;(\r?\n)(?=(\r?\n)+)&#39; } | Select-String &#39;fifa&#39;} &gt; LogNEW.txt&quot;`
+```
+1:
+
+Region: AR
+OnlineID: Atl_Tuc
+---Start---
+FIFA 18 Legacy Edition
+---END---
+
+Region: FR
+OnlineID: jubtrrzz
+---Start---
+FIFA 19
+Undertale
+Pro Evolution Soccer™ 2018
+---END---
+
+Region: US
+OnlineID: Cu128yi
+---Start---
+KINGDOM HEARTS HD 1.5 +2.5 ReMIX
+---END---
+
+Region: RO
+OnlineID: Se116
+---Start---
+Real Farm
+EA SPORTS™ FIFA 20
+LittleBigPlanet™ 3
+---END---
+
+Region: US
+OnlineID: CAJ5Y
+---Start---
+Madden NFL 18: G.O.A.T. Super Bowl Edition
+---END---
+```
+Pattern 2 Solved: `powershell -command &quot;&amp; {Get-ChildItem .\LogFILE.txt -r | Get-Content -Raw | Foreach-Object { $_ -Split &#39;(?&lt;=---END---\s*\n)\s*\n&#39; } | Select-String &#39;fifa&#39;} &gt; LogNEW.txt&quot;`
+```
+2:
+
+Language: pt-BR (Actually I need [Language:.*])
+
+Region: AR
+OnlineID: Atl_Tuc
+---Start---
+FIFA 18 Legacy Edition
+---END---
+
+Language: en-US
+
+Region: FR
+OnlineID: jubtrrzz
+---Start---
+FIFA 19
+Undertale
+Pro Evolution Soccer™ 2018
+---END---
+
+Language: en-GB
+
+Region: US
+OnlineID: Cu128yi
+---Start---
+KINGDOM HEARTS HD 1.5 +2.5 ReMIX
+---END---
+
+Language: pt-BR
+
+Region: RO
+OnlineID: Se116
+---Start---
+Real Farm
+EA SPORTS™ FIFA 20
+LittleBigPlanet™ 3
+---END---
+
+Language: es-MX
+
+Region: US
+OnlineID: CAJ5Y
+---Start---
+Madden NFL 18: G.O.A.T. Super Bowl Edition
+---END---
+```
+
+  [1]: https://stackoverflow.com/questions/64840204/regex-to-find-a-multi-line-string-that-includes-another-string-between-lines",2020-11-15 05:43:41
+51,Swift - Difference between passing variable and passing variable address withUnsafePointer?,"recently I was trying to see the address of my variable and I have this question.
+
+```
+var age: Int = 5
+
+withUnsafePointer(to: age) {
+    print($0) // 0x00007ffee3362750
+    print($0.pointee) // 5
+}
+
+withUnsafePointer(to: &amp;age) {
+    print($0) // 0x000000010d226330
+    print($0.pointee) // 5
+}
+```
+
+why it shows different memory address and why it shows the same value for the `pointee`?
+
+```
+var strarr = [1, 2]
+
+withUnsafePointer(to: strarr[0]) {
+    print(&quot;\($0)&quot;) // 0x00007ffee3362750
+    print(&quot;\($0.pointee)&quot;) // 1
+}
+
+withUnsafePointer(to: strarr[1]) {
+    print(&quot;\($0)&quot;) // 0x00007ffee3362750
+    print(&quot;\($0.pointee)&quot;) // 2
+}
+
+withUnsafePointer(to: &amp;strarr[0]) {
+    print(&quot;\($0)&quot;) // 0x0000600002755760
+    print(&quot;\($0.pointee)&quot;) // 1
+}
+
+withUnsafePointer(to: &amp;strarr[1]) {
+    print(&quot;\($0)&quot;) // 0x0000600002755768
+    print(&quot;\($0.pointee)&quot;) // 2
+}
+```
+
+for the array, why it shows the same memory address for index 1 and 2, when I&#39;m not passing the address of the variable and why it shows a different memory address for index 1 and 2 when I&#39;m passing the memory address? 
+
+Appreciate your answer and looking forward to understand this
+
+",2020-11-15 08:32:28
+52,I&#39;m troubling writing a pseudo code for Bioinformacits,"Paralogs are genes related by a duplication event in a single genome. Such genes will be identical immediately after the duplication but will then begin to accumulate differences. I found all paralogs of human protein X by BLASTing it against the human protein database. (Assume that the human protein database was produced from a FASTA file containing one copy of each human protein.)
+
+Describe in pseudocode a procedure for identifying all replicated genes in the human genome. In other words, how would you repeat this analysis for ALL human proteins, listing those with at least one paralog? You pseudocode may or may not resemble the actual computer code, but MUST include all the required steps. 
+
+",2020-11-15 16:21:06
+53,RuntimeError: Did not find any input files matching the glob pattern [&#39;D:\\ML\\Object-Detection\\data\train.record&#39;],"Hey I am working on a tensorflow project. I am using codes from [this website][1] and when I run my `train.py` file I&#39;m getting the below error.
+
+&gt; RuntimeError: Did not find any input files matching the glob pattern
+&gt; [&#39;D:\\ML\\Object-Detection\\data\train.record&#39;]
+
+
+  [1]: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html",2020-01-14 08:30:00
+54,"SSO with SAML, Keycloak and Nextcloud","I am trying to setup Keycloak as a IdP (Identity Provider) and Nextcloud as a service. I want to setup Keycloak as to present a SSO (single-sign-on) page.
+
+I am running a Linux-Server with a Intel compatible CPU. What is the correct configuration?
+
+- Keycloak will be running as https://kc.domain.com
+- Nextcloud will be running as https://nc.domain.com
+",2018-01-23 13:37:40
+55,How to convert pandas series to 2D array?,"I have a pandas series that looks like this:[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/DLS7i.png
+
+How can I convert this into a 2D array that looks like this: ([10.32.5.53, 1008],[10.32.5.56,1002]...[10.32.5.58,11]) ?",2020-11-15 16:00:07
+56,How do I create an R dataframe from a collection in mongoDB?,"The following is a subset from a collection in a mongoDB database: 
+
+    { &quot;_id&quot; : ObjectId(&quot;5fb12983e205e40690704cf9&quot;), &quot;arrest_key&quot; : &quot;9930154&quot;, &quot;arrest_date&quot; : &quot;2006-01-01T00:00:00.000&quot;, &quot;pd_cd&quot; : &quot;115.0&quot;, &quot;pd_desc&quot; : &quot;RECKLESS ENDANGERMENT 2&quot;}
+    { &quot;_id&quot; : ObjectId(&quot;5fb12983e205e40690704cfa&quot;), &quot;arrest_key&quot; : &quot;9929859&quot;, &quot;arrest_date&quot; : &quot;2006-01-01T00:00:00.000&quot;, &quot;pd_cd&quot; : &quot;109.0&quot;, &quot;pd_desc&quot; : &quot;ASSAULT 2,1,UNCLASSIFIED&quot; }
+
+I installed mongolite and I was able to create a connection using the following: 
+
+    c=mongo(db=&#39;crime&#39;, collection=&#39;arrests&#39;)
+
+I can&#39;t figure out how to create an R dataframe from this collection. I went through the documentation https://jeroen.github.io/mongolite/import-export.html and I don&#39;t see any mention of exporting collections as R dataframes. How can I do this? ",2020-11-15 16:20:58
+57,Scrapy/Python: run logic after yielded requests are finished,"What I do:
+
+    def parse(self, response):
+
+        products_urls = response.css(&#39;.product-item a::attr(href)&#39;).extract()
+
+        for product_url in product_urls:
+            yield Request(product_url, callback=self.parse_product)
+
+        print( &quot;Continue doing stuff....&quot; )
+
+
+    def parse_product(self, response):
+        title = response.css(&#39;h1::text&#39;).extract_first()
+        print( title )
+    }
+
+In this example, the code will first output `Continue doing stuff..` and after that it will print product titles. I would like it to run otherwise, first do requests and print titles, and only then print `Continue doing stuff..`
+",2020-11-13 13:06:09
+58,Powershell script to output Lan computers for smb version and signed true,"I found a nice script to run on a network for getting the smb version but I would like a different output, could you help?
+
+The script found is :
+
+```powershell
+$b4 = {Get-SMBServerConfiguration  |Select-Object EnableSMB1Protocol,EnableSMB2Protocol,pscomputername}
+
+ForEach ($COMPUTER in (Get-ADComputer -Filter &#39;*&#39; | Select -ExpandProperty Name)) {
+    if(!(Test-Connection -Cn $computer -BufferSize 16 -Count 1 -ea 0 -quiet)) {
+        write-host &quot;cannot reach $computer&quot; -f red
+    }
+    else {
+        Invoke-Command -ComputerName $computer -ScriptBlock $b4
+    }
+}
+```
+
+Output is like:
+
+```none
+EnableSMB1protocol: true
+EnableSMB2protocol: true
+PSComputerName: computer-Timmy 
+RunSpaceId: some hash
+```
+
+I would like output like that:
+
+```none
+ComputerName    SMB1 enabled  SMB2 enabled  Signing
+------------    ------------  ------------  -------
+Computer-Timmy          true          true     true
+Computer-John          false          true    false 
+```
+
+Could you please help me?
+I want to have output like that and get rid of the computers that haven’t been found.
+
+Thank you very much for your help !
+
+
+
+
+",2020-11-14 19:38:12
+59,Create a Boxplot using gplot2 from Excel File,"My goal is to create a simple boxplot using the ggplot function. I&#39;ve imported the data from an excel file using read_excel. The data consists of 4 columns (corresponding to treatment) and for each row/treatment, there are around 600 values (see screenshot of head of data.frame in R). For ggplot however, i don&#39;t have a clue what are the x/y names of my data frame to put in the aes() argument and I don&#39;t know how to create x/y names for the aes function. 
+I just want to know what the x and y values to put in Aes()...or how to define them if I haven&#39;t yet.
+So far, code is: 
+Library(readxl)
+Library(ggplot2)
+
+CM&lt;-read_excel(file.choose(new=FALSE))
+CM&lt;-data.frame(CM)
+
+So for the graph: ggplot(CM, aes(??,??)
+
+Didn&#39;t get very far...
+
+[enter image description here][1]
+
+
+  [1]: https://i.stack.imgur.com/ZJzNl.png",2020-11-15 16:10:03
+60,What is a good URI design for creating a new resource?,"I currently have:
+
+/exercises
+
+Which lists all exercises
+
+And /exercises/1
+
+Which shows exercise with id 1
+
+One exercise can have zero or many runs:
+
+/runs
+
+Shows all runs across all exercises
+
+/runs/1
+
+Shows run with is 1
+
+So how can I have a page that allows you to create a run for an exercise?
+
+Options I thought of are:
+
+ 1. /exercises/1/run-wizard
+ 2. /runs/wizard?exerciseId=1
+
+What do you think?",2020-11-15 16:20:45
+61,Making a web page cache even if the parameters change,"Is there a way to get a browser to cache a web page even if the parameters change?
+
+I have a web assembly app that takes parameters.  If the parameters change, the browser forces a download.  Is there any way I can set headers so that the parameters aren&#39;t a factor in caching?
+
+i.e. if I do
+
+http://www.myapp.com?param=1234
+
+and 
+
+http//:www.myapp.com?param=4321
+
+...the browser thinks it&#39;s a whole new site and downloads the whole 26mb web assembly binary again.
+
+Anything I can do?",2020-09-02 16:37:12
+62,Adobe Animate - Javascript to reset objects on a stage,"I&#39;m new to JavaScript and Adobe Animate. I have a rather involved project going you can view the current working version at [Digital Magnet Board][1]
+
+The concept is a magnet board that allows the user to manipulate the tiles to spell words. We will be using this to teach students to read during distance learning. It is functional right now with my current code. I&#39;m guessing there will be 100 more tiles added to the board by the time I&#39;m done. I&#39;ve got the items dragging and dropping. If there&#39;s a simpler way I&#39;d love some feedback.
+
+Right now I&#39;m accomplishing the reset with a ClicktoPosition function, but I&#39;m also having to put individual coordinates in for every tile which is cumbersome and time consuming.
+
+```
+    this.resetButton.on(&quot;click&quot;, fl_ClickToPosition.bind(this));
+    		function fl_ClickToPosition()
+    		{
+    					   this.cardA.x = 32;
+    					   this.cardA.y = 66;
+    					   this.cardB.x = 83.45;
+    					   this.cardB.y = 66;
+    					   this.cardC.x = 134.85;
+    					   this.cardC.y = 66;
+    }
+```
+Is there a way to set the start positions of the tiles when the animation loads so I can have the reset button return the tiles when the button is clicked?
+
+Right now this is the code I&#39;m using for the drag and drop functionality - I&#39;m manually adding this with each tile. 
+
+
+    this.prefixSUB.on(&quot;pressmove&quot;, function(evt){
+    var p = stage.globalToLocal(evt.stageX, evt.stageY);
+    evt.currentTarget.x = p.x;
+    evt.currentTarget.y = p.y;
+    });
+
+
+Thank you for any assistance you can provide.  
+  
+
+Erin
+
+
+  [1]: http://erinewold.com/MagnetBoard2.html",2020-11-15 16:20:37
+63,"Cannot set property name because no setter, no wither and it&#39;s not part of the persistence constructor","**Problem in title.** I trying to get HistoryModel basrd on istory Mongo Document from controller by user&#39;s AppleId (or &#39;admin&#39; in this example). Or methods, models JSON-responses and controller code below. 
+Question: **How to solve it?** I think I am making a stupid mistake.
+
+This topic didn&#39;t work for me: [Spring HATEOAS RepresentationModel, Cannot set property links because no setter, no wither and it&#39;s not part of the persistence constructor][1]
+
+**My Document entity class:**
+```java
+@Document(collection = &quot;histories&quot;)
+@Data
+public class History {
+    @Id
+    private String id;
+
+    private final String name = MAIN_FOLDER;
+    private String appleId;
+    private ArrayList&lt;Item&gt; historyItems = new ArrayList&lt;&gt;();
+    private ArrayList&lt;Folder&gt; historyFolders = new ArrayList&lt;&gt;();
+
+    public History() {
+    }
+}
+```
+
+
+
+ **1. If user&#39;s history doesn&#39;t exist:**
+```json
+{
+    &quot;code&quot;: &quot;OK&quot;,
+    &quot;message&quot;: &quot;History downloaded&quot;,
+    &quot;history&quot;: {
+        &quot;id&quot;: &quot;5fb135c43a3834575545bf18&quot;,
+        &quot;name&quot;: &quot;MAIN_FOLDER&quot;,
+        &quot;appleId&quot;: &quot;admin&quot;,
+        &quot;historyItems&quot;: [],
+        &quot;historyFolders&quot;: []
+    }
+}
+```
+ **2. If user`s history exists:**
+```json
+{
+    &quot;timestamp&quot;: &quot;2020-11-15T14:09:31.023+00:00&quot;,
+    &quot;status&quot;: 500,
+    &quot;error&quot;: &quot;Internal Server Error&quot;,
+    &quot;message&quot;: &quot;&quot;,
+    &quot;path&quot;: &quot;/api/history/get-root/admin&quot;
+}
+```
+**Message:** ```Cannot set property name because no setter, no wither and it&#39;s not part of the persistence constructor public *.entity.History()!```
+
+
+**Controller:**
+```java
+    @GetMapping(&quot;/get-root/{appleId}&quot;)
+    public HistoryModelResponse getFullRootFolder(@PathVariable String appleId) {
+        return historyService.getHistory(appleId);
+    }
+```
+**Service:**
+```java
+    public HistoryModelResponse getHistory(final String appleId) {
+        History history = getHistoryInstance(appleId);
+        HistoryModel historyModel = new HistoryModel();
+
+        historyModel.setAppleId(appleId);
+        historyModel.setHistoryFolders(history.getHistoryFolders());
+        historyModel.setHistoryItems(history.getHistoryItems());
+        historyModel.setId(history.getId());
+
+        return new HistoryModelResponse(HttpStatus.OK, &quot;History downloaded&quot;, historyModel);
+    }
+```
+**My createIfNotExists method:**
+```java
+    private History getHistoryInstance(final String appleId) {
+        History history = historyRepository.findByAppleId(appleId);
+
+        if (history == null) {
+            history = new History();
+            history.setId(ObjectId.get().toHexString());
+            history.setAppleId(appleId);
+            historyRepository.save(history);
+        }
+
+        return history;
+    }
+```
+**HistoryModel.class:**
+```java
+@Data
+public class HistoryModel {
+    private String id;
+    private final String name = MAIN_FOLDER;
+    private String appleId;
+    private List&lt;Item&gt; historyItems;
+    private List&lt;Folder&gt; historyFolders;
+}
+```
+
+
+  [1]: https://stackoverflow.com/questions/63693623/spring-hateoas-representationmodel-cannot-set-property-links-because-no-setter",2020-11-15 16:20:29
+64,HTML audio can&#39;t set currentTime,"I am using Chrome. In my dev tools console, I tried the following:
+
+[![enter image description here][1]][1]
+
+
+Everything works as expected except last line. Why can&#39;t I set `currentTime` on it?
+
+Also in general, I am finding this whole HTML5 Audio thing to not be very reliable. Is there a robust javascript wrapper that fallsback to flash ?
+
+  [1]: http://i.stack.imgur.com/FVA4j.png",2016-05-05 09:40:24
+65,GOOGLE_APPLICATION_CREDENTIALS can&#39;t be found,"Currently have to integrate Google Cloud Platform services into my app but recieving the following exception: 
+
+    **W/System.err: java.io.IOException: The Application Default Credentials are not available. They are available if running in Google Compute Engine. Otherwise, the environment variable GOOGLE_APPLICATION_CREDENTIALS must be defined pointing to a file defining the credentials. See https://developers.google.com/accounts/docs/application-default-credentials for more information.
+            at com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentials(DefaultCredentialsProvider.java:134)
+    W/System.err:     at com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:119)
+            at com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:91)
+            at com.google.api.gax.core.GoogleCredentialsProvider.getCredentials(GoogleCredentialsProvider.java:67)
+            at com.google.api.gax.rpc.ClientContext.create(ClientContext.java:135)
+            at com.google.cloud.speech.v1.stub.GrpcSpeechStub.create(GrpcSpeechStub.java:94)
+            at com.google.cloud.speech.v1.stub.SpeechStubSettings.createStub(SpeechStubSettings.java:131)
+            at com.google.cloud.speech.v1.SpeechClient.&lt;init&gt;(SpeechClient.java:144)
+            at com.google.cloud.speech.v1.SpeechClient.create(SpeechClient.java:126)
+            at com.google.cloud.speech.v1.SpeechClient.create(SpeechClient.java:118)
+            at com.dno.app.ui.TranscriptFragment$1.onClick(TranscriptFragment.java:72)**
+
+Environment variable is set:
+
+[![environment_variable][1]][1]
+
+.json file is here:
+
+[![.json file][2]][2]
+
+the app crashes at authImplicit() in this code block (fragment):
+
+        transcriptBtn = getActivity().findViewById(R.id.transcript_button);
+        transcriptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try (SpeechClient speechClient = SpeechClient.create()) {
+                    authImplicit(); // issue with Google Platform Login Authentification
+                    // - does not read the environment variable, and therefore cannot get access to the .json file.
+
+                    // The path to the audio file to transcribe
+                    String fileName = getFile().getName();
+  
+                    // Reads the audio file into memory
+                    Path path = Paths.get(fileName);
+
+                    byte[] data = Files.readAllBytes(path);
+                    ByteString audioBytes = ByteString.copyFrom(data);
+
+                    // Builds the sync recognize request
+                    RecognitionConfig config =
+                            RecognitionConfig.newBuilder()
+                                    .setEncoding(RecognitionConfig.AudioEncoding.FLAC)
+                                    .setSampleRateHertz(16000)
+                                    .setLanguageCode(&quot;en-US&quot;)
+                                    .build();
+                    RecognitionAudio audio = RecognitionAudio.newBuilder().setContent(audioBytes).build();
+
+                    // Performs speech recognition on the audio file
+                    RecognizeResponse response = speechClient.recognize(config, audio);
+                    List&lt;SpeechRecognitionResult&gt; results = response.getResultsList();
+
+                    for (SpeechRecognitionResult result : results) {
+                        // There can be several alternative transcripts for a given chunk of speech. Just use the
+                        // first (most likely) one here.
+                        SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
+                        System.out.printf(&quot;Transcription: %s%n&quot;, alternative.getTranscript());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+code for authImplicit():
+
+     private void authImplicit() {
+            // If you don&#39;t specify credentials when constructing the client, the client library will
+            // look for credentials via the environment variable GOOGLE_APPLICATION_CREDENTIALS.
+            Storage storage = StorageOptions.getDefaultInstance().getService();
+    
+            System.out.println(&quot;Buckets:&quot;);
+            Page&lt;Bucket&gt; buckets = storage.list();
+            for (Bucket bucket : buckets.iterateAll()) {
+                System.out.println(bucket.toString());
+            }
+        }
+
+I have selected a service account of the type, Owner, so I shouldn&#39;t be lacking any permissions.
+
+**EDIT** (Still not working):
+I tried using this example but it still doesn&#39;t work: https://stackoverflow.com/questions/55496769/the-application-default-credentials-are-not-available?rq=1
+
+**EDIT #2** (Working on server-side):
+As it turns out, Google does not currently support Android for this task. Since this, I&#39;ve moved the code to an ASP.NET back-end, and the code is now running smoothly. 
+
+Thank you for the assistance below. 
+
+  [1]: https://i.stack.imgur.com/uvMcN.png
+  [2]: https://i.stack.imgur.com/KbKyE.png
+
+",2020-05-04 18:20:26
+66,Python Real Time Audio Visualization,"I&#39;m having trouble getting this to work, it seems that the loop stops at the animation part.
+anyone knows how to fix this ? or is there any better way to do this (I tried to run two files simultaneously ...one for collecting data and one for animation but it so tedious and inefficient.)  
+
+
+    from collections import deque
+    import numpy as np
+    import pyaudio
+    import matplotlib.pyplot as plt
+    from matplotlib.animation import FuncAnimation
+
+
+
+
+    chunk = 1024  # Record in chunks of 1024 samples
+    sample_format = pyaudio.paFloat32  #32 bits per sample
+    channels = 1
+    fs = 48000  # Record at 44100 samples per second
+    seconds = 3
+    range_ = int(fs / chunk * seconds)
+
+
+    p = pyaudio.PyAudio()
+
+    stream = p.open(format=sample_format,
+                channels=channels,
+                rate=fs,
+                frames_per_buffer=chunk,
+                input=True)
+
+
+    print(&#39;Recording...&#39;)
+
+
+
+    frames = list(np.zeros((range_ * chunk, 1), dtype=np.float32))
+    frames = deque(frames, maxlen=range_ * chunk)
+
+    fig = plt.figure()
+
+
+    time = np.linspace(0, len(frames) / fs, 
+	num=len(frames))
+
+
+    def animate(i):
+	     plt.ylim(ymin=-0.001, ymax=0.001)
+	     line, = plt.plot(time[i * 1000:chunk + i * 1000], frames[i * 1000:chunk + i * 1000])
+	     return line,
+
+
+    while True:
+	     frames = list(frames)
+	     data = stream.read(chunk)
+	     frames.append(list(np.frombuffer(data, dtype=np.float32)))
+
+	     anim = FuncAnimation(fig, animate, interval=100)
+
+	     plt.show()
+	     fig.clf()
+",2020-11-15 16:20:24
+67,How to add new column to pd.DataFrame from another pd.DataFrame using mutual column?,"I have two `pd.DataFrame`s, two columns each. The first one has `Id` and `Name` columns, the other has `OwnerID` and `shows_num` columns. Both dataframes have the same shape - (721, 2). I need to add `shows_num` column to the first dataframe. The thing is `Id` and `OwnerID` have the same values inside (so they can be used a mutual column), but the order of these values is different. How can I add `shows_num` column to the firts dataframe, so that each value of this column corresponds to the right `Id` number?",2020-11-15 16:20:22
+68,Api Plateform &amp; ReactJs &amp; Symfony 4 : Route issue,"I have a new *symfony* 4.4 project with *api platform* installed (via composer require api) and *reactJs* with *Webpack Encore*. I can&#39;t display Api platform (**127.0.0.1:8000/api**) view when i have the 
+
+&gt; @Route(&quot;/{reactRouting}&quot;, name=&quot;home&quot;, defaults={&quot;reactRouting&quot;: null})
+
+ inside my 
+DefaultController.php :
+
+    class DefaultController extends AbstractController {
+
+    /**
+     * @Route(&quot;/{reactRouting}&quot;, name=&quot;home&quot;, defaults={&quot;reactRouting&quot;: null})
+     */
+    public function index()
+    {
+        return $this-&gt;render(&#39;default/index.html.twig&#39;);
+    }
+
+But when i remove it i can access /api but i can&#39;t access my route from react (/login etc).
+",2020-11-08 00:45:24
+69,Insert data from Android app to php only inserts &quot;1&quot;,"I am trying to insert data from an android app to my hosted phpMyAdmin database but once i have inserted the data from the app and check the database then it only inserts &quot;1&quot; if data was supplied and leaves the fields blank when no data is given (not all fields are initially filled) except for the date which works correctly leading em to believe it is an issue on the java side but i wouldn&#39;t know. I am quite new to java so would appreciate all the help I could get.
+
+PHP Code
+
+    &lt;?php
+    //Recieve JSon Data
+    $data =   json_decode(file_get_contents(&#39;php://input&#39;),true);
+    ini_set(&#39;display_errors&#39;, 1);
+    ini_set(&#39;display_startup_errors&#39;, 1);
+    error_reporting(E_ALL);
+    //Server Settings
+    $result;
+
+     $servername = &quot;localhost&quot;;
+     $username = &quot;zentyqkpub_3&quot;;
+     $password = &quot;eaqqumRiFAB1J7TnqGe8&quot;;
+     $dbname = &quot;zentyldb&quot;;
+
+
+      $initials = isset($data[&quot;initials&quot;]);
+      $lastname = isset($data[&quot;lastname&quot;]);
+      $dob = isset($data[&quot;dob&quot;]);
+      $licno = isset($data[&quot;licno&quot;]);
+      $gender = isset($data[&quot;gender&quot;]);
+      $expiry = isset($data[&quot;expiry&quot;]);
+      $issue = isset($data[&quot;issuedplace&quot;]);
+      $country = isset($data[&quot;country&quot;]);
+      $idno = isset($data[&quot;idno&quot;]);
+
+      $make = isset($data[&quot;make&quot;]);
+      $model = isset($data[&quot;model&quot;]);
+      $registration = isset($data[&quot;registration&quot;]);
+      $color = isset($data[&quot;color&quot;]);
+      $description = isset($data[&quot;description&quot;]);
+      $vin = isset($data[&quot;vin&quot;]);
+      $engineno = isset($data[&quot;engineno&quot;]);
+
+      $site = isset($data[&quot;site&quot;]);
+      $siteid = isset($data[&quot;siteid&quot;]);
+
+      $inorout = isset($data[&quot;inorout&quot;]);
+      $dlphoto = isset($data[&quot;dlphoto&quot;]);
+      $takenphoto = isset($data[&quot;takenphoto&quot;]);
+
+      $registernumber = isset($data[&quot;registernumber&quot;]);
+      $documentnubmer = isset($data[&quot;documentnumber&quot;]);
+      $dlphoto = isset($data[&quot;dlphoto&quot;]);
+      $takenphoto = isset($data[&quot;takenphoto&quot;]);
+      $inorout = isset($data[&quot;inorout&quot;]);
+
+      date_default_timezone_set(&quot;Africa/Harare&quot;);
+      $visitdate = date(&quot;Y-m-d H:i:sa&quot;);
+
+
+      // Create connection
+      $conn = new mysqli($servername, $username, $password,       $dbname);
+      // Check connection
+      if ($conn-&gt;connect_error) {
+      die(&quot;Connection failed: &quot; . $conn-&gt;connect_error);
+      }else{
+	  echo &quot;Connected to database.....&quot;;
+      }
+      $sql = &quot;INSERT INTO tblMotorist (motorSite, motorIDNumber, motorInitials, motorLastName, motorGender, motorDateOfBirth, motorLicenseNumber, motorCountry, motorDriverPhoto, motorMake, motorModel, motorColour, motorDescription, motorVIN, motorEngineNumber,
+      motorRegistrationNumber, motorEnter, motorDiskPhoto)
+      VALUES   (&#39;&quot;.$site.&quot;&#39;,&#39;&quot;.$idno.&quot;&#39;,&#39;&quot;.$initials.&quot;&#39;,&#39;&quot;.$lastname.&quot;&#39;,&#39;&quot;.$gender.&quot;&#39;,&#39;&quot;.$dob.&quot;&#39;,&#39;&quot;.$licno.&quot;&#39;,&#39;&quot;.$country.&quot;&#39;,&#39;&quot;.$dlphoto.&quot;&#39;,&#39;&quot;.$make.&quot;&#39;,&#39;&quot;.$model.&quot;&#39;,&#39;&quot;.$color.&quot;&#39;,&#39;&quot;.$description.&quot;&#39;,&#39;&quot;.$vin.&quot;&#39;,&#39;&quot;.$engineno.&quot;&#39;,
+      &#39;&quot;.$registration.&quot;&#39;,&#39;&quot;.$visitdate.&quot;&#39;,&#39;&quot;.$dlphoto.&quot;&#39;)&quot;;
+
+      if ($conn-&gt;query($sql) === TRUE) {
+      echo json_encode(&quot;Data Posted&quot;);
+      echo $gender;
+      } else {
+      echo mysqli_error($conn);
+       }
+      $conn-&gt;close();?&gt;
+
+Java Code
+
+     public void sendPost(final String request) {
+
+        Thread thread = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                try {
+
+                    URL url = new URL(&quot;http://zentylvms.co.za/API/insertmotorist.php&quot;);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod(&quot;POST&quot;);
+                    conn.setRequestProperty(&quot;Content-Type&quot;, &quot;application/json;charset=UTF-8&quot;);
+                    conn.setRequestProperty(&quot;Accept&quot;, &quot;application/json&quot;);
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+
+                    JSONObject jsonParam = new JSONObject();
+
+                    try
+                    {
+                        jsonParam.put(&quot;idno&quot;, motorist.getIDNo());
+                        jsonParam.put(&quot;initials&quot;, motorist.getInitials());
+                        jsonParam.put(&quot;lastname&quot;, motorist.getLastName());
+                        jsonParam.put(&quot;gender&quot;, motorist.getGender());
+                        jsonParam.put(&quot;expiry&quot;, motorist.getExpiry());
+                        jsonParam.put(&quot;issuedplace&quot;, motorist.getIssuedPlace());
+                        jsonParam.put(&quot;country&quot;, motorist.getCountry());
+                        jsonParam.put(&quot;dob&quot;, motorist.getDOB());
+                        jsonParam.put(&quot;licno&quot;, motorist.getLicNo());
+                        jsonParam.put(&quot;validfrom&quot;, motorist.getValidFrom());
+                        jsonParam.put(&quot;make&quot;, motorist.getMake());
+                        jsonParam.put(&quot;model&quot;, motorist.getModel());
+                        jsonParam.put(&quot;color&quot;, motorist.getColor());
+                        jsonParam.put(&quot;vin&quot;, motorist.getVin());
+                        String date = Calendar.getInstance().getTime().toString();
+                        jsonParam.put(&quot;visitdate&quot;, date);
+                        jsonParam.put(&quot;engineno&quot;, motorist.getEngineNo());
+                        jsonParam.put(&quot;restrictions&quot;, motorist.getRestrictions());
+                        jsonParam.put(&quot;registration&quot;, motorist.getRegistration());
+                        jsonParam.put(&quot;registernumber&quot;, motorist.getRegisterNumber());
+                        jsonParam.put(&quot;documentnumber&quot;, motorist.getDocumentNumber());
+                        jsonParam.put(&quot;description&quot;, motorist.getDescription());
+                        jsonParam.put(&quot;site&quot;, Globals.sitename);
+                        jsonParam.put(&quot;siteid&quot;, Globals.siteID);
+                        jsonParam.put(&quot;dlphoto&quot;, motorist.getIDPhoto());
+                        jsonParam.put(&quot;inorout&quot;, Globals.InOrOut);
+                        jsonParam.put(&quot;takenphoto&quot;, motorist.getTakenPhoto());
+
+
+                    }catch(Exception e){
+                        Log.d(&quot;Json Error&quot;,&quot;Failed to convert json&quot;);
+                    }
+
+                    Log.i(&quot;JSON&quot;, jsonParam.toString());
+                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+
+                    os.writeBytes(jsonParam.toString());
+                    os.flush();
+                    os.close();
+
+                    Log.i(&quot;STATUS&quot;, String.valueOf(conn.getResponseCode()));
+                    Log.i(&quot;MSG&quot;, conn.getResponseMessage());
+                    conn.disconnect();
+
+                    if (String.valueOf(conn.getResponseCode()).equals(&quot;200&quot;)) {
+                        Log.d(&quot;Error&quot;,&quot;success Post&quot;);
+                    }
+                } catch(Exception e) {
+                    Log.d(&quot;Error&quot;,&quot;Failed to Post&quot;);
+                } finally {
+
+                }
+
+            }
+        });
+
+        thread.start();
+
+    }
+
+
+",2020-11-15 16:14:54
+70,error TS2503: Cannot find namespace &#39;SocketIOClient&#39;,"I keep on receiving an error in one of the typings on @feathersjs/socketio-client/index.d.ts 
+
+&gt; ERROR in node_modules/@feathersjs/socketio-client/index.d.ts:7:14 - error TS2503: Cannot find namespace &#39;SocketIOClient&#39;.
+&gt;   
+&gt;    7     (socket: SocketIOClient.Socket, options?: socketioClient.Options): () =&gt; void;
+
+I already added the **@types/feathersjs__socketio-client** and **@types/socket.io-client** but no luck.",2020-11-15 16:20:04
+71,leaflet Uncaught TypeError: Cannot read property &#39;length&#39; of undefined,"I wrote a code for getting data from server and show it on map. it&#39;s been working fine till I changed the map codes to add `LayerGroup()`.
+I have my map function in a seperate file named: `app.js`,  clustering function in `functions.js`.
+I wanted to use different types of map (layer control). and also, the clustering function should work whenever the &quot;show on map&quot; button is clicked.
+My map code now:
+
+     var cities = L.layerGroup();
+      
+        var mbAttr = &#39;Map data &amp;copy; &lt;a href=&quot;https://www.openstreetmap.org/&quot;&gt;OpenStreetMap&lt;/a&gt; contributors, &#39; +
+            &#39;&lt;a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;&gt;CC-BY-SA&lt;/a&gt;, &#39; +
+            &#39;Imagery &#169; &lt;a href=&quot;https://www.mapbox.com/&quot;&gt;Mapbox&lt;/a&gt;&#39;,
+          mbUrl = &#39;https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw&#39;;
+      
+        var satellite   = L.tileLayer(mbUrl, {id: &#39;mapbox/satellite-v9&#39;, tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+            streets  = L.tileLayer(mbUrl, {id: &#39;mapbox/streets-v11&#39;, tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+            Defaultmap = L.tileLayer(&#39;http://mt0.google.com/vt/lyrs=p&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}&amp;s=Ga&#39;, {
+                maxZoom: 19,
+                attribution: &#39;&amp;copy; &lt;a href=&quot;https://openstreetmap.org/copyright&quot;&gt;OpenStreetMap contributors&lt;/a&gt;&#39;}),
+            googleHybrid = L.tileLayer(&#39;http://{s}.google.com/vt/lyrs=s,h&amp;x={x}&amp;y={y}&amp;z={z}&#39;,{
+                maxZoom: 20,
+                subdomains:[&#39;mt0&#39;,&#39;mt1&#39;,&#39;mt2&#39;,&#39;mt3&#39;]}),
+            googleSat = L.tileLayer(&#39;http://{s}.google.com/vt/lyrs=s&amp;x={x}&amp;y={y}&amp;z={z}&#39;,{
+                maxZoom: 20,
+                subdomains:[&#39;mt0&#39;,&#39;mt1&#39;,&#39;mt2&#39;,&#39;mt3&#39;]}),
+            googleTerrain = L.tileLayer(&#39;http://{s}.google.com/vt/lyrs=p&amp;x={x}&amp;y={y}&amp;z={z}&#39;,{
+                maxZoom: 20,
+                subdomains:[&#39;mt0&#39;,&#39;mt1&#39;,&#39;mt2&#39;,&#39;mt3&#39;]});
+
+        var map = L.map(&#39;map&#39;, {
+          center: [36.564012,53.060300],
+          zoom: 8,
+          layers: [satellite, cities, Defaultmap , googleHybrid , googleSat , googleTerrain]
+        });
+      
+        var baseLayers = {
+          &quot;نقشه ماهواره ای(گوگل)&quot;: googleSat,
+          &quot;نقشه هیبریدی&quot;: googleHybrid,
+          &quot;نقشه ماهواره ای(OSM)&quot;: satellite,
+          &quot;Streets&quot;: streets,
+          &quot;نقشه اصلی&quot;: Defaultmap,
+          &quot;نقشه Terrain&quot;: googleTerrain
+        };
+      
+        var overlays = {
+          &quot;Cities&quot;: cities
+        };
+      
+        L.control.layers(baseLayers, overlays).addTo(map);
+    Init_Map ();
+
+
+
+and my function:
+
+     for ( var i = 0; i &lt; ODO.length ; i++ ){
+        var popup = 
+                    &#39;&lt;br/&gt;&lt;b&gt;کد رشته :&lt;/b&gt; &#39; + ODO[i].branchcode +
+                    &#39;&lt;br/&gt;&lt;b&gt;دوره:&lt;/b&gt; &#39; + ODO[i].saleprd +
+                    &#39;&lt;br/&gt;&lt;b&gt;سال :&lt;/b&gt; &#39; + ODO[i].saleyear+
+                    &#39;&lt;br/&gt;&lt;b&gt;موقعیت مکانی:&lt;/b&gt; &#39; + ODO[i].LastX +&quot;&quot;+&quot;-&quot;+&quot;&quot;+ ODO[i].LastY +
+                    &#39;&lt;br/&gt;&lt;b&gt;فلگ :&lt;/b&gt; &#39; + ODO[i].flag ;
+
+    
+        var marker= L.marker( [ODO[i].LastX, ODO[i].LastY] )
+                        .bindPopup( popup );
+    
+        markerClusters.addLayer( marker);
+    }
+
+and called the map function in this clustering:
+
+        Init_Map ();
+
+
+can anyone tell me why I&#39;m recieving this error suddenly?",2020-11-15 16:19:59
+72,Is it possible to disable file download in chrome using selenium,"On visiting some pages using ChromeDriver and Selenium, downloading of a particular file is happening automatically. Because of the file download, the code is not proceeding further. Is it possible to disable downloading of file using any ChromeOptions or preferences that can be set while creating ChromeDriver.
+
+Tried the following ChromeOptions, but none helped.
+
+    prefs.put(&quot;download.default_directory&quot;, &quot;NUL&quot;);
+    prefs.put(&quot;download.prompt_for_download&quot;, false);
+    prefs.put(&quot;profile.default_content_setting_values.automatic_downloads&quot;, 0);
+
+",2017-05-23 23:34:23
+73,"itext 7 PDFA1B conversion was successful, however Acrbat DC compaints &quot;CIDSet in subset font is missing&quot;","I&#39;m using itext 7 to convert a PDF file to PDF A-1B file.
+itext 7 PDFA1B conversion was successful, however Acrobat DC complaints &quot;CIDSet in subset font is missing&quot;
+Is there a way to fix this issue ?
+
+This is how I do the conversion
+
+    PdfADocument pdf = new PdfADocument(writer,
+					PdfAConformanceLevel.PDF_A_1B,
+					new PdfOutputIntent(&quot;Custom&quot;, &quot;&quot;, &quot;https://www.color.org&quot;,
+							&quot;sRGB IEC61966-2.1&quot;, new FileInputStream(PDFA1B_PROFILE_FILENAME)));
+			pdf.getCatalog().setLang(new PdfString(&quot;en-au&quot;));
+
+",2020-11-15 16:19:38
+74,Safari only CORS origin django issue - Origin is not allowed by Access-Control-Allow-Origin - django-cors-headers,"```
+[Error] Origin https://www.rrrroll.com is not allowed by Access-Control-Allow-Origin.
+[Error] XMLHttpRequest cannot load https://www.backend.rrrroll.com/upload/ due to access control checks.
+[Error] Failed to load resource: Origin https://www.rrrroll.com is not allowed by Access-Control-Allow-Origin. (upload, line 0)
+```
+
+Having CORS issues with Safari only -  Firefox, Chrome OK. Works in development for Safari but not production. Any help? Only difference is the backend is served on a subdomain in prod rather than just a different localhost port in dev.
+
+Django as backend for Next.js frontend, the GraphQL POST endpoint works fine on Safari, but the POST `/upload` endpoint gives the errors above. Using the django-cors-headers package and the` CORS_ALLOWED_ORIGINS` is correctly set.
+
+I previously did have a similar error earlier with another project and Safari this year and setting the `CORS_ALLOW_ALL_ORIGINS` and explicitly stating the default allowed headers worked. Not working in this case.
+
+Worth noting that a preflight OPTIONS request is run with 200 response when I press the upload the button I believe
+`Nov 15 00:32:19 ubuntu-s-1vcpu-1gb-lon1-01 gunicorn[16665]:  - - [15/Nov/2020:00:32:19 +0000] &quot;OPTIONS /upload/ HTTP/1.0&quot; 200 0 &quot;https://rrrroll.com/&quot; &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15&quot;`
+
+See the massive difference in requests on Safari vs Chrome, for some reason missing loads of headers, for context I&#39;m using [React-Upload-Gallery](https://github.com/m-inan/react-upload-gallery) to link the upload endpoint to, I tried adding the missing headers manually since the component allows to do that, but I can&#39;t since apparently it&#39;s unsafe.
+
+Safari:
+![Safari](https://imgur.com/syRLtnb.png)
+
+Chrome:
+![Chrome](https://imgur.com/YwIainq.png)",2020-11-15 16:19:35
+75,Compilation warning on deconstructed tuples &quot;local val in value $anonfun is never used&quot;,"Why does scala throw a warning during compilation when deconstructing a tuple inside a for comprehension. The warning states that member and map are never used even though they are.
+```
+   for {
+      row &lt;- mappings
+      (member, map) = row
+    } { ... }
+```",2020-11-15 16:12:02
+76,SearchBar and ListView crashed after load ListView with 5000 name places from mysql database,"Is there a way to force this function..
+
+    IEnumerable&lt;Contacts&gt; GetContacts(string searchText = null)
+        {
+            server = &quot;192.168.0.1,3306&quot;;
+            database = &quot;dbName&quot;;
+            uid = &quot;User&quot;;
+            password = &quot;Pass&quot;;
+            string connectionString;
+            connectionString = &quot;SERVER=&quot; + server + &quot;;&quot; + &quot;DATABASE=&quot; +
+            database + &quot;;&quot; + &quot;UID=&quot; + uid + &quot;;&quot; + &quot;PASSWORD=&quot; + password + &quot;;&quot;;
+            connection = new MySqlConnection(connectionString);
+            connection.Open();
+            var cmd = new MySqlCommand();
+            cmd.Connection = connection;
+
+            var contacts = new List&lt;Contacts&gt;();
+
+            MySqlCommand command = new MySqlCommand($&quot;SELECT place FROM places ORDER BY place&quot;, connection);
+            
+            using (MySqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var place = new Contacts
+                    {
+                        Place = reader[0].ToString()
+                    };
+
+                    contacts.Add(place);
+                   
+                }
+                connection.Close();
+            }
+
+            
+
+            if (string.IsNullOrEmpty(searchText))
+                return contacts;
+            return contacts.Where(p =&gt; p.Place.StartsWith(searchText));
+        }
+
+        private void ListView_Refreshing(object sender, EventArgs e)
+        {
+            listView.ItemsSource = GetContacts();
+            listView.EndRefresh();
+        }
+
+When I execute this querry and fill my contact list, SearchBar render this 5000 lines too slowly... I want to set a places to give you a hint when you search some place..
+
+In the constructor class when I calling GetContacts the app start too slowly..
+
+    public MainPage()
+        {
+            InitializeComponent();
+
+            listView.ItemsSource = GetContacts();
+            this.BindingContext = this;
+        }
+
+My SearchBar and ListView:
+
+     &lt;StackLayout&gt;  
+                &lt;SearchBar
+                   Placeholder=&quot;Enter city&quot;
+                   TextChanged=&quot;SearchBar_TextChanged&quot;
+                   SearchButtonPressed=&quot;Btn_Search&quot;&gt;&lt;/SearchBar&gt;  
+                &lt;ListView
+                    HeightRequest=&quot;50&quot;
+                    x:Name=&quot;listView&quot; &gt;  
+                    &lt;ListView.ItemTemplate&gt;  
+                        &lt;DataTemplate&gt;  
+                            &lt;TextCell Text=&quot;{Binding Place}&quot;&gt;  
+                        &lt;/TextCell&gt;  
+                        &lt;/DataTemplate&gt;  
+                    &lt;/ListView.ItemTemplate&gt;  
+                &lt;/ListView&gt;  
+            &lt;/StackLayout&gt;",2020-11-15 16:03:43
+77,Dynamicly change from for Displaying only linked tags Django Admin,"i have product tag and its variations of tag example: Color|green Quality|bad
+
+i need to display only linked variations when i create product
+
+i need to display only colors when i choice color
+
+ [![][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/eOsGb.jpg
+
+
+    models.py
+
+	
+class Variety(models.Model):
+
+	varietyName = models.CharField(max_length=30)
+
+	def __str__(self):
+
+		return self.varietyName
+
+	class Meta:
+
+		verbose_name = &quot;List variations&quot;
+
+
+class Tag(models.Model):
+
+	STATUS_VARIETY=(
+
+		(&#39;Filters&#39;, &#39;Filter&#39;),
+
+		(&#39;Variaty&#39;, &#39;Variaty&#39;),
+
+		(&#39;Boths&#39;, &#39;Boths&#39;),
+
+	)
+
+	status = models.CharField(max_length=10, choices=STATUS_VARIETY, default=&#39;Boths&#39;, verbose_name=&#39;status&#39;)
+
+	name = models.CharField(max_length=255, verbose_name=&#39;name&#39;)
+
+	variety = models.ManyToManyField(Variety, related_name=&#39;children&#39;, verbose_name=&#39;Parent&#39;)
+
+	def __str__(self):
+
+		return self.name
+
+	class Meta:
+
+		verbose_name = &quot;Variation&quot;
+
+		verbose_name_plural = &quot;Variations&quot;
+
+class Productcopy(models.Model):
+
+	STATUS_PRODUCT=(
+
+		(&#39;Publish&#39;, &#39;Publish&#39;),
+
+		(&#39;Not_to_publish&#39;, &#39;Not_to_publish&#39;),
+
+	)
+
+	status = models.CharField(max_length=30, choices=STATUS_PRODUCT, verbose_name=&#39;status&#39;)
+
+	name = models.CharField(max_length=100, verbose_name=&#39;name&#39;)
+
+	tag = models.ForeignKey(Tag, verbose_name=&#39;Variation&#39;, on_delete=models.CASCADE)
+
+	variety = models.ManyToManyField(Variety, verbose_name=&#39;Variations&#39;)
+
+	def __str__(self):
+
+		return self.name
+
+	class Meta:
+
+		verbose_name = &quot;product&quot;
+
+		verbose_name_plural = &quot;products&quot;
+
+
+    admin.py
+    from .models import *
+
+class TagAdmin(admin.ModelAdmin):
+
+	list_display = (&#39;name&#39;, &#39;status&#39;,)
+
+	filter_horizontal = (&#39;variety&#39;,)
+
+class ProductcopyAdmin(admin.ModelAdmin):
+
+	list_display = (&#39;name&#39;, &#39;status&#39;,)
+	
+	filter_horizontal = (&#39;variety&#39;,)
+
+ 
+
+     admin.site.register(Tag,TagAdmin)
+    
+      admin.site.register(Productcopy,ProductcopyAdmin)
+    
+      admin.site.register(Variety)
+
+
+   
+
+
+
+
+",2020-11-15 11:36:49
+78,Rocket couldn&#39;t parse JSON body,"I am trying to make a POST request with Postman to my Rust API:
+
+```
+#![feature(proc_macro_hygiene, decl_macro)]
+
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate serde_derive;
+
+use rocket_contrib::json::{Json, JsonValue};
+
+#[derive(Serialize, Deserialize)]
+struct Response {
+    status: String,
+}
+
+#[get(&quot;/&quot;)]
+fn index() -&gt; &amp;&#39;static str {
+    &quot;Hello, world!&quot;
+}
+
+#[post(&quot;/register&quot;, format = &quot;json&quot;, data = &quot;&lt;register&gt;&quot;)]
+fn user_create(register: Json&lt;Response&gt;) -&gt; Json&lt;Response&gt; {
+    Json(Response {
+        status: &quot;works&quot;.to_string(),
+    })
+}
+
+fn main() {
+    rocket::ignite()
+        .mount(&quot;/&quot;, routes![index, user_create])
+        .launch();
+}
+```
+
+Cargo.toml:
+
+```toml
+[package]
+name = &quot;hello-rocket&quot;
+version = &quot;0.1.0&quot;
+authors = [&quot;&quot;]
+edition = &quot;2018&quot;
+
+[dependencies]
+rocket = &quot;0.4.6&quot;
+serde = { version = &quot;1.0&quot;, feature = [&quot;derive&quot;]}
+serde_json = &quot;1.0&quot;
+serde_derive = &quot;1.0&quot;
+
+[dependencies.rocket_contrib]
+version = &quot;0.4.6&quot;
+default-features = false
+features = [&quot;json&quot;]
+```
+
+I have configured a `Content-Type: application/json` header within Postman and the body of my request is `{&quot;status&quot;: &quot;running&quot;}`:
+
+[![enter image description here][1]][1]
+
+I am getting 
+
+```none
+Error: Couldn&#39;t parse JSON body: Error(&quot;EOF while parsing a value&quot;, line: 1, column: 0)
+```
+
+  [1]: https://i.stack.imgur.com/ecrKb.png",2020-11-15 01:12:20
+79,How to fetch the input values by importing an xslt into another xslt?,"I have imported &quot;Codelist.xsl&quot; file in my another xslt and trying to call the template based upon the codes. In the imported file it contains list of code values. the input contains the codes. I&#39;m not able to execute xslt based upon the input request. My xslt will be as below:
+
+          
+    &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version&quot;1.0&quot;&gt;
+    &lt;xsl:template match=&quot;/&quot;&gt;
+            &lt;xsl:variable name=&quot;AccountType1&quot;&gt;
+            					&lt;xsl:call-template name=&quot;AccountType&quot;&gt;
+            						&lt;xsl:with-param name=&quot;AAccountType&quot; select=&quot;$EmpAccountType&quot;/&gt;
+            					&lt;/xsl:call-template&gt;
+            				&lt;/xsl:variable&gt;	
+          &lt;xsl:variable name=&quot;EmpAccountType&quot; select=&quot;Employee/EmployeeType/Type/Account/EmpAccountType&quot;/&gt;
+            			  &lt;Accounttype&gt;
+            			    &lt;xsl:value-of select=&quot;$AccountType1&quot;/&gt;
+            			  &lt;/Accounttype&gt;	
+    &lt;/xsl:template&gt;
+    &lt;/xsl:stylesheet&gt;
+
+My imported file contains:
+
+    &lt;xsl:template name=&quot;AccountType&quot;&gt;
+            &lt;xsl:param name=&quot;AAccountType&quot;/&gt;
+            &lt;xsl:choose&gt;
+    		    &lt;xsl:when test=&quot;$AAccountType=&#39;01&#39;&quot;&gt;A&lt;/xsl:when&gt;
+                &lt;xsl:when test=&quot;$AAccountType=&#39;02&#39;&quot;&gt;B&lt;/xsl:when&gt;
+                &lt;xsl:when test=&quot;$AAccountType=&#39;03&#39;&quot;&gt;C&lt;/xsl:when&gt;            
+            &lt;/xsl:choose&gt;
+    &lt;/xsl:template&gt;
+My input will be like:
+
+    &lt;Employee&gt;
+    &lt;EmployeeType&gt;
+    &lt;Type&gt;
+    &lt;Account&gt;
+    &lt;EmpAccountType&gt;02&lt;/EmpAccountType&gt;
+    &lt;/Account&gt;
+    &lt;/Type&gt;
+    &lt;/EmployeeType&gt;
+    &lt;/Employee&gt;
+But I&#39;m not able to fetch the value from input. Can someone correct me where am I going wrong in my xslt ?
+    		  ",2020-11-15 16:08:06
+80,Gem::Gem Not Found Exception,"My pull request keep failing on linters with this Ruby gem error:
+
+```
+Run[ -f Gemfile ] &amp;&amp; bundle --deployment
+gem install --no-document rspec:&#39;~&gt;3.0&#39;
+shell: /bin/bash -e {0}/opt/hostedtoolcache/Ruby/2.6.6/x64/lib/ruby/2.6.0/rubygems.rb:283:in 
+`find_spec_for_exe&#39;: Could not find &#39;bundler&#39; (2.1.2) required by your 
+/home/runner/work/Telegram_Inspirational_Bot/Telegram_Inspirational_Bot/Gemfile.lock. (Gem::GemNotFoundException)
+To update to the latest version installed on your system, run `bundle update --bundler`.To install the missing version, run `gem install bundler:2.1.2`from/opt/hostedtoolcache/Ruby/2.6.6/x64/lib/ruby/2.6.0/rubygems.rb:302:in`activate_bin_path&#39;from/opt/hostedtoolcache/Ruby/2.6.6/x64/bin/bundle:23:in `&lt;main&gt;&#39;Error: Process completed with exit code 1.
+```
+
+Screenshot CI
+
+[![][1]][1]
+
+And my client can&#39;t run my app
+
+  [1]: https://i.stack.imgur.com/qwQkW.png
+
+My client can&#39;t run my app. I&#39;m sure it&#39;s because of this error. He&#39;s getting this error after making a pull request:
+
+    The error: 
+    bundle install
+    Fetching gem metadata from https://rubygems.org/.........
+    Resolving dependencies...
+    Bundler could not find compatible versions for gem &quot;bundle exec rspec&quot;:
+      In Gemfile:
+        telegram-bot-ruby was resolved to 0.13.0, which depends on
+          virtus was resolved to 1.0.5, which depends on
+            bundle exec rspec
+
+    Could not find gem &#39;bundle exec rspec&#39;, which is required by gem &#39;virtus&#39;, in any of the sources.
+
+I really can&#39;t figure out the issue as initially I thought it was a bug from the gem file.
+
+**Gem file:**
+```
+source &#39;https://rubygems.org&#39;
+
+git_source(:github) { |repo_name| &quot;https://github.com/#{repo_name}&quot; }
+
+# gem &quot;rails&quot;
+
+gem &#39;json&#39;
+gem &#39;net-http-persistent&#39;, &#39;~&gt; 2.9&#39;, &#39;&gt;= 2.9.4&#39;
+gem &#39;rubocop&#39;, &#39;~&gt;0.81.0&#39;
+gem &#39;telegram-bot-ruby&#39;
+```
+
+**Gem file lock:**
+```
+GEM
+  remote: https://rubygems.org/
+  specs:
+    axiom-types (0.1.1)
+      descendants_tracker (~&gt; 0.0.4)
+      ice_nine (~&gt; 0.11.0)
+      thread_safe (~&gt; 0.3, &gt;= 0.3.1)
+    coercible (1.0.0)
+      descendants_tracker (~&gt; 0.0.1)
+    descendants_tracker (0.0.4)
+      thread_safe (~&gt; 0.3, &gt;= 0.3.1)
+    equalizer (0.0.11)
+    faraday (1.1.0)
+      multipart-post (&gt;= 1.2, &lt; 3)
+      ruby2_keywords
+    ice_nine (0.11.2)
+    inflecto (0.0.2)
+    json (2.3.1)
+    multipart-post (2.1.1)
+    net-http-persistent (2.9.4)
+    ruby2_keywords (0.0.2)
+    telegram-bot-ruby (0.13.0)
+      faraday
+      inflecto
+      virtus
+    thread_safe (0.3.6)
+    virtus (1.0.5)
+      axiom-types (~&gt; 0.1)
+      coercible (~&gt; 1.0)
+      descendants_tracker (~&gt; 0.0, &gt;= 0.0.3)
+      equalizer (~&gt; 0.0, &gt;= 0.0.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json
+  net-http-persistent (~&gt; 2.9, &gt;= 2.9.4)
+  telegram-bot-ruby
+
+BUNDLED WITH
+   2.1.4
+```",2020-11-04 16:15:17
+81,Slick Slider: Unable to Play Videos on Mobile,"I have a Wordpress Slick Slider that plays videos on desktop with an option to turn the volume-on. I also have managed to enable video on click Pause/Play.
+
+On mobile, video slides only show the Featured image without volume icon.
+
+I tried hard for the past 2 weeks configurating the .js file, ...slick slider always stops playing T.T
+... css files doesn&#39;t show any hidden content.
+
+Do I need to add an additional code to make videos play on mobile? 
+
+Here comes the js code:
+
+    (function ($, root, undefined) {
+
+	root.kwa_videos = [];
+	root.kwa_players = [];
+	root.kwa_env_init = false;
+	root.kwa_slick_paused = false;
+	root.kwa_is_mobile = false;
+
+	try {
+		document.createEvent(&quot;TouchEvent&quot;);
+		kwa_is_mobile = true;
+	} catch (e) {
+		kwa_is_mobile = false;
+	}
+	root.kwa_is_responsinator = false;
+	if (document.referrer) {
+		kwa_is_responsinator = (document.referrer.split(&#39;/&#39;)[2] == &#39;www.responsinator.com&#39;);
+	}
+
+================
+
+    	$(function () {
+		&quot;use strict&quot;;
+
+		kwa_scroll_actions();
+		kwa_resize_actions();
+
+		if (kwa_parallax_on) {
+			$(document).on(&#39;lazybeforeunveil&#39;, function () {
+				setTimeout(function () {
+					$(window).trigger(&#39;resize.px.parallax&#39;);
+				}, 500);
+			});
+		}
+
+		var $home_slider = false;
+
+		root.kwa_init_home_slider = function () {
+
+			root.kwa_videos = [];
+			root.kwa_players = [];
+			root.kwa_env_init = false;
+			root.kwa_slick_paused = false;
+			slickCurrentSlide = 0;
+			$home_slider = $(&#39;.slick&#39;);
+
+			if ($home_slider.length) {
+
+				var is_start_video = $home_slider.find(&#39;.video&#39;).length &amp;&amp; !kwa_is_mobile &amp;&amp; typeof window.orientation === &#39;undefined&#39; &amp;&amp; (kwa_detectIE() === false || kwa_detectIE() &gt;= 11) &amp;&amp; !kwa_is_responsinator;
+
+=======================
+
+    				$home_slider.on(&#39;afterChange&#39;, function (event, slick, currentSlide) {
+					slickCurrentSlide = currentSlide;
+					if (root.kwa_slick_paused) {
+						if (Object.keys(kwa_players).length) {
+							var video = $home_slider.find(&#39;.slick-slide[data-slick-index=&#39; + currentSlide + &#39;] .video .screen&#39;);
+							if (!video.length &amp;&amp; kwa_wp_vars.sliderInterval &gt; 0) {
+								$home_slider.slick(&#39;slickPlay&#39;);
+								root.kwa_slick_paused = false;
+							}
+						}
+					}
+				});
+
+				$home_slider.slick({
+					dots         : false,
+					infinite     : !is_start_video,
+					speed        : $home_slider.data(&#39;speed&#39;),
+					autoplay     : $home_slider.data(&#39;interval&#39;) &gt; 0,
+					autoplaySpeed: $home_slider.data(&#39;interval&#39;),
+					slidesToShow : 1,
+					fade         : $home_slider.data(&#39;effect&#39;) == &#39;fade&#39;,
+					prevArrow    : &#39;&lt;a class=&quot;slick-prev&quot;&gt;&lt;span&gt;&lt;i class=&quot;fa fa-chevron-left&quot;&gt;&lt;/i&gt;&lt;/span&gt;&lt;/a&gt;&#39;,
+					nextArrow    : &#39;&lt;a class=&quot;slick-next&quot;&gt;&lt;span&gt;&lt;i class=&quot;fa fa-chevron-right&quot;&gt;&lt;/i&gt;&lt;/span&gt;&lt;/a&gt;&#39;
+				});
+
+
+				if (is_start_video) {
+					var is_youtube_api_init = false;
+					var is_vimeo_api_init = false;
+					var is_vimeo_api_loaded = false;
+
+====================
+
+    						if (!$home_slider.find(&quot;.volume&quot;).length) {
+							$home_slider.append(&#39;&lt;a href=&quot;#&quot; class=&quot;volume mute&quot;&gt;&lt;i class=&quot;fa fa-volume-off&quot;&gt;&lt;/i&gt;&lt;i class=&quot;fa fa-volume-up&quot;&gt;&lt;/i&gt;&lt;/a&gt;&#39;);
+						}
+
+						$(document).on(&#39;click&#39;, &#39;.slick .volume&#39;, function () {
+							var _ = $(this), frameID;
+							if (_.hasClass(&#39;mute&#39;)) {
+								for (frameID in kwa_players) {
+									if (kwa_players[frameID].videoSource == &#39;youtube&#39; &amp;&amp; kwa_players[frameID].hasOwnProperty(&#39;isVideoLoaded&#39;)) {
+										kwa_players[frameID].unMute();
+									} else if (kwa_players[frameID].videoSource == &#39;vimeo&#39; &amp;&amp; kwa_players[frameID].hasOwnProperty(&#39;isVideoLoaded&#39;)) {
+										kwa_players[frameID].setVolume(1);
+									}
+								}
+								_.removeClass(&#39;mute&#39;);
+							} else {
+								for (frameID in kwa_players) {
+									if (kwa_players[frameID].videoSource == &#39;youtube&#39; &amp;&amp; kwa_players[frameID].hasOwnProperty(&#39;isVideoLoaded&#39;)) {
+										kwa_players[frameID].mute();
+									} else if (kwa_players[frameID].videoSource == &#39;vimeo&#39; &amp;&amp; kwa_players[frameID].hasOwnProperty(&#39;isVideoLoaded&#39;)) {
+										kwa_players[frameID].setVolume(0);
+									}
+								}
+								_.addClass(&#39;mute&#39;);
+							}
+							return false;
+						});
+					};
+
+					root.onYouTubePlayerAPIReady = function () {
+						if ($home_slider) {
+							$home_slider.find(&quot;.video[data-video-source=youtube]&quot;).append(&#39;&lt;i class=&quot;loading&quot;&gt;&lt;/i&gt;&#39;).insertAfter();
+							var playerDefaults = {
+								autoplay      : 0,
+								autohide      : 1,
+								modestbranding: 0,
+								rel           : 0,
+								showinfo      : 0,
+								controls      : 0,
+								disablekb     : 1,
+								enablejsapi   : 0,
+								iv_load_policy: 3
+							};
+							for (var i = 0; i &lt; kwa_videos.length; i++) {
+								var obj = kwa_videos[i];
+								if (obj.source == &#39;youtube&#39;) {
+									kwa_players[obj.id] = new YT.Player(obj.id, {
+										events    : {
+											&#39;onReady&#39;      : kwaCreateYTEventReady(obj.id, obj),
+											&#39;onStateChange&#39;: kwaCreateYTEventStateChange(obj.id, obj)
+										},
+										origin    : kwa_wp_vars.homeUrl,
+										wmode     : &#39;transparent&#39;,
+										playerVars: playerDefaults
+									});
+									kwa_players[obj.id].videoSource = &#39;youtube&#39;;
+								}
+							}
+							kwaVideoRescale();
+							kwaEnvInit();
+						}
+					};
+
+					root.kwaVimeoPlayerAPIReady = function () {
+						if ($home_slider) {
+							$home_slider.find(&quot;.video[data-video-source=vimeo]&quot;).append(&#39;&lt;i class=&quot;loading&quot;&gt;&lt;/i&gt;&#39;).insertAfter();
+
+							var player_on_loaded = function (data) {
+								var frameId = this.frameId;
+								kwa_players[frameId].isVideoLoaded = true;
+								$(&#39;#&#39; + frameId + &#39; iframe&#39;).width(&#39;100%&#39;).height(&#39;100%&#39;);
+								kwaVideoRescale();
+								var video = $home_slider.find(&#39;.slick-slide[data-slick-index=&#39; + $home_slider.slick(&#39;slickCurrentSlide&#39;) + &#39;] .video .screen&#39;);
+								if (video.length == 1 &amp;&amp; video.get(0).id == frameId) {
+									$home_slider.slick(&#39;slickPause&#39;);
+									root.kwa_slick_paused = true;
+									var _ = kwa_players[frameId];
+									_.seekLock = true;
+									_.setCurrentTime(kwa_players[frameId].startSeconds).then(function (seconds) {
+										_.play().then(function () {
+											_.seekLock = false;
+										});
+									});
+									if (!$(&#39;.slick .volume&#39;).hasClass(&#39;mute&#39;)) {
+										kwa_players[frameId].setVolume(1);
+									}
+								}
+							};
+
+=============================
+
+    								if (root.kwa_slick_paused &amp;&amp; $home_slider.data(&#39;interval&#39;) &gt; 0) {
+									$home_slider.slick(&#39;slickPlay&#39;);
+									root.kwa_slick_paused = false;
+								}
+							};
+
+							for (var i = 0; i &lt; kwa_videos.length; i++) {
+								var obj = kwa_videos[i];
+								if (obj.source == &#39;vimeo&#39;) {
+									var player = kwa_players[obj.id] = new Vimeo.Player(obj.id, {
+										id       : obj.vm.videoId,
+										width    : &#39;640&#39;,
+										byline   : false,
+										autopause: false,
+										title    : false
+									});
+									kwa_players[obj.id].videoSource = &#39;vimeo&#39;;
+									kwa_players[obj.id].frameId = obj.id;
+									kwa_players[obj.id].startSeconds = obj.vm.startSeconds;
+									kwa_players[obj.id].endSeconds = obj.vm.endSeconds;
+									player.setVolume(0);
+									player.on(&#39;loaded&#39;, player_on_loaded);
+									player.on(&#39;timeupdate&#39;, player_on_timeupdate);
+
+								}
+							}
+							kwaEnvInit();
+						}
+					};
+
+					root.kwaCreateYTEventReady = function (frameID, obj) {
+						return function (event) {
+							var player = kwa_players[frameID];
+							var the_div = $(&#39;#&#39; + frameID);
+							kwa_players[frameID].isVideoLoaded = true;
+							player.cueVideoById(obj.yt);
+							player.mute();
+							var video = $home_slider.find(&#39;.slick-slide[data-slick-index=&#39; + $home_slider.slick(&#39;slickCurrentSlide&#39;) + &#39;] .video .screen&#39;);
+							if (video.length == 1 &amp;&amp; video.get(0).id == frameID) {
+								$home_slider.slick(&#39;slickPause&#39;);
+								root.kwa_slick_paused = true;
+								kwa_players[frameID].playVideo();
+								if (!$(&#39;.slick .volume&#39;).hasClass(&#39;mute&#39;)) {
+									kwa_players[frameID].unMute();
+								}
+							}
+						};
+					};
+
+					root.kwaCreateYTEventStateChange = function (frameID, obj) {
+						return function (event) {
+							var player = kwa_players[frameID];
+							var the_div = $(&#39;#&#39; + frameID);
+							if (event.data === 1) {
+								the_div.addClass(&#39;active&#39;);
+								if (root.kwa_slick_paused &amp;&amp; $home_slider.data(&#39;interval&#39;) &gt; 0) {
+									$home_slider.slick(&#39;slickPlay&#39;);
+									root.kwa_slick_paused = false;
+								}
+							} else if (event.data === 0) {
+								player.seekTo(obj.start);
+							}
+						};
+					};
+
+					root.kwaVideoRescale = function () {
+
+						var w = $home_slider.width() + 200,
+							h = $home_slider.height() + 200;
+
+						for (var frameID in kwa_players) {
+							if ($(&#39;#&#39; + frameID).parent().data(&#39;video-source&#39;) == &#39;youtube&#39;) {
+								if (w / h &gt; 16 / 9) {
+									kwa_players[frameID].setSize(w, w / 16 * 9);
+								} else {
+									kwa_players[frameID].setSize(h / 9 * 16, h);
+								}
+							} else {
+								if (w / h &gt; 16 / 9) {
+									$(&#39;#&#39; + frameID).width(w).height(w / 16 * 9);
+								} else {
+									$(&#39;#&#39; + frameID).width(h / 9 * 16).height(h);
+								}
+							}
+						}
+
+						if (w / h &gt; 16 / 9) {
+							$home_slider.find(&#39;.video .screen&#39;).css({&#39;left&#39;: -100});
+						} else {
+							$home_slider.find(&#39;.video .screen&#39;).each(function () {
+								$(this).css({&#39;left&#39;: -Math.abs($(this).outerWidth() - $home_slider.width()) / 2});
+							});
+						}
+
+					};
+
+
+
+
+
+
+",2020-11-15 16:18:55
+82,Foreign Keys in Fact Tables,"Is it more common to combine all the data into a fact table, such as:
+
+    -- MOVIE_SALE -- 
+    Year
+    Studio
+    Studio_CEO
+    Studio_Location
+    Studio_...
+    Movie_Name
+    Movie_Copyright
+    Movie_PrimaryLanguage
+    Amount
+
+Or, is it more common and better practice to foreign key to other tables that contain the group of information, such as:
+
+    -- MOVIE_SALE -- 
+    Year
+    Studio_ID
+    Movie_ID
+    Amount
+
+Why would one way be preferred over the other?",2020-11-15 01:08:08
+83,Problem connecting to MariaDB docker from Golang docker,"I&#39;m trying to connect to a MariaDB docker using a Go docker. 
+
+This is my docker-compose: 
+
+    version: &quot;3.7&quot;
+    services:
+        app:
+            build:
+                context: &quot;./go&quot;
+                dockerfile: &quot;go.dockerfile&quot;
+            container_name: &quot;app_go&quot;
+            ports:
+                - &quot;8080:80&quot;
+            networks:
+                - my_network
+            depends_on:
+                - &quot;db&quot;
+        db:
+            build:
+                context: &quot;./mysql&quot;
+                dockerfile: &quot;mariadb.dockerfile&quot;
+            container_name: app_mariadb
+            restart: always
+            networks:
+                - my_network
+            ports:
+                - &quot;3306:3306&quot;
+    volumes:
+        dbdata:
+    networks:
+        my_network:
+            driver: bridge
+
+And this is how I&#39;m trying to connect:
+
+    func main() {
+    	config := &amp;DBConfig{
+    		Host:     &quot;app_mariadb&quot;,
+    		Port:     3306,
+    		User:     &quot;dev&quot;,
+    		DBName:   &quot;fullstackAsociacion&quot;,
+    		Password: &quot;passdev&quot;,
+    	}
+    	_, err := gorm.Open(mysql.Open(DbURL(config)), &amp;gorm.Config{})
+    	if err != nil {
+    		log.Fatal(&quot;Error BBDD&quot;)
+    	}
+    }
+
+If I connect from my own machine, it works well, but if I try to connect from the Go docker, I get this error: 
+
+&gt; [error] failed to initialize database, got error dial tcp: lookup app_mariadb on 192.168.65.1:53: no such host
+2020/11/15 13:09:36 Error BBDD
+
+I have also tried using &quot;0.0.0.0&quot; on the host, same error.
+",2020-11-15 16:18:51
+84,Python commacode adding and,"I&#39;m doing an assignment where we have to write a comma code as described from the book
+
+Say you have a list value like this:
+
+    spam = [&#39;apples&#39;, &#39;bananas&#39;, &#39;tofu&#39;, &#39;cats&#39;]
+
+Write a function that takes a list value as an argument and returns a string with all the items separated by a comma and a space, with and inserted before the last item. For example, passing the previous spam list to the function would return `apples, bananas, tofu, and cats`. But your function should be able to work with any list value passed to it.
+
+We are to write it with these details:
+
+- In your program, create four lists as follows:
+
+    ```
+    animalList1 = [&#39;dog&#39;, &#39;cat&#39;, &#39;bird&#39;, &#39;tiger&#39;, &#39;lion&#39;, &#39;camel&#39;]
+    animalList2 = [&#39;elephant&#39;, &#39;alligator&#39;]
+    animalList3 = [&#39;horse&#39;]
+    animalList4 = []
+    ```
+
+- When you run your program, pass each list to the `commaCode()` function and then print out the result as shown in the Example Output.
+
+I&#39;m really stuck and don&#39;t know if I&#39;m heading in the right direction. This is my code so far:
+
+    animalList1 = [&#39;dog&#39;, &#39;cat&#39;, &#39;bird&#39;, &#39;tiger&#39;, &#39;lion&#39;, &#39;camel&#39;]
+    animalList2 = [&#39;elephant&#39;, &#39;alligator&#39;]
+    animalList3 = [&#39;horse&#39;]
+    animalList4 = []
+    spam = [animalList1, animalList2, animalList3, animalList4]
+
+    def commacode(list):
+        spam[-1] = &#39;and &#39; + str(spam-[1])
+
+        for i in range(len(spam)-1):
+            spam[i] = str(spam[i]) + &#39;,&#39;
+            stringList = &#39;&#39;
+
+            for i in range(len(spam)):
+                stringList = stringList + str(spam[i])
+                print(stringList)
+
+    print(commacode(spam))",2020-11-14 08:57:58
+85,Can&#39;t install Packages in Julia,"As the title says I can&#39;t seem to be able to install packages in Julia using Pluto anymore even though until a few days ago everything worked as it should.[Error Code][2]
+[![New Error][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/4CwIQ.png
+  [2]: https://i.stack.imgur.com/PxKkc.png",2020-11-14 18:00:30
+86,understanding the debounce code from geeksforgeeks,"Can someone help me understand how this code snippet is going to work?
+
+In [geeks from greeks](https://www.geeksforgeeks.org/debouncing-in-javascript/) they have following code snippet 
+```
+&lt;html&gt; 
+&lt;body&gt; 
+&lt;button id=&quot;debounce&quot;&gt; 
+	Debounce 
+&lt;/button&gt; 
+&lt;script&gt; 
+var button = document.getElementById(&quot;debounce&quot;); 
+const debounce = (func, delay) =&gt; { 
+	let debounceTimer 
+	return function() { 
+		const context = this
+		const args = arguments 
+			clearTimeout(debounceTimer) 
+				debounceTimer 
+			= setTimeout(() =&gt; func.apply(context, args), delay) 
+	} 
+} 
+button.addEventListener(&#39;click&#39;, debounce(function() { 
+		alert(&quot;Hello\nNo matter how many times you&quot; + 
+			&quot;click the debounce button, I get &quot; + 
+			&quot;executed once every 3 seconds!!&quot;) 
+						}, 3000)); 
+&lt;/script&gt; 
+&lt;/body&gt; 
+&lt;/html&gt; 
+```
+From the following https://stackoverflow.com/questions/25991367/difference-between-throttling-and-debouncing-a-function, it says, emit only if there is no pending action (and after specific second) [Answer](https://stackoverflow.com/a/44547447/8701527)
+
+Here I can&#39;t see any if condition to check if there is a pending action. 
+
+From the article they say 
+
+```
+
+&gt; If the debounce button is clicked only once, the debounce function
+&gt; gets called after the delay. However, if the debounce button is
+&gt; clicked once, and again clicked prior to the end of the delay, the
+&gt; initial delay is cleared and a fresh delay timer is started. The
+&gt; clearTimeout function is being used to achieve it.
+
+```
+
+So everytime the button is clicked, the timer is cleared and a new timer is started (and probably the new action is also triggered), which probably doesn&#39;t sound anything like what I read from SFO answer
+
+Also, Can someone please also explain how `func.apply(context, args), delay) `  is used or code-line by line? ",2020-11-15 16:18:44
+87,How to eliminate duplicate &#39;NA&#39;s and Values in a data.frame R?,"How would we take a data.frame like this with duplicate values and &#39;NA&#39;s:
+```
+IRIS_EXAMPLE &lt;- &quot;Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         NA           1.4         0.2        NA
+2          5.1         3.5          NA          0.2        NA
+3          NA          NA           1.4         NA         setosa
+4          5.1         3.5          NA          NA         setosa
+5          5.1         3.5          1.4         NA         NA
+
+```
+And **eliminate** duplicate **&#39;NA&#39;s** and duplicate **values** to give us something like this:
+```
+IRIS_EXAMPLE &lt;- &quot;Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2        setosa
+```",2020-11-15 00:56:50
+88,How do I open a directory (folder) then open a file in the directory - discord.py,How do I open a directory (Folder) then open a file in the directory?,2020-11-15 15:14:14
+89,How to disable particular option dynamically in Angular Mat-Select,"I have a list with an object has `name` and `id` properties:
+
+
+    [
+      {
+        &quot;name&quot;: &quot;open&quot;,
+        &quot;id&quot;: &quot;1&quot;
+      },
+      {
+        &quot;name&quot;: &quot;inprogress&quot;,
+        &quot;id&quot;: &quot;2&quot;
+      },
+      {
+        &quot;name&quot;: &quot;close&quot;,
+        &quot;id&quot;: &quot;3&quot;
+      }
+    ]
+
+And using MatSelect with *ngFor to iterate over an array and bind the current status with select using `[(ngModel)]`.
+
+Expected output:
+
+If the current status is `inprogress` then disable `open` option
+
+[StackBlitz Example][1]
+
+
+  [1]: https://stackblitz.com/edit/angular-s7etim?file=app/select-multiple-example.html",2018-07-27 08:45:01
+90,Jest how to test GraphQL definitions,"I am trying to &quot;develop&quot; a [npm library](https://github.com/maramal/gqlhttptools), so I am testing them with Jest JS. I don&#39;t know what I really need to test (expect) about Jest tests.
+
+The method `buildSchema()` will return a `GQLSchema` or `GQLHTTPToolsError`, and `createSchema()` will return a string.
+
+This is my current test file `createSchema.test.ts`:
+```typescript
+import GQLHTTPTools from &#39;../index&#39;;
+import GQLSchema from &#39;../gqlschema&#39;;
+
+const testTypeDef1 = `
+    type Query {
+        tests: [Test]
+        test(id: Int): Test
+    }
+
+    type Mutation {
+        createTest(name: String): Test
+    }
+
+    type Test {
+        id: ID
+        name: String
+    }
+`;
+
+const testSchema1 = GQLHTTPTools.buildSchema(testTypeDef1);
+
+test(&#39;create schema from single type definition&#39;, () =&gt; {
+    expect(GQLHTTPTools.createSchema(testSchema1 as GQLSchema))
+        .toEqual(expect.stringContaining(testTypeDef1));
+});
+```
+
+This returns the following error:
+
+![Error](https://i.imgur.com/4YmwrRa.png)
+
+I don&#39;t really know anything about Jest, but according to what I have read on [Jest documentation](https://jestjs.io/docs/en/expect#expectstringcontainingstring), `expect(&#39;my test type definition&#39;).toEqual(expect.stringContaining(&#39;type definition&#39;))` should &quot;work&quot;, right?, I was following [this Itnext guide](https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c).
+
+I also tried this one:
+```typescript
+test(&#39;create schema from single type definition&#39;, () =&gt; {
+    const regex = /.*type (.*) {\n((.+\n)+).*}.*/gm;
+    expect(GQLHTTPTools.createSchema(testSchema1 as GQLSchema))
+        .toMatch(regex);
+});
+```
+
+But I am getting:
+![Second error](https://i.imgur.com/1IrlCuC.png)
+
+What am I doing wrong?",2020-11-14 17:38:01
+91,Second div is showing first - float:right,"I have a div that floats to right and two child DIVs that also float to right. The issue is that the Second Div always shows up first. I have tried adding clearfix to the parent div which did not work at all. Is there a way to fix this without adding width to the child divs?
+
+    &lt;div class=&quot;parent-div&quot;&gt;
+    	&lt;div class=&quot;div1&quot;&gt;
+    		Div 1
+    	&lt;/div&gt;
+    	&lt;div class=&quot;div2&quot;&gt;
+    		Div 2
+    	&lt;/div&gt;
+    &lt;/div&gt;
+    
+    .parent-div {
+        float: right;
+        margin-left: 0;
+        flex-grow: 1;
+        display: inline;
+    }
+    
+    .parent-div&gt;* {
+        float: right;
+    }",2020-11-15 16:18:29
+92,I can not build an apk file because of error message,"&lt;h3&gt;each time i want to build an APK file,it displays this message
+&quot;FAILURE: Build failed with an exception.
+
+* Where:
+Auto-applied by using --scan
+
+* What went wrong:
+Plugin [id: &#39;com.gradle.enterprise&#39;, version: &#39;3.3.3&#39;, artifact: &#39;com.gradle:gradle-enterprise-gradle-plugin:3.3.3&#39;] was not found in any of the following sources:
+
+- Gradle Core Plugins (plugin is not in &#39;org.gradle&#39; namespace)
+- Plugin Repositories (could not resolve plugin artifact &#39;com.gradle:gradle-enterprise-gradle-plugin:3.3.3&#39;)
+  Searched in the following repositories:
+    Gradle Central Plugin Repository
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 1s&quot;.
+please,who will explain this message to me,i am new to android studio,i need help.&lt;/h4&gt;
+&lt;p&gt;&lt;h3&gt;This is my wrapper.properties&lt;/h3&gt;&lt;/p&gt;
+distributionBase=GRADLE_USER_HOME
+
+
+distributionPath=wrapper/dists
+
+
+
+distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-bin.zip
+
+
+zipStoreBase=GRADLE_USER_HOME
+
+
+zipStorePath=wrapper/dists
+
+&lt;p&gt;&lt;h3&gt;My build.gradle(module)&lt;/h3&gt;&lt;/p&gt;
+
+
+plugins {
+
+
+    id &#39;com.android.application
+
+}
+
+
+android {
+
+
+    compileSdkVersion 30
+
+
+
+    buildToolsVersion &quot;30.0.2&quot;
+
+
+    defaultConfig {
+
+
+        applicationId &quot;com.spack.thebeginner&quot;
+
+
+        minSdkVersion 19
+
+
+        targetSdkVersion 30
+
+
+        versionCode 1
+
+
+        versionName &quot;1.0&quot;
+
+
+        testInstrumentationRunner &quot;androidx.test.runner.AndroidJUnitRunner&quot;
+
+
+    }
+
+    buildTypes {
+
+
+        release {
+
+
+            minifyEnabled false
+
+
+            proguardFiles getDefaultProguardFile(&#39;proguard-android-optimize.txt&#39;), &#39;proguard-rules.pro&#39;
+
+
+        }
+    }
+    compileOptions {
+
+
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+
+
+
+        targetCompatibility JavaVersion.VERSION_1_8
+
+
+
+    }
+}
+
+dependencies {
+
+
+    implementation &#39;androidx.appcompat:appcompat:1.1.0&#39;
+
+
+    implementation &#39;com.google.android.material:material:1.1.0&#39;
+
+
+
+    implementation &#39;androidx.constraintlayout:constraintlayout:1.1.3&#39;
+
+
+    testImplementation &#39;junit:junit:4&#39;
+
+
+    androidTestImplementation &#39;androidx.test.ext:junit:1.1.1&#39;
+
+
+    androidTestImplementation &#39;androidx.test.espresso:espresso-core:3.2.0&#39;
+
+}
+&lt;p&gt;&lt;h3&gt;This is my build.gradle(project)&lt;/h3&gt;&lt;/p&gt;
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    repositories {
+
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath &quot;com.android.tools.build:gradle:4.1.0&quot;
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+
+    repositories {
+
+
+
+
+        google()
+
+
+        jcenter()
+
+    }
+
+}
+
+task clean(type: Delete) {
+
+    delete rootProject.buildDir
+
+}
+&lt;h3&gt;PLEASE HELP ME&lt;/H3&gt;",2020-11-13 04:25:20
+93,Random sample with conditions in r with dbplyr,"I have a dataframe where I have to select 5 people who have at least 3 rows. So the idea is that I have a random sample for every id at least 3 rows or more. The data looks like this: 
+
+``` head(df)``` 
+
+```  head(df) 
+    id year sex education no_kids health_org satisf_org health_std
+1 312 2004   1        NA       1          4          7  0.5670103
+2 399 2000   0        12       1          4          8  0.5670103
+3 399 2001   0        12       1          4          9  0.5670103
+4 457 2000   0        18       0          3          8 -0.4639175
+5 457 2002   0        18       0          3          7 -0.4639175
+6 457 2004   0        18       0          2          4 -1.4948454
+   satisf_std
+1 -0.09090909
+2  0.47727272
+3  1.04545450
+4  0.47727272
+5 -0.09090909
+6 -1.79545450
+``` 
+I already created a way to do this but the result was not good enough. It looks like this:
+``` 
+library(dplyr) 
+sample_n_groups = function(grouped_df, size, replace = FALSE, weight=NULL) {
+  grp_var &lt;- grouped_df %&gt;% 
+    groups %&gt;%
+    unlist %&gt;% 
+    as.character
+  random_grp &lt;- grouped_df %&gt;% 
+    summarise() %&gt;% 
+    sample_n(size, replace, weight) %&gt;% 
+    mutate(unique_id = 1:NROW(.))
+  grouped_df %&gt;% 
+    right_join(random_grp, by=grp_var) %&gt;% 
+    group_by_(grp_var) 
+}
+df_sample &lt;- df %&gt;%  filter(n() &gt;= 3) %&gt;% group_by(id) %&gt;% sample_n_groups(5)
+```
+
+Has anyone a different approach? ",2020-11-15 15:49:07
+94,C++ error: expected initializer before * token,"I am trying to write code for creating a BST from a sorted array. This is the code that I have so far:
+
+```
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    int data;
+    Node *left;
+    Node *right;
+    Node (int v) {
+        data = v;
+        left = right = NULL;
+    }
+}
+
+Node* createBST(int arr[], int start, int end) {
+    if (end &lt;= start)
+        return NULL;
+    int mid = (start+end)/2;
+    Node* root = new Node(arr[mid]);
+    root-&gt;left = createBST(arr, start, mid);
+    root-&gt;right = createBST(arr, mid+1, end);
+    return root;
+}
+
+void inorder(Node* root) {
+    if (root == NULL)
+        return;
+    inorder(root-&gt;left);
+    cout&lt;&lt;root-&gt;data&lt;&lt;&quot; &quot;;
+    inorder(root-&gt;right);
+}
+
+int main() {
+	int t, n, i;
+	cin&gt;&gt;t;
+	while (t--) {
+	    cin&gt;&gt;n;
+	    int arr[n];
+	    for (i=0; i&lt;n; i++)
+	        cin&gt;&gt;arr[i];
+	    Node* root = createBST(arr, 0, n);
+	    inorder(root);
+	    cout&lt;&lt;endl;
+	}
+	return 0;
+}
+```
+
+The GeeksforGeeks sandbox in which I am coding this, throws up the following error:
+
+```
+Compilation Error:
+prog.cpp:14:5: error: expected initializer before * token
+ Node* createBST(int arr[], int start, int end) {
+     ^
+prog.cpp: In function int main():
+prog.cpp:40:38: error: createBST was not declared in this scope
+      Node* root = createBST(arr, 0, n);
+                                      ^
+```
+
+I am not able to figure out what I did wrong.",2020-11-15 16:14:05
+95,Create SSH tunnel using MobaXterm on Windows,"I have SSH access to a `CentOS` server.
+
+There I have a `venv` with Python 3 where I have Jupyter Notebooks installed.
+
+If I create a notebook
+
+    jupyter notebook
+
+It gives me a localhost URL with a specific token.
+
+*Example:* `http://localhost:[PORT]/?token=[TOKEN]`
+
+As I want to access that URL on the local Windows machine, how do I do that using MobaXterm?",2020-11-12 20:29:28
+96,How to DROP_LATEST with coroutine Flow&lt;T&gt;?,"Please help. I was trying to do:
+
+        2sec     2sec     2sec
+    ------[A]------[B]------[C]------...----------------&gt; InitailFlow
+           \        |        | 
+            \      drop      drop
+             \
+         5sec \    5sec        5sec
+    ----------[1]---------[2]---------[3]-----|&gt; AnotherFlow
+    result: [A1, A2, A3]
+
+So I have InitailFlow which emits a short amount of time (2 seconds) which is then transformed to AnotherFlow which takes longer to finish (15 seconds in total)... I would like to drop the other incoming items emitted by the InitialFlow while AnotherFlow isn&#39;t finished...
+
+I&#39;ve tried:
+
+    flow{
+        delay(2000)
+        emit(&quot;A&quot;)
+        delay(2000)
+        emit(&quot;B&quot;)
+        delay(2000)
+        emit(&quot;C&quot;)
+    }.buffer(0, BufferOverflow.DROP_LATEST)
+        .onEach {
+           println(&quot;Event for $it&quot;)
+        }
+        .flatMapConcat {
+           flow {
+               delay(5000)
+               emit(&quot;${it}1&quot;)
+               delay(5000)
+               emit(&quot;${it}2&quot;)
+               delay(5000)
+               emit(&quot;${it}3&quot;)
+            }
+         }
+         .onEach {
+             println(it)
+         }
+         .launchIn(scope)
+
+But for some reason this is the result:
+
+    Event for A
+    A1
+    A2
+    A3
+    Event for B
+    B1
+    B2
+    B3
+
+It still process `Event B` for some reason even when I have a `.buffer(0, BufferOverflow.DROP_LATEST)`.
+
+Why does it still process Event B?
+
+Is there a way to do this? I expect the output to be only:
+
+    Event for A
+    A1
+    A2
+    A3
+
+Thanks in advance. ",2020-11-15 15:13:37
+97,Django - Enter a list of values - ForeignKey,"For a M2O relation what field should I be using in forms?
+
+**models.py**
+
+```python
+class Studio(models.Model):
+    name = models.SlugField(max_length=100)
+    rating = models.CharField(max_length=10, default=None)
+
+    def __str__(self):
+        return self.name
+
+class AnimeDetail(models.Model):
+    title_japanese = models.CharField(max_length=250)
+    studio = models.ForeignKey(Studio, on_delete=models.CASCADE, default=None)
+    ...
+```
+
+**forms.py**
+
+```pythonfrom django import forms
+
+from .models import AnimeDetail
+
+class AnimeDetailForm(forms.ModelForm):
+
+    class Meta:
+        model = AnimeDetail
+        fields = [&#39;icon&#39;, &#39;image&#39;, &#39;title_japanese&#39;, &#39;title_english&#39;, &#39;studio&#39;, &#39;genre&#39;, &#39;total_episodes&#39;, &#39;posted_episodes&#39;, &#39;season&#39;, &#39;date_started&#39;, &#39;date_finished&#39;, &#39;status&#39;, &#39;type_anime&#39;, &#39;age&#39;, &#39;source&#39;]
+
+        widgets = {
+            &#39;title_japanese&#39;: forms.TextInput(attrs={&#39;class&#39;: &#39;form-control&#39;}),
+            &#39;studio&#39;:forms.Select(attrs={&#39;class&#39;: &#39;form-control&#39;}),
+            ...
+        }
+```
+
+`&#39;studio&#39;:forms.Select(attrs={&#39;class&#39;: &#39;form-control&#39;})` -&gt; Select doesnt work properly in this situiation but in other project worked without problems.
+
+**Error**:
+[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/c5c55.jpg
+
+What is wrong?",2020-11-15 16:17:53
+98,Using a DDE Server with Qt,"I&#39;ve searched high and low for a class that&#39;ll allow me to connect to a DDE server. Whilst I&#39;m aware that DDE is dated and better methods exist, they don&#39;t for what I want to connect to.
+
+I found [this](http://permalink.gmane.org/gmane.comp.lib.qt.general/91) which apparently works in QT 3, and unfortunately I lack the knowledge of differences to update it to QT 4.
+
+Does anybody have an updated version, the time to update or another solution?",2012-04-12 14:01:27
+99,How to filter years in shiny leaflet in sliderbar (Interactive map),"```
+library(shiny)
+library(leaflet)
+library(RMySQL)
+library(DBI)
+
+data &lt;- function(con){
+    con &lt;- dbConnect(MySQL(), dbname=&quot;&quot;, host=&quot;&quot;,
+                     port = , user=&quot;&quot;,
+                     password=&quot;&quot;)
+    dbSendQuery(con, &quot;SEt NAMES euckr&quot;)
+    d &lt;- dbGetQuery(con, &quot;select * from accidents&quot;)
+    dbGetQuery(con,d)
+    dbDisconnect(con)
+}
+
+
+```
+I&#39;m using RMySQL to load data.
+
+```
+ui &lt;- navbarPage(&quot;Interactive Map&quot;,
+                 tabPanel(&quot;Map&quot;,
+                          leafletOutput(&quot;m&quot;, height=800),
+                          tags$style(&quot;
+                                     #controls {
+                                     backgropund-color: #ddd;
+                                     opacity: 0.7;
+                                     }
+                                     #controls:hover{
+                                     opacity: 1;
+                                     }
+                                     &quot;),
+                          absolutePanel(id = &quot;controls&quot;,  class=&quot;panel panel-default&quot;,
+                                        fixed =TRUE, draggable = TRUE, top=60, left=&quot;auto&quot;,
+                                        right=20, bottom =&quot;auto&quot;, width=250, height=450,
+                                        sliderInput(&quot;year&quot;,
+                                                    &quot;years:&quot;,
+                                                    min=min(d$acci_year),
+                                                    max=max(d$acci_year),
+                                                    value=2012:2019,
+                                                    step=1, sep=&quot;&quot;))))
+```
+This is my UI code. I made sliderbar in clear panel.
+```
+server &lt;- function(input, output, session){
+    
+    output$m &lt;- renderLeaflet({
+        
+        d_colour &lt;- colorFactor(&quot;viridis&quot;, d$acci_type)
+        
+        leaflet(d) %&gt;% 
+            setView(lng = 126.97806, lat=37.56667, zoom=13) %&gt;%
+            addTiles() %&gt;% 
+            addCircles(lng=~d$longt, lat=~d$lat, color=~d_colour(d$acci_type), radius=20, 
+                       popup=paste0(&quot;&lt;br&gt;사고장소:&quot;, d$사고발생지, &quot;&lt;br&gt;사고년도:&quot;, d$사고년도, &quot;&lt;br&gt;발생건수:&quot;, d$발생건수,
+                                    &quot;&lt;br&gt;사상자수:&quot;, d$사상자수, &quot;&lt;br&gt;사망자수:&quot;, d$사망자수,
+                                    &quot;&lt;br&gt;중상자수:&quot;, d$중상자수, &quot;&lt;br&gt;경상자수:&quot;, d$경상자수,
+                                    &quot;&lt;br&gt;부상자수:&quot;, d$부상자수)) %&gt;% 
+            addLegend(position = &quot;bottomleft&quot;,
+                      title = &quot;사고유형&quot;,
+                      pal = d_colour, values = ~d$acci_type, opacity = 1)})
+
+ filteredData &lt;- reactive({
+       d %&gt;% 
+            filter(d$acci_year &gt;= input$year[1] &amp; d$acci_year &lt;= input$year[2])
+    })
+    
+    observe({
+        d_colour &lt;- colorFactor(&quot;viridis&quot;, d$acci_type)
+        leafletProxy(&quot;m&quot;, data=filteredData()) %&gt;% 
+            clearShapes() %&gt;% 
+            addCircles(lng=~d$longt, lat=~d$lat, color=~d_colour(d$acci_type), radius=20, 
+                       popup=paste0(&quot;&lt;br&gt;사고장소:&quot;, d$사고발생지, &quot;&lt;br&gt;발생년도:&quot;, d$사고년도, &quot;&lt;br&gt;발생건수:&quot;, d$발생건수,
+                                    &quot;&lt;br&gt;사상자수:&quot;, d$사상자수, &quot;&lt;br&gt;사망자수:&quot;, d$사망자수,
+                                    &quot;&lt;br&gt;중상자수:&quot;, d$중상자수, &quot;&lt;br&gt;경상자수:&quot;, d$경상자수,
+                                    &quot;&lt;br&gt;부상자수:&quot;, d$부상자수))
+    })
+}
+
+shinyApp(ui, server) 
+```
+
+This is server code. When I run this app I got like this pic
+[![enter image description here][1]][1]
+
+When I move the slide bar, It doesn&#39;t work.
+For example, I can see acci_year when I click the circle marks.
+When I move the slide bar for 2013-2014, other years come out from the popup informations.. What should I do?
+
+* acci_type means accident type and acci_year means accident year
+* popup information includes korean, but it doesn&#39;t matter  
+
+  [1]: https://i.stack.imgur.com/SoyIk.jpg",2020-11-15 16:17:42
