@@ -1,0 +1,2348 @@
+,Answer,Creation Date
+0,"As user in the comments above pointed out, it is vanilla JS https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Assigning_to_new_variable_names Thanks!",2020-11-16 00:27:39
+1,"To fix this issue, you have 2 options: 
+
+1- (**Recommended**) To add the scopes to API resource like this: 
+
+```
+public static IEnumerable&lt;ApiResource&gt; GetApis() =&gt;
+            new List&lt;ApiResource&gt; {
+                new ApiResource(&quot;api1&quot;)
+                {
+                    Scopes = new []{ &quot;api1&quot; }
+                }
+            };
+
+        public static IEnumerable&lt;ApiScope&gt; GetApiScopes()
+        {
+            return new List&lt;ApiScope&gt;
+            {
+                // backward compat
+                new ApiScope(&quot;api1&quot;)
+            };
+        }
+
+```
+
+2- On API change your code to set `ValidateAudience = false`, like this: 
+```
+services.AddAuthentication(&quot;Bearer&quot;).AddJwtBearer(&quot;Bearer&quot;,
+   options =&gt;
+   {
+      options.Authority = &quot;http://localhost:5000&quot;;
+      options.Audience = &quot;api1&quot;;
+      options.RequireHttpsMetadata = false;
+      options.TokenValidationParameters = new 
+         TokenValidationParameters()
+         {
+            ValidateAudience = false
+         };
+   });
+```
+
+Here is my blog about migrating IdentityServer4 to v4 https://nahidfa.com/posts/migrating-identityserver4-to-v4/",2020-11-16 00:27:36
+2,"The complication here is we&#39;re dealing with a column of lists. We can improve performance a bit by exploding the rows first. Then use `factorize` and return to the original format:
+
+    v = df[&#39;genre&#39;].explode()
+    v[:] = pd.factorize(v)[0] + 1
+    df[&#39;genre2&#39;] = v.groupby(level=0).agg(list)
+    
+    df
+                                   genre        genre2
+    0    [Comedy, Supernatural, Romance]     [1, 2, 3]
+    1          [Comedy, Parody, Romance]     [1, 4, 3]
+    2                           [Comedy]           [1]
+    3  [Comedy, Drama, Romance, Fantasy]  [1, 5, 3, 6]
+    4           [Comedy, Drama, Romance]     [1, 5, 3]",2020-11-16 00:27:32
+3,"You could move `total` into `getCombinations` and return this value on exit.
+
+&lt;!-- begin snippet: js hide: false console: true babel: null --&gt;
+&lt;!-- language: lang-js --&gt;
+
+    function generateCombination() {
+      const perm = [];
+      const permLength = 2;
+      const numberRange = 8;
+
+      const getCombinations = (result, permLength, numberRange) =&gt; {
+        let total = 0;
+        if (result.length === permLength) return 1;
+      
+        for (var i = 0; i &lt; numberRange; i++) {
+          if (result.indexOf(i) === -1) {
+            result.push(i);
+            total += getCombinations(result, permLength, numberRange);
+            result.pop();
+          }
+        }
+
+        return total;
+      }
+      
+      console.log(&quot;total: &quot;, getCombinations(perm, permLength, numberRange)); // expected value &quot;total:  56&quot;
+    }
+
+    generateCombination();
+&lt;!-- end snippet --&gt;",2020-11-16 00:27:29
+4,"You can use the generic in both the type of the class argument and the return value as follows:
+
+```typescript
+function find&lt;A extends Animal&gt;(animals: Animal[], cls: new() =&gt; A): A | undefined {
+    return animals.find((value): value is A =&gt; value instanceof cls);
+}
+```
+
+Note that by using a [*type predicate*](https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards) as the return value we don&#39;t need a type assertion any more.
+
+The generic can be inferred from the second argument when you call this:
+
+```javascript
+find(animals, Dog);
+```",2020-11-16 00:21:27
+5,"Turns out this wasn&#39;t an issue with CORS at all!
+It was to do with the file size of the image I was uploading
+
+nginx servers have a default `client_max_body_size` of 1MB, meaning any upload of &gt;1MB image would be rejected. Adding `client_max_body_size 100M;` to my nginx config fixed this.
+
+Safari error was of course super misleading so I didn&#39;t even think of checking the nginx logs. It explains why the django server wasn&#39;t even logging the `/upload` request.
+
+Another error I made on my part was not uploading the same sized image on Chrome, Firefox as it should have failed too. I just used the first thing I saw when clicking upload and seems Safari was by default pointed to a folder where images were large, and the other browsers were pointed to my Downloads where the first images were smaller",2020-11-16 00:27:07
+6,"One of the main drawbacks in your scenario would be the complexity of the system - which means higher development (including this research phase) &amp; maintenance costs. That is especially important in early stages of a project. Typically, you would focus on the main business functionality and leave such optimizations for later, when you see the business value in investing in such relatively small optimizations (i.e. you need a LOT of traffic to get back the initial costs + additional maintenance costs).
+
+If you see the business case in looking into this further, you should start with estimating the actual benefit. So you should check out some benchmarks - e.g. how fast could you get the writes on Redis vs. DynamoDB (optimized for this use case)?
+
+Next, if you expect to constantly have a TON of traffic - does the math say serverless is actually better for you? Maybe it&#39;s more cost effective to just have auto-scaled instances up and running with local in-memory cache, which gets dumped to DB in chunks (instead of using Redis of the same idea)? Serverless is not always as cost-efficient as the nice adverts show.
+
+As you noted, consistency is a very important aspect to think about. Do you really need it? What happens if, e.g., two lamdbas want to update the same &#39;card&#39;? Ideally, you should not care which update is handled first. If they could happen in any order (without an error) - that would give you the most options for getting better performance &amp; lower costs.",2020-11-16 00:27:02
+7,"This is almost certainly a namespacing issue.
+
+You&#39;ll need either this at the top of the file:
+
+    use Illuminate\Http\Client\ConnectionException;
+
+or do this:
+
+    } catch(\Illuminate\Http\Client\ConnectionException $e)
+
+Otherwise, you&#39;re actually trying to catch something in the *current* namespace named `ConnectionException` (i.e. something like `App\Controllers\ConnectionException`), which will never exist.",2020-11-16 00:26:45
+8,"No Gradient:
+-----------
+Sets every third column to red starting from 1. Sets every third column to green starting from 2. Sets every third column to blue starting from 3. Each column is set within the respective layer in the matrix corresponding to the correct colour channel. This indexing of columns is achieved by 
+
+    Red_Channel = 1;
+    Image(:,1:3:Image_Width,Red_Channel) =  255;
+
+Where, &lt;br&gt;
+ `:` indicates for all the rows &lt;br&gt;
+
+ `1:3:Image_Width` indicates starting a column 1 and skipping by a factor 3 up to `Image_Width`. &lt;br&gt;
+
+  `Red_Channel` is 1 and indicates the layer of the 3D matrix to set.
+
+RGB Conventions:
+---------------
+
+[![RGB Conventions][2]][2]
+
+[![RGB Conventions 2][1]][1]
+
+[![No Gradient][3]][3]
+
+By Indexing the 3D Array/Matrix:
+--------------------------------
+
+    %Image size properties%
+    Image_Height = 50;
+    Image_Width = 50;
+    Number_Of_Colour_Channels = 3;
+    Image = zeros(Image_Height,Image_Width,Number_Of_Colour_Channels);
+    
+    Red_Channel = 1;
+    Green_Channel = 2;
+    Blue_Channel = 3;
+    
+    %Setting every theird column starting at 1 to red%
+    Image(:,1:3:Image_Width,Red_Channel) =  255;
+    %Setting every theird column starting at 2 to green%
+    Image(:,2:3:Image_Width,Green_Channel) =  255;
+    %Setting every theird column starting at 3 to blue%
+    Image(:,3:3:Image_Width,Blue_Channel) =  255;
+    
+    %Figure settings%
+    X_Position = 0;
+    Y_Position = 0;
+    Figure_Height = 300;
+    Figure_Width = 300;
+    
+    imshow(Image,&#39;InitialMagnification&#39;,&#39;fit&#39;);
+    set(gcf, &#39;Position&#39;,  [X_Position, Y_Position, Figure_Width, Figure_Height]);
+
+----------
+
+Alternatively: Using a Set of For-Loops
+-----------------------------------
+
+    %Image size properties%
+    Image_Height = 50;
+    Image_Width = 50;
+    Number_Of_Colour_Channels = 3;
+    Image = zeros(Image_Height,Image_Width,Number_Of_Colour_Channels);
+    
+    Red_Channel = 1;
+    Green_Channel = 2;
+    Blue_Channel = 3;
+    
+    for Layer = 1: +1: 3
+    for Column = 0: +3: Image_Width
+    
+    Index = Layer + Column;
+    Image(:,Index,Layer) = 255;
+        
+    end
+    end
+    
+    %Figure settings%
+    X_Position = 0;
+    Y_Position = 0;
+    Figure_Height = 300;
+    Figure_Width = 300;
+    
+    imshow(Image,&#39;InitialMagnification&#39;,&#39;fit&#39;);
+    set(gcf, &#39;Position&#39;,  [X_Position, Y_Position, Figure_Width, Figure_Height]);
+
+**Ran using MATLAB R2019b**
+
+  [1]: https://i.stack.imgur.com/0NVEe.png
+  [2]: https://i.stack.imgur.com/1h7TH.png
+  [3]: https://i.stack.imgur.com/9tWGS.png
+",2020-11-15 20:46:15
+9,"from mklement0:
+
+
+
+               
+    PS /home/nicholas/powershell&gt; 
+    PS /home/nicholas/powershell&gt; Install-Module XmlRpc
+    
+    Untrusted repository
+    You are installing the modules from an untrusted repository. If you trust this repository, change its InstallationPolicy value by 
+    running the Set-PSRepository cmdlet. Are you sure you want to install the modules from &#39;PSGallery&#39;?
+    [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is &quot;N&quot;): Y
+    PS /home/nicholas/powershell&gt;         
+    PS /home/nicholas/powershell&gt; 
+    PS /home/nicholas/powershell&gt; Get-Help xmlrpc
+                                                                                                                                        Name                              Category  Module                    Synopsis                                                      ----                              --------  ------                    --------                                                      ConvertTo-XmlRpcMethodCall        Function  XmlRpc                    …                                                             ConvertTo-XmlRpcType              Function  XmlRpc                    …                                                             Send-XmlRpcRequest                Function  XmlRpc                    …                                                                                                                                                                                                 PS /home/nicholas/powershell&gt; 
+
+
+looks promising.",2020-11-16 00:26:31
+10,"
+not sure what your problem is.  Either you have an error in your load function or your link isn&#39;t correct.  Check the network tab to see if your js is being found and check the console for errors in your javascript load function.  Report back with what you find.
+
+
+&lt;!-- begin snippet: js hide: false console: true babel: false --&gt;
+
+&lt;!-- language: lang-html --&gt;
+
+    &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script&gt;
+    function load(){
+    console.log(&#39;loaded&#39;)
+    }
+    &lt;/script&gt;
+
+    &lt;script&gt;
+      $(window).on(&quot;load&quot;, function() {
+        load(&#39;seasonal&#39;);
+      });
+    &lt;/script&gt;
+
+&lt;!-- end snippet --&gt;
+
+",2020-11-16 00:26:29
+11,"I ran into the same problem. I ended up using Castlabs EVS to VMP sign my package. Info and instructions on how to use are located here: https://github.com/castlabs/electron-releases/wiki/EVS
+
+Note, if you are on a Mac you must invoke the VMP signing prior to code signing. On Windows you have to do it after. Electron-builder has `afterPack` and `afterSign` hooks for this.
+
+I have a working version of this using the Castlabs Electron fork here:
+https://github.com/jtvberg/StreamDock",2020-11-16 00:26:21
+12,"What you want is to match [variable length relationships](https://neo4j.com/docs/cypher-manual/current/clauses/match/#varlength-rels)
+
+    MATCH (p:Person)&lt;-[r:Related*1..]-(p2:Person)
+    WHERE id(p)=4 And id(p) &lt;&gt; id(p2)
+    RETURN id(p), p, collect(r.relationship), collect(id(p2)) ",2020-11-16 00:26:09
+13,"**Updated: November 16, 2020**.
+
+# TL;DR
+
+**`Google ARCore`** allows you build apps for Android and iOS/iPadOS. With **`Apple ARKit`** you can build apps for iOS and iPadOS only. And a great old **`PTC Vuforia`** was designed to create apps for Android, iOS/iPadOS and Universal Windows Platform. 
+
+**A crucial Vuforia&#39;s peculiarity is that it uses `ARCore`/`ARKit` technology if the hardware it&#39;s running on supports it, otherwise Vuforia uses its own AR technology and engine, known as `software solution without dependant hardware`**.
+
+&gt;When developing for Android OEM smartphones, you may encounter with an unpleasant problem: devices from different manufacturers need a sensors’ calibration in order to observe the same AR experience. Luckily, Apple gadgets have no such drawback because all sensors used there were calibrated under identical conditions.   
+
+To answer this question, let’s put first things first.
+
+&lt;br&gt;&lt;/br&gt;
+
+[![enter image description here][1]][1]
+[![enter image description here][2]][2]
+
+&lt;br&gt;&lt;/br&gt;
+
+# **Google ARCore 1.21** 
+
+ARCore is based on the three main [fundamental concepts][3] : **`Motion Tracking`**, **`Environmental Understanding`** and **`Light Estimation`**. Thus ARCore allows a [supported mobile device][4] to track its position and orientation relative to the world in 6 degrees of freedom (6DOF) using special technique called **Concurrent Odometry and Mapping**. COM also helps us detect the size and location of horizontal, vertical and angled tracked surfaces (like ground, tables, benches, walls, slopes, etc). Motion Tracking works robustly thanks to optical data coming from a camera **at 60 fps**, combined with inertial data coming from gyroscope and accelerometer **at 1000 fps**. Naturally, ARKit and Vuforia operate almost the same way.
+
+  When you move your phone through the real environment, ARCore tracks a surrounding space to understand where a smartphone is, relative to the world coordinates. At tracking stage ARCore &quot;***sows***&quot; so called **`feature points`** which form a sparse [point cloud][5] and this cloud lives while tracking session is active. These feature points are visible through RGB camera, and ARCore uses them to compute phone&#39;s change in location. The visual data then must be combined with measurements coming from accelerometer and gyroscope (**Inertial Measurement Unit**) to estimate the position and orientation of the [ArCamera][6] over time. ARCore looks for clusters of feature points that appear to lie on horizontal, vertical or angled surfaces and makes these surfaces available to your app as planes (we call this technique as **plane detection**). So, now you can use these planes to place 3D objects in your scene. After this, virtual geometry with assigned shaders will be rendered by ARCore&#39;s companion – **Sceneform**, supporting `OBJ`, `FBX` and `glTF` assets and using a real-time **Physically Based Rendering** (a.k.a. PBR) engine – [Filament][7]. 
+
+Notwithstanding the above, at this moment Sceneform repository has been archived and it no longer actively maintaining by Google. The last released version was Sceneform 1.17.0.
+
+ ARCore&#39;s environmental understanding lets you place 3D objects and 2D annotations in a way that integrates with the real world. For example, you can place a virtual cup of coffee on the corner of your real-world table using **ArAnchor**.
+
+ ARCore can also define lighting parameters of a real environment and provide you with the average intensity and color correction of a given camera image. This data lets you light your virtual scene under the same conditions as the environment around you, considerably increasing the sense of realism.  
+
+Current ARCore version has such a significant APIs as [Depth API][8], `Lighting Estimation` with `Environmental HDR mode`, `Augmented Faces`, `Augmented Images`, `Instant Placement`, `Sceneform Animations`, [365-days Cloud Anchors][9], `Recording and Playback` and `Multiplayer support`. The main advantage of ARCore in Android Studio over ARKit in Xcode is [Android Emulator][10] allowing you run and debug AR apps using virtual device.  
+
+ARCore is older than ARKit. Do you remember Project Tango released in 2014? Roughly speaking, ARCore is just a rewritten Tango SDK without a depth camera support. But a wise acquisition of FlyBy and MetaIO helped Apple not only to catch up but also significantly overtake. I suppose it is extremely good for AR industry. 
+
+The latest version of ARCore requires Android 7.0 Nougat or later, supports OpenGL ES 3.1 acceleration, and integrates with Unity, Unreal, and Web applications. At the moment the most powerful and energy efficient chipsets for AR experience on Android platform are **Snapdragon 875** (5nm), **Exynos 1080** (5nm) and **Kirin 980** (7nm).
+
+**ARCore price: FREE**.
+
+    |------------------------------|------------------------------|
+    |        &quot;ARCore PROs&quot;         |        &quot;ARCore CONs&quot;         | 
+    |------------------------------|------------------------------|
+    | iToF and Depth API support   | No Body Tracking support     |
+    |------------------------------|------------------------------|
+    | Quick Plane Detection        | Cloud Anchors hosted online  |
+    |------------------------------|------------------------------|
+    | Long-distance-accuracy       | Lack of rendering engines    |
+    |------------------------------|------------------------------|
+    | ARCore Emulator in AS        | Poor developer documentation | 
+    |------------------------------|------------------------------|
+    | High-quality Lighting API    | No external camera support   |
+    |------------------------------|------------------------------|
+    | A lot of supported devices   | Poor Google Glass API        |
+    |------------------------------|------------------------------|
+
+
+*Here&#39;s ARCore code&#39;s snippet written in Kotlin:*
+
+``` lang-kotlin
+private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renderable: Renderable) {
+    
+    val anchorNode = AnchorNode(anchor)
+    anchorNode.setParent(fragment.arSceneView.scene)
+    
+    val modelNode = TransformableNode(fragment.transformationSystem)
+    modelNode.setParent(anchorNode)
+    modelNode.setRenderable(renderable)
+    modelNode.localPosition = Vector3(0.0f, 0.0f, -3.0f)
+    fragment.arSceneView.scene.addChild(anchorNode)
+    
+    modelNode.select()
+}
+```
+
+&lt;br&gt;&lt;/br&gt;
+&lt;br&gt;&lt;/br&gt;
+
+[![enter image description here][11]][11]
+[![enter image description here][12]][12]
+
+&lt;br&gt;&lt;/br&gt;
+
+# **Apple ARKit 4.0**
+
+ARKit was released in June 2017 and just two years later it became very popular. Like its competitors, ARKit also uses special technique, called **Visual Inertial Odometry**, to very accurately track the world around your device. VIO is quite similar to COM found in ARCore. There are also three similar fundamental concepts in ARKit: **`World Tracking`**, **`Scene Understanding`** (which includes four stages: **Plane Detection**, **Hit-Testing** / **Ray-Casting**, **Light Estimation**, **[Scene Reconstruction][13]**), and **`Rendering`** with a great help of ARKit companions – **[SceneKit][14]** framework, that’s actually an Apple 3D game engine since 2012, **RealityKit** framework specially made for AR and written in Swift from scratch (released in 2019), and **SpriteKit** framework with its 2D engine (since 2013).
+
+VIO fuses RGB sensor data **at 60 fps** with Core-Motion data (IMU) **at 1000 fps**. In addition to that, SceneKit, for example, can render all the 3D geometry at 30/60/120 fps. So, under such circumstances, I think it should be noted that due to a very high energy impact (because of an enormous burden on CPU and GPU), your iPhone&#39;s battery will be drained pretty quickly.
+
+ARKit has a handful of useful methods for robust tracking and accurate measurements. Among its arsenal you can find easy-to-use functionality for saving and retrieving **ARWorldMaps**. World map is an indispensable &quot;portal&quot; for ***Persistent*** and ***Multiuser AR experience*** that allows you to come back to the same environment filled with the same chosen 3D content just before the moment your app became inactive. Support for simultaneous `front` and `back` camera capture and support for `collaborative sessions` that allows us to share World Maps are also great.
+
+There are good news for gamers: up to 6 people are simultaneously able to play the same AR game, thanks to [MultipeerConnectivity][15] framework. For 3D geometry you could use a brand-new [USDZ][16] file format, developed and supported by Pixar, that is good choice for sophisticated 3D models with lots of PBR shaders and animations. Also you can use the [following 3D formats][17] for ARKit.
+
+ARKit not only can help you track a position and orientation of your device relative to the world in 6 DOF, but also help you perform [People and Objects Occlusion][18] technique (based on **alpha** and **depth** channels&#39; segmentation), `LiDAR Scene Reconstruction`, `Body Motion Capture tracking`, `2D tracking`, `Vertical and Horizontal Planes detection`, `Image detection`, `3D Object detection` and `3D Object scanning`. With People and Objects Occlusion tool your AR content realistically passes behind and in front of real world entities, making AR experiences even more immersive. Also, `Realistic reflections`, that use machine learning algorithms and `Face-based AR experience` that allows to track up to 3 faces at a time are available for you.  
+
+Using iBeacons along with ARKit, you assist an iBeacon-aware application to know what room it’s in, and show the correct 3D/2D content chosen for that room. Working with ARKit you should intensively exploit [ARAnchor][19] class and all its subclasses, the same way you’ve been using it in ARCore.  
+
+Pay particular attention to RealityKit&#39;s satellite – **`Reality Composer`** application that&#39;s now a part of Xcode. This brand-new app helps you build 3D scenes for AR. Scenes built in Reality Composer can be packed with dynamics, simple animations and PBR materials. Reality Composer can be installed on iOS and iPadOS as a standalone app.
+
+For creating AR apps built on the latest versions of ARKit 4.0, including brand-new LiDAR scanner support, you need macOS 11 Big Sur, Xcode 12 and device running iOS 14 or iPadOS 14. **A sad news is – all ARKit 4.0 top features are restricted to devices powered by Apple A12 chipset and higher**. Also ARKit 4.0 is a worthy candidate to marry Metal framework for GPU acceleration. Don’t forget that ARKit tightly integrates with Unity and Unreal. At the moment the most powerful and energy efficient chipsets for AR experience are **A14 Bionic** (5nm), **A13 Bionic** (7nm) and **A12z Bionic** (7nm). 
+
+**ARKit price: FREE**.
+
+    |------------------------------|------------------------------|
+    |         &quot;ARKit PROs&quot;         |         &quot;ARKit CONs&quot;         | 
+    |------------------------------|------------------------------|
+    | LiDAR and Depth API support  | No AR glasses support        |
+    |------------------------------|------------------------------|
+    | Stable 6 DoF World Tracking  | No auto-update for Anchors   |
+    |------------------------------|------------------------------|
+    | Collaborative Sessions       | ARKit 4.0 / 3.5 Restrictions |
+    |------------------------------|------------------------------|
+    | WorldMaps, iBeacon-awareness | No ARKit Simulator in Xcode  |
+    |------------------------------|------------------------------|
+    | 4 rendering technologies     | No external camera support   |
+    |------------------------------|------------------------------|
+    | Rich developer documentation | Quickly drains your battery  |
+    |------------------------------|------------------------------|
+
+
+*Here&#39;s ARKit code&#39;s snippet written in Swift:*
+
+``` lang-swift
+func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+    
+    guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+    let planeNode = tableTop(planeAnchor)
+    node.addChildNode(planeNode)
+}
+    
+func tableTop(_ anchor: ARPlaneAnchor) -&gt; SCNNode {
+    
+    let x = CGFloat(anchor.extent.x)
+    let z = CGFloat(anchor.extent.z)
+    
+    let tableNode = SCNNode()
+    tableNode.geometry = SCNPlane(width: x, height: z)
+    tableNode.position = SCNVector3(anchor.center.x, 0, anchor.center.z)
+    return tableNode
+}
+```
+
+&lt;br&gt;&lt;/br&gt;
+&lt;br&gt;&lt;/br&gt;
+
+[![enter image description here][20]][20]
+[![enter image description here][21]][21]
+
+&lt;br&gt;&lt;/br&gt;
+
+# **Apple RealityKit 2.0**
+
+You should carefully look at [RealityKit][22] that was introduced in WWDC 2019. There’s been a lot of hype around it since then. RealityKit allows you create AR experiences for iOS/iPadOS and VR experiences for mobiles and macOS. This high-level framework works with `.usdz` assets as well as with `.rcproject` and `.reality` file formats which you can import from standalone macOS or iOS app – [Reality Composer][23] (RC). Cupertino software engineers built RealityKit from the ground for augmented reality apps that you can create with no repetitive code. It works with Swift from scratch – there’s no Objective-C legacy. And, of course, RealityKit shines not only with SwiftUI and UIKit but with Metal too.
+
+RealityKit framework has several fundamental blocks on which RealityKit&#39;s scenes are based: a parent class **Entity**, a class **[AnchorEntity][24]** that automatically tracks target (unlike in ARKit), classes **BodyTrackedEntity**, **ModelEntity**, **PointLight**, **SpotLight**, **DirectionalLight**, **TriggerVolume** and **PerspectiveCamera**. These entities are just like SceneKit&#39;s nodes but slightly different in hierarchical structure. And, of course, most entities have [Components][25]. It would be useful to say that ModelEntity is built on [MeshResource][26] and [Materials][27] and now there&#39;s a support for [VideoMaterial][28] in RealityKit 2.0.
+
+[![enter image description here][29]][29]
+
+**RealityKit** framework gives you a rich set of building blocks to work with AR and VR: new declarative Swift syntax, 3D primitives (at the moment `box`, `plane`, `sphere` and `text`), PBR materials with textures, occlusion material and video material, [lighting fixtures][30] (`directional`, `spot` and `point`) with realistic ray-traced shadows, spacial audio processing, different anchors types (`body`, `camera`, `face`, `image`, `object`, `horizontal plane`, `vertical plane`, `raycastResult`, `ARAnchor` and `world`), simplified setup for collaborative sessions, robust animations&#39; and physics&#39; setup, indispensable AI and ML built-in features and many other useful things.
+
+**Reality Composer** application gives you a simple and intuitive UI for constructing 3D scenes for Augmented Reality experiences. It has a royalty free library with downloadable 3D assets that allow you construct sophisticated 3D scenes with animation, audio, and dynamics which contain a thorough description of how these objects behave. You can also export your composition as a lightweight [AR Quick Look][31] experience that lets users place and preview a content. In Reality Composer app you can start your project using one of five anchor types: `horizontal`, `vertical`, `image`, `face` and `object` – which corresponds to desired type of tracking.
+
+**RealityKit and Reality Composer price: FREE**.
+
+    |------------------------------|------------------------------|
+    |       &quot;RealityKit PROs&quot;      |      &quot;RealityKit CONs&quot;       | 
+    |------------------------------|------------------------------|
+    | Can create AR apps w/o ARKit | Intensive usage of CPU/GPU   |
+    |------------------------------|------------------------------|
+    | Very little boilerplate code | iOS 13+, macOS 10.15+ only   |
+    |------------------------------|------------------------------|
+    | Suitable for AR/VR projects  | Start lagging on old devices |
+    |------------------------------|------------------------------|
+    | Robust API for RC scenes     | Limited shaders capabilities |
+    |------------------------------|------------------------------|
+    | Asynchronous asset loading   | Lack of Apple documentation  |
+    |------------------------------|------------------------------|
+    | Autoupdating tracking target | No AR glasses support        |
+    |------------------------------|------------------------------|
+
+
+*Here&#39;s RealityKit code&#39;s snippet written in Swift:*
+
+``` lang-swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    let textAnchor = try! SomeText.loadTextScene()
+    let textEntity: Entity = textAnchor.realityComposer!.children[0]
+    var textMC: ModelComponent = textEntity.children[0].components[ModelComponent]!
+    
+    var material = SimpleMaterial()
+    material.baseColor = .color(.yellow)
+    textMC.materials[0] = material
+    textMC.mesh = .generateText(&quot;Hello, RealityKit&quot;)
+    textAnchor.realityComposer!.children[0].children[0].components.set(textMC)
+    arView.scene.anchors.append(textAnchor)
+}
+```
+
+[![enter image description here][32]][32]
+
+One more important part of Apple&#39;s AR ecosystem is `Reality Converter` app. Now, instead of using a command line conversion tool, you can use a [Reality Converter][33]. The brand-new app makes it easy for you to convert, view and customize `.usdz` 3D objects on Mac. Simply drag-and-drop common 3D file formats, such as `.obj`, `.gltf` or `.usd`, to view the converted `.usdz` result, customize material properties with your own textures and edit file metadata. You can even preview your `.usdz` object under a variety of lighting and environment conditions with built-in Image-Based Lighting (IBL) options.
+
+&lt;br&gt;&lt;/br&gt;
+&lt;br&gt;&lt;/br&gt;
+
+[![enter image description here][34]][34]
+[![enter image description here][35]][35]
+
+&lt;br&gt;&lt;/br&gt;
+
+# **PTC Vuforia 9.5**
+
+In October 2015 PTC acquired Vuforia from Qualcomm for $65 million. Take into consideration that Qualcomm launched Vuforia in 2010. So Vuforia is an older sister in AR family. Big sister is watching you, guys! ;)
+
+In November 2016 Unity Technologies and PTC announced a strategic collaboration to simplify AR development. Since then they work together integrating new features of the Vuforia AR platform into the Unity game engine. Vuforia can be used with such development environments as Unity, MS Visual Studio, Apple Xcode and Android Studio. It supports a wide range of smartphones, tablets and AR smart glasses, such as HoloLens, Magic Leap, Vuzix M400, and ODG R7.
+
+Vuforia Engine boasts approximately the same main capabilities that you can find in the latest versions of ARKit but also it has its own features, such as Model Targets with Deep Learning, VISLAM for markerless AR experience and External Camera support for iOS, new experimental APIs for ARCore and ARKit and support for industry latest AR glasses. The main advantage of Vuforia over ARKit and ARCore that it has a [wider list of supported devices][36] and it supports the development of [Universal Windows Platform][37] apps for Intel-based Windows 10 devices, including Microsoft Surface and HoloLens.
+
+Vuforia has a standalone version and a version baked directly into Unity. It has the following functionality: 
+
+- **Advanced Model Targets 360**, recognition powered by AI;
+- **Model Targets with Deep Learning**, allow to instantly recognize objects by shape using pre-existing 3D models and deep learning algorithms;
+- **Image Targets**, the easiest way to put AR content on flat objects;
+- **Multi Targets**, for objects with flat surfaces and multiple sides; 
+- **Cylinder Targets**, for placing AR content on objects with cylindrical shapes, like bottles; 
+- **Ground Plane**, as a part of `Smart Terrain`, this feature enables digital content to be placed on floors and tabletop surfaces;
+- **VuMarks**, allows identify and add content to series of objects; 
+- **Object Targets**, for scanning an object;
+- **Static and Adaptive Modes**, for stationary and moving objects;
+- **Simulation Play Mode**, allows developers to “walk through” or around the 3D model and see the final AR experience from their computer;
+- **Vuforia Area Target Creator** app, enables us to scan and generate new Area Targets by using a depth-enabled mobile devices;
+- **AR Session Recorder**, can record AR experiences in the location, and then use that recording with Playback mode in Unity for editing and updating;
+- and, of course, **Vuforia Fusion** and **Vuforia Engine Area Targets**. 
+
+**Vuforia Fusion** is a capability designed to solve the problem of fragmentation in AR enabling technologies such as cameras, sensors, chipsets, and software frameworks like ARKit. With Vuforia Fusion, your application will automatically provide the best experience possible with no extra work required on your end.
+
+**Vuforia Engine Area Targets** enable developers to use an entire space, be it a factory floor or retail store, as an augmented reality target. Using a first supported device, a `Matterport Pro2` camera, developers can create a detailed 3D scan of a desired location. Locations are recommended to be indoors, mostly static, and no larger than 1,000 sqm (around 10,000 sqft). Once the scan produces a 3D model it can be converted into an Area Target with the Vuforia Area Target Generator. This target can then be brought into Unity where content can be placed within a digital representation of the space.
+
+Vuforia API allows for a `Static` or `Adaptive` mode. When the real-world model remains stationary, like a large industrial machine, implementing the `Static` API will use significantly less processing power. This enables a longer lasting and higher performance experience for those models. For objects that won’t be stationary the `Adaptive` API allows for a continued robust experience.
+
+The **`External Camera`** feature is a part of the Vuforia Engine Driver Framework. External Camera provides a new perspective on what’s possible with Augmented Reality. It allows Vuforia Engine to access external video sources beyond the camera equipped in phones and tablets. By using an independent camera, developers can create an AR experience that offers a first-person view from toys, robots or industrial tools. 
+
+**`Occlusion Management`** is one of the key features for building a realistic AR experience. When you&#39;re using Occlusion Management, Vuforia Engine detects and tracks targets, even when they’re partially hidden behind everyday barriers, like your hand. Special occlusion handling allows apps to display graphics as if they appear inside physical objects.
+
+Vuforia supports Metal acceleration for iOS devices. Also you can use Vuforia Samples for your projects. For example: the `Vuforia Core Samples` library includes various scenes using Vuforia features, including a pre-configured Object Recognition scene that you can use as a reference and starting point for Object Recognition application.
+
+[![enter image description here][38]][38]
+
+*Here&#39;s AR Foundation code&#39;s snippet written in C#:*
+
+``` lang-csharp
+private void UpdatePlacementPose() {
+
+    var screenCenter = Camera.main.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
+    var hits = new List&lt;ARRaycastHit&gt;();
+    arOrigin.Raycast(screenCenter, hits, TrackableType.Planes);
+    
+    placementPoseIsValid = hits.Count &gt; 0;
+
+    if (placementPoseIsValid) {
+
+        placementPose = hits[0].pose;
+    
+        var cameraForward = Camera.current.transform.forward;
+        var cameraBearing = new Vector3(cameraForward.x, 
+                                        0, 
+                                        cameraForward.z).normalized;
+
+        placementPose.rotation = Quaternion.LookRotation(cameraBearing);
+    }
+}
+```
+
+**Vuforia SDK Pricing Options**: 
+
+- **Free license** – you just need to register for a free [Development License Key][39]
+
+- **Basic license** (*$42/month, billed annually*) – For Students
+  
+- **Basic + Cloud license** (*$99/month*) – For Small Businesses
+
+- **Pro license** (*personal price*) – For All Companies Types
+
+Here are Pros and Cons.
+
+    |------------------------------|------------------------------|
+    |       &quot;Vuforia PROs&quot;         |        &quot;Vuforia CONs&quot;        | 
+    |------------------------------|------------------------------|
+    | Supports Android, iOS, UWP   | The price is not reasonable  |
+    |------------------------------|------------------------------|
+    | A lot of supported devices   | Poor developer documentation |
+    |------------------------------|------------------------------|
+    | External Camera support      | SDK has some issues and bugs |
+    |------------------------------|------------------------------|
+    | Webcam/Simulator Play Mode   | Doesn&#39;t support Geo tracking |
+    |------------------------------|------------------------------|
+&lt;br&gt;&lt;/br&gt;
+&lt;br&gt;&lt;/br&gt;
+
+[![enter image description here][40]][40]
+
+&gt;**CONCLUSION** :
+&gt;
+&gt;There are no significant limitations when developing with PTC Vuforia 9.5 compared to ARCore 1.21 and ARKit 4.0. Vuforia is an old great product and it supports a wider list of Apple and Android devices that are not officially supported and, of course, it supports several latest models of AR glasses. 
+&gt;
+&gt;But in my opinion, ARKit 4.0 with a **Reality Family** toolkit (RealityKit, Reality Composer and Reality Converter) have an extra bunch of useful up-to-date features that Vuforia 9.5 and ARCore 1.21 just partially have. ARKit 4.0 personally has a much greater, if not saying astonishing, short-distance measurement accuracy than ARCore compatible device has, within a room or on a street, without any need for calibration. This is achieved through the use of Apple LiDAR scanner. ARCore 1.21 uses iToF cameras and `Depth API`, and Vuforia 9.5 adds `Occlusion Management` feature to a whole picture. That allows you create a high-quality virtual mesh with `OcclusionMaterial` for real-world surfaces at scene understanding stage. This mesh is ready-for-collision and ready-to-be-lit. ARKit 4.0 now instantly detects nonplanar surfaces and surfaces with no-features-at-all, such as texture-free white walls in a poorly-lit rooms. 
+&gt;
+&gt;Also if you implement iBeacon tools, WorldMaps, and support for GPS – it will help you eliminate any tracking errors accumulated over time. And ARKit&#39;s tight integration with Vision and CoreML frameworks makes a huge contribution to a robust AR toolset. Integration with Apple Maps allows ARKit 4.0 to put `GPS Location Anchors` outdoors with a highest possible precision at the moment.
+&gt;
+&gt;Vuforia&#39;s measurement accuracy greatly depends on what platform you&#39;re developing for. Pay particular attention to the fact that even popular [Vuforia Chalk][41] application was built on Apple ARKit. This makes sense, doesn&#39;t it?
+
+&lt;br&gt;&lt;/br&gt;
+
+
+  [1]: https://i.stack.imgur.com/J5SXO.jpg
+  [2]: https://i.stack.imgur.com/VHnve.jpg
+  [3]: https://developers.google.com/ar/discover/concepts
+  [4]: https://developers.google.com/ar/discover/supported-devices
+  [5]: https://en.wikipedia.org/wiki/Point_cloud
+  [6]: https://stackoverflow.com/questions/51763412/arcore-session-frame-camera-and-pose/55710711#55710711
+  [7]: https://github.com/google/filament
+  [8]: https://developers.google.com/ar/develop/java/depth/overview
+  [9]: https://developers.google.com/ar/develop/java/cloud-anchors/overview-android
+  [10]: https://stackoverflow.com/questions/49818161/cant-install-arcore-on-emulator-for-android-studio/55567156#55567156
+  [11]: https://i.stack.imgur.com/p1ncM.jpg
+  [12]: https://i.stack.imgur.com/sbWMK.jpg
+  [13]: https://medium.com/macoclock/arkit-911-scene-reconstruction-with-a-lidar-scanner-57ff0a8b247e
+  [14]: https://stackoverflow.com/questions/60505755/high-quality-rendering-realitykit-vs-scenekit-vs-metal/60513052#60513052
+  [15]: https://developer.apple.com/documentation/multipeerconnectivity
+  [16]: https://graphics.pixar.com/usd/docs/Usdz-File-Format-Specification.html
+  [17]: https://stackoverflow.com/questions/46556524/3d-model-basics-in-arkit-arcore-development/55873291#55873291
+  [18]: https://developer.apple.com/documentation/arkit/occluding_virtual_content_with_people
+  [19]: https://stackoverflow.com/questions/52893075/what-is-aranchor-exactly/52899502#52899502
+  [20]: https://i.stack.imgur.com/smX3a.jpg
+  [21]: https://i.stack.imgur.com/pHkbz.jpg
+  [22]: https://developer.apple.com/documentation/realitykit
+  [23]: https://developer.apple.com/augmented-reality/reality-composer/
+  [24]: https://stackoverflow.com/questions/57593960/whats-the-difference-between-aranchor-and-anchorentity/57630001#57630001
+  [25]: https://developer.apple.com/documentation/realitykit/component
+  [26]: https://developer.apple.com/documentation/realitykit/meshresource
+  [27]: https://stackoverflow.com/questions/56828648/realitykit-adding-a-material-to-a-modelentity-programmatically/56849454#56849454
+  [28]: https://stackoverflow.com/questions/58131206/realitykit-how-to-add-a-video-material-to-a-modelentity#comment110576442_58131206
+  [29]: https://i.stack.imgur.com/xoASD.png
+  [30]: https://medium.com/@arkit/realitykit-911-lighting-and-shadows-66f99bcd5219
+  [31]: https://developer.apple.com/augmented-reality/quick-look/
+  [32]: https://i.stack.imgur.com/xUHaS.jpg
+  [33]: https://developer.apple.com/news/?id=01132020a
+  [34]: https://i.stack.imgur.com/jD5a9.jpg
+  [35]: https://i.stack.imgur.com/8JCLe.jpg
+  [36]: https://library.vuforia.com/articles/Solution/vuforia-fusion-supported-devices.html
+  [37]: https://visualstudio.microsoft.com/vs/features/universal-windows-platform/
+  [38]: https://i.stack.imgur.com/natTX.png
+  [39]: https://developer.vuforia.com/pricing
+  [40]: https://i.stack.imgur.com/DCe8z.jpg
+  [41]: https://chalk.vuforia.com",2018-06-12 14:46:22
+14,"The url should be different, for retrieving data - the endpoint should be different from **$metadata** query.
+
+You have to use below endpoint for retrieving **Vendors**.
+
+    httpClient.BaseAddress = new Uri(&quot;https://trial-ub2dbh.sandbox.operations.dynamics.com/data/Vendors&quot;);
+
+
+instead of below line:
+
+    httpClient.BaseAddress = new Uri(&quot;https://trial-ub2dbh.sandbox.operations.dynamics.com/data/$metadata#&quot;);
+
+",2020-11-16 00:25:40
+15,"To my knowledge it is possible and have it work correctly each time.  In the last year I found that the e-mails I sent using the mail() function would immediately go into my spam box (as well as the junk box of others) causing great confusion.  I upgraded to PHPMailer to solve this and I have never set it up to use SMTP and works just fine.
+
+The code I have is:
+
+	$mail = new PHPMailer;
+	$html = $email-&gt;get(); // This gets a standard HTML Template to use as the base of the e-mail.
+	$title = &#39;Title for Inside the HTML&#39;;
+	$subject = &#39;The E-mail Subject&#39;;
+	$html = str_replace(&#39;[title]&#39;,$title,$html); //Use this to replace the [title] element in my HTML Template with $title.
+	$html = str_replace(&#39;[date]&#39;,date(&quot;F j, Y g:i A&quot;),$html); // Again, replaces [date] in the HTML Template with the current date and time.
+	$body = &#39;Hello My Good Friend,&lt;br&gt;This is just a simple &lt;strong&gt;HTML Message&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Thank you.&#39;;
+	$html = str_replace(&#39;[body]&#39;,$body,$html); //Add my HTML Message to the HTML Template.
+
+	try {
+		//Recipients
+		$mail-&gt;setFrom(&#39;noreply@example.com&#39;, &#39;My Organization&#39;);
+		$mail-&gt;addAddress($row[&quot;email&quot;], $row[&quot;fullname&quot;]);     // Add a recipient
+		
+		//Content
+		$mail-&gt;isHTML(true);                                  // Set email format to HTML
+		$mail-&gt;Subject = $subject;
+		$mail-&gt;Body    = $html;
+		$mail-&gt;AltBody = strip_tags($html,&#39;&lt;br&gt;&#39;);
+				
+		$mail-&gt;send();
+					
+		//Return Success Message
+		$rMsg .= &#39;&lt;div class=&quot;alert alert-success&quot;&gt;
+					&lt;strong&gt;Success: &lt;/strong&gt; We have e-mailed the warning.&lt;/div&gt;&#39;;
+	} catch (Exception $e) {
+			$rMsg .= &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;
+						&lt;strong&gt;Error: &lt;/strong&gt; There was an error e-mailing the warning.&lt;/div&gt;&#39;;
+	}
+	",2020-11-16 00:25:27
+16,"First install the required packages:
+
+    npm i --save-dev webpack-node-externals start-server-webpack-plugin
+
+Once the installation is complete, create a webpack-hmr.config.js file in the root directory of your application.
+
+     const webpack = require(&#39;webpack&#39;);
+    const nodeExternals = require(&#39;webpack-node-externals&#39;);
+    const StartServerPlugin = require(&#39;start-server-webpack-plugin&#39;);
+    
+    module.exports = function(options) {
+      return {
+        ...options,
+        entry: [&#39;webpack/hot/poll?100&#39;, options.entry],
+        watch: true,
+        externals: [
+          nodeExternals({
+            allowlist: [&#39;webpack/hot/poll?100&#39;],
+          }),
+        ],
+        plugins: [
+          ...options.plugins,
+          new webpack.HotModuleReplacementPlugin(),
+          new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/]),
+          new StartServerPlugin({ name: options.output.filename }),
+        ],
+      };
+    };
+
+
+To enable HMR, open the application entry file (main.ts) and add the following webpack-related instructions:
+
+    declare const module: any;
+    
+    async function bootstrap() {
+      const app = await NestFactory.create(AppModule);
+      await app.listen(3000);
+    
+      if (module.hot) {
+        module.hot.accept();
+        module.hot.dispose(() =&gt; app.close());
+      }
+    }
+    bootstrap();
+
+",2020-11-16 00:25:20
+17,"Your code looks good. I think that your problem might be with the `if` statement. Try added an `else` afterwards because your code in the `if` statement will only run on that condition. Try adding an `alert()`  for an test. When my code doesn&#39;t run as expected I have three things that I do:
+
+ 1. I go through my code and check for syntax errors.
+ 2. I check the console to see if there are any errors that I could have missed.
+ 3. I add `console.log(1)` or `alert(1)` after certain parts of my code to see if that code even gets run.
+",2020-11-16 00:25:06
+18,"You can change
+
+    map &lt;F9&gt; :&lt;C-U&gt;!./%:r&lt;CR&gt;
+
+to
+
+    map &lt;F9&gt; :&lt;C-U&gt;!x-terminal-emulator -e ./%:r -hold&lt;CR&gt;
+
+In fact, you can use any of your favorite terminal. Just check how to pass in commands to the terminal. In most of the cases, it is `-e`. 
+
+`-hold` is to hold the terminal from vanishing.
+
+",2020-11-16 00:17:03
+19,"    import React, {Component, PropTypes} from &#39;react&#39;;
+    import html2canvas from &#39;html2canvas&#39;;
+    import jsPDF from &#39;jspdf&#39;;
+    import Pie from &#39;./Pie.js&#39;;
+    
+    class Qu extends Component {
+      constructor(props) {
+        super(props);
+      }
+    
+      printDocument() {
+        const input = document.getElementById(&#39;divToPrint&#39;);
+        html2canvas(input)
+          .then((canvas) =&gt; {
+            let imgWidth = 208;
+            let imgHeight = canvas.height * imgWidth / canvas.width;
+            const imgData = canvas.toDataURL(&#39;img/png&#39;);
+            const pdf = new jsPDF(&#39;p&#39;, &#39;mm&#39;, &#39;a4&#39;);
+            pdf.addImage(imgData, &#39;PNG&#39;, 0, 0, imgWidth, imgHeight);
+            // pdf.output(&#39;dataurlnewwindow&#39;);
+            pdf.save(&quot;download.pdf&quot;);
+          })
+        ;
+      }
+    
+      render() {
+        return (&lt;div&gt;
+        
+          &lt;div id=&quot;divToPrint&quot; className=&quot;mt4&quot;&gt;
+            &lt;div&gt;Title of Component&lt;/div&gt; 
+            &lt;div&gt;&lt;Pie /&gt;&lt;/div&gt;
+            &lt;div className=&quot;mb5&quot;&gt;
+            &lt;button onClick={this.printDocument}&gt;Print&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;);
+      }
+    }
+    export default Qu;
+
+Please try the above code.",2020-11-16 00:24:52
+20,"The subject refers to the nth column but the question and the example in the question refer to the first column so we assume that the first column is meant.  Use `ncol` to find the number of columns if that is not the case.
+
+Using the builtin `anscombe` data frame and setting some blanks we can use `rowSums` (`any` in the second solution) below.  The second solution produces a tibble and the others produce a data frame given the input shown.  The data frames are the same except possibly the row names.
+
+    a &lt;- anscombe; a[1, -1] &lt;- &quot;&quot;  # input data
+    
+    
+    a %&gt;% filter(rowSums(across(-1, ~ . != &quot;&quot;)) &gt; 0)
+
+    a %&gt;% rowwise %&gt;% filter(any(c_across(-1) != &quot;&quot;)) %&gt;% ungroup
+
+    a %&gt;% filter(rowSums(.[-1] != &quot;&quot;) &gt; 0)
+
+    a[rowSums(a[-1] != &quot;&quot;) &gt; 0, ] # base R
+",2020-11-15 21:04:42
+21,"you may find that solution useful for you.
+
+- you need to set a unique index or any identifier to every element. 
+- on every update or delete operation, you can access the element by its index
+- reference the input to get the value by using `ref`
+
+I assume that you pass an array of object as a props
+    
+    const readData = [
+      {
+        data: {
+          message: &quot;new message 1&quot;
+        }
+      },
+      {
+        data: {
+          message: &quot;new message 2&quot;
+        }
+      },
+      {
+        data: {
+          message: &quot;new message 3&quot;
+        }
+      },
+      {
+        data: {
+          message: &quot;new message 4&quot;
+        }
+      }
+    ];
+    
+
+
+**ReadData Component**
+
+    function ReadDataComponent({readData}) {
+      let inputRef = React.useRef();
+    
+      const [updateBox, setUpdateBox] = React.useState(readData);
+    
+      const deleteMessage = (i) =&gt; {
+        const updatedBox = [...updateBox];
+        let filteredBox = updatedBox.filter((_, index) =&gt; i !== index);
+        setUpdateBox(filteredBox);
+      };
+    
+      const showUpdateBox = (i) =&gt; {
+        const updatedBox = [...updateBox];
+        updatedBox[i].isOpen = updatedBox[i].isOpen ? !updatedBox[i].isOpen : true;
+        updatedBox[i].data.message = inputRef.current
+          ? inputRef.current.value
+          : updatedBox[i].data.message;
+        setUpdateBox(updatedBox);
+      };
+    
+      return (
+        &lt;div className=&quot;read-data&quot;&gt;
+          {readData.length &gt;= 1
+            ? updateBox.map((res, i) =&gt; (
+                &lt;div key={i}&gt;
+                  &lt;h2&gt;{res.data.message}&lt;/h2&gt;
+                  &lt;button
+                    onClick={() =&gt; {
+                      showUpdateBox(i);
+                    }}
+                  &gt;
+                    Update
+                  &lt;/button&gt;
+                  {res.isOpen ? (
+                    &lt;div&gt;
+                      &lt;form&gt;
+                        &lt;input
+                          ref={inputRef}
+                          type=&quot;text&quot;
+                          name=&quot;textarea&quot;
+                          placeholder=&quot;Update message&quot;
+                        /&gt;
+                      &lt;/form&gt;
+                    &lt;/div&gt;
+                  ) : null}
+                  &lt;button
+                    onClick={() =&gt; {
+                      deleteMessage(i);
+                    }}
+                  &gt;
+                    {&quot; &quot;}
+                    Delete
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              ))
+            : null}
+        &lt;/div&gt;
+      );
+    }
+
+[live demo][1]
+
+
+  [1]: https://codesandbox.io/s/peaceful-knuth-pd85l",2020-11-16 00:10:53
+22,"You should use `created` unless you need access to the element `this.$el` (or any other element ref) then use `mounted` instead.
+
+There isn&#39;t really any optimization improvement using one over the other, as long as you choose a convention and stick to it.",2020-11-16 00:24:01
+23,"The errors your seeing in your attempts 1, 2, and 3 are due to your data type being object (str) instead of a number (float).
+
+use df.dtypes and more than likely your data types all show object for &#39;close&#39; and &#39;adj close&#39;, etc.
+
+    df[&#39;close&#39;] = df[&#39;close&#39;].astype(&#39;float&#39;)
+    df[&quot;1 day percent change&quot;] = df[&#39;close&#39;].pct_change()",2020-11-16 00:23:54
+24,"The only form which I found its not use the method process, even in the cakePHP 4 I used the method __invoke and i can get the result expected",2020-11-16 00:09:46
+25,"You can edit and assign different colors to each of your KML files. However, the simplest approach is using the random color mode in a line style added to each KML file.
+
+    &lt;Document&gt;
+      &lt;Style id=&quot;s1&quot;&gt;
+        &lt;LineStyle&gt;
+          &lt;colorMode&gt;random&lt;/colorMode&gt;
+        &lt;/LineStyle&gt;
+      &lt;/Style&gt;
+      &lt;Placemark&gt;
+        &lt;styleUrl&gt;#s1&lt;/styleUrl&gt;
+      &lt;/Placemark&gt;
+    &lt;/Document&gt;
+
+You could use a multi-file text editor such as [NotePad++][1] to globally replace &lt;Docment&gt; tag with &lt;Document&gt; tag plus the Style elements in all files.
+
+
+  [1]: https://notepad-plus-plus.org/",2020-11-16 00:23:24
+26,"When converting object to base64 I was getting **out of latin range issues** and character invalid error. 
+
+I made it work in my project with the below line.
+
+Include the `base64` and `utf8` node packages and access them like this:
+
+```js
+var bytes = base64.encode(utf8.encode(JSON.stringify(getOverviewComments())));
+```",2019-11-22 16:21:41
+27,"this code works for me, it has only a small flaw, when the player is running (play), if I click anywhere on the web page the player turns off and loses the link with the source url.
+How do I make sure that once the mp3 url link is acquired the player does not lose the link if I click somewhere else?
+
+
+  
+
+      list.onclick = function(e) {
+      e.preventDefault();
+    
+      var elm = e.target;
+      var audio = document.getElementById(&#39;audio&#39;);
+    
+      var source = document.getElementById(&#39;audioSource&#39;);
+      source.src = elm.getAttribute(&#39;data-value&#39;);
+    
+      audio.load(); //call this to just preload the audio without playing
+      audio.play(); //call this to play the song right away
+    };
+    &lt;ul style=&quot;list-style: none&quot;&gt;
+      &lt;li&gt;Audio Files
+        &lt;ul id=&quot;list&quot;&gt;
+          &lt;li&gt;&lt;a href=&quot;#&quot; data-value=&quot;http://media.w3.org/2010/07/bunny/04-Death_Becomes_Fur.oga&quot;&gt;Death_Becomes_Fur.oga&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#&quot; data-value=&quot;http://media.w3.org/2010/07/bunny/04-Death_Becomes_Fur.mp4&quot;&gt;Death_Becomes_Fur.mp4&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#&quot; data-value=&quot;http://media.w3.org/2010/11/rrs006.oga&quot;&gt;rrs006.oga&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#&quot; data-value=&quot;http://media.w3.org/2010/05/sound/sound_90.mp3&quot;&gt;sound_90.mp3&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+    
+    &lt;audio id=&quot;audio&quot; controls=&quot;controls&quot;&gt;
+      &lt;source id=&quot;audioSource&quot; src=&quot;&quot;&gt;&lt;/source&gt;
+      Your browser does not support the audio format.
+    &lt;/audio&gt;
+
+
+",2020-11-16 00:23:15
+28,"I think it&#39;s late to give an answer now. recently I faced the same issue. and inspired from your question.
+
+
+You can use `[FromRout]` to tag the `id` parameter without changing the consuming type
+
+    
+        [HttpPost(&quot;user/{id=0}/avatar&quot;)]
+        public IActionResult TestImage([FromRoute] int id, IFormFile avatar)
+        {
+            return Ok($&quot;id: {id}, avatar name: {avatar.FileName}&quot;);
+        }
+",2020-11-16 00:23:06
+29,"To do negative lookaheads, use `!`. It will make sure the next character is not a double quote, but doesn&#39;t actually consume anything, just like a negative lookahead in normal regex. Then you can match on `AnyChar` or some other pattern.
+```scala
+def regex[_: P]: P[Unit] = P((!&quot;\&quot;&quot; ~ AnyChar).rep).log
+```
+[Here](https://scastie.scala-lang.org/3CErrtfEQE22vRmCNjX0RA) it is running in Scastie.",2020-11-16 00:23:00
+30,"You can do it with `ngAfterViewChecked` lifecycle hook. It will be called after your changes have been rendered. (It is called every time angular checks for changes also, hence the `setHighlight` guard to only do the highlighting once)
+
+1. Add new class field `setHighlight`:
+2. Update your code:
+
+----------
+
+    this.dataService.getPageContent().subscribe(
+      res =&gt; {
+        this.html = this.sanitizer.bypassSecurityTrustHtml(res);
+        this.setHighlight = true;
+      },
+      err =&gt; {
+        alert(&#39;error&#39;);
+      }
+    ); 
+    
+3. Add lifecycle hook:
+
+----------
+ 
+    ngAfterViewChecked() {
+      if(this.setHighlight){
+        Prism.highlightAll(); 
+        this.setHighlight = false;
+      }
+    }
+
+",2020-11-16 00:22:55
+31,"There is no [XML-RPC](https://en.wikipedia.org/wiki/XML-RPC) functionality built into PowerShell.
+
+Providing such functionality therefore requires third-party code.  
+
+In your case, it seems your script requires the [`XmlRpc` module](https://github.com/lipkau/XmlRpc/blob/master/XmlRpc.psd1), available from the PowerShell Gallery [here](https://www.powershellgallery.com/packages/XmlRpc) (which means you can install it with `Install-Module XmlRpc`).
+
+However, this module was last updated more than 5 years ago, predating PowerShell&#39;s cross-platform edition, [PowerShell (Core)](https://github.com/PowerShell/PowerShell), so you&#39;ll have to find out yourself if it works on a Unix-like platform such as Ubuntu.
+
+
+",2020-11-16 00:22:55
+32,"You can use `-print0` as `find` argument, to print a `null` delimited stream of filenames.
+
+Then loop read the `null` delimited stream.
+
+```sh
+find &quot;$path&quot; \( -name &#39;*.c&#39; -or -name &#39;*.cpp&#39; -or -name &#39;*.cxx&#39; -or -name &#39;*.cc&#39; \) -print0 |
+while IFS= read -r file
+do
+done
+```",2020-11-16 00:22:47
+33,"You can pass to `find` as many commands as you like:
+
+    find $path \( -name &quot;*.c&quot; -or -name &quot;*.cpp&quot; -or -name &quot;*.cxx&quot; -or -name &quot;*.cc&quot; \) \
+        -exec bash -c &quot;echo cmd1 {}; echo cmd2 {}; echo etc.&quot; \;
+
+an alternative is to write a function:
+
+    function safe_copy() {
+      echo &quot;$1&quot;     
+    }          
+
+    export -f safe_copy
+
+    find $path \( -name &quot;*.c&quot; -or -name &quot;*.cpp&quot; -or -name &quot;*.cxx&quot; -or -name &quot;*.cc&quot; \) \
+         -exec bash -c &quot;safe_copy {}&quot; \;
+
+You can also write a script and call it with exec instead of a function.
+   
+
+
+",2020-11-16 00:22:37
+34,"This process work for me
+
+1 - Run your Command Invite/Terminal as Administrator
+
+2 - Install the Vue CLI globally with the command :
+
+    npm install -g vue-cli",2020-11-16 00:22:33
+35,"&gt; I get this error message: AttributeError: &#39;PropertyImageSerializers&#39;
+&gt; object has no attribute &#39;property&#39; but im my model you can see I have
+&gt; the property
+
+`property` is not an attribute of the `PropertyImageSerializers` class, that&#39;s why `AttributeError`
+
+I think you will find your answer [here][1]
+
+
+  [1]: https://stackoverflow.com/a/53035559/6510856
+
+Update:
+
+You can do it like this
+
+    def post(self, request, *args, **kwargs):
+        property_id = request.data[&#39;property&#39;]
+        form_data = {}
+        form_data[&#39;property&#39;]= property_id
+        success = True
+        response = []
+        for images in request.FILES.getlist(&#39;images&#39;):
+            form_data[&#39;images&#39;]=images
+            print(form_data)
+            serializer = PropertyImageSerializers(data=form_data)
+            if serializer.is_valid():
+                serializer.save()
+                response.append(serializer.data)
+            else:
+                success = False
+        if success:
+            return Response(response, status=status.HTTP_201_CREATED)
+        return Response(response,status=status.HTTP_400_BAD_REQUEST)",2020-11-15 22:30:25
+36,"Pass a second argument in, the subclass that you want to find in the array.
+
+To be a bit more type-safe, check that the `.find` doesn&#39;t return `undefined` as well.
+
+To reduce duplication, have the generic take its type from the class passed in, instead of having to repeat the class twice:
+
+```
+function find&lt;A extends typeof Animal&gt;(items: Animal[], theClass: A) {
+    const found = items.find(a =&gt; a instanceof theClass);
+    return (found as A) || undefined;
+}
+
+const result = find(animals, Dog);
+```",2020-11-16 00:15:33
+37,"Are you sure? It does display on mine. Is the file saved as a `.html` file? Also, try opening it on another browser. If that doesn&#39;t work, try creating a new file in Notepad or something similar, save it with a `.html` file extension and try opening it again.",2020-11-16 00:21:30
+38,"Just close all of them and open the one that the user click on:
+
+&lt;!-- begin snippet: js hide: false console: true babel: false --&gt;
+
+&lt;!-- language: lang-js --&gt;
+
+    $(&#39;.accordion-control&#39;).click(function(){
+       $(&quot;.accordion-panel&quot;).slideUp();
+       $(this).next(&#39;.accordion-panel&#39;).slideToggle();
+    });
+
+&lt;!-- language: lang-html --&gt;
+
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;ul class=&quot;accordion&quot;&gt;
+            &lt;li&gt;
+        &lt;button class=&quot;accordion-control&quot;&gt;Something&lt;/button&gt;
+        &lt;div class=&quot;accordion-panel&quot;&gt;
+            &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
+        &lt;/div&gt;
+            &lt;/li&gt;
+
+            &lt;li&gt;
+        &lt;button class=&quot;accordion-control&quot;&gt;Something&lt;/button&gt;
+        &lt;div class=&quot;accordion-panel&quot;&gt;
+            &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
+        &lt;/div&gt;
+            &lt;/li&gt;
+    &lt;/ul&gt;
+
+&lt;!-- end snippet --&gt;
+
+This SO relate: https://stackoverflow.com/questions/7402659/js-slidetoggle-close-other-open-divs
+",2020-11-16 00:21:10
+39,"## Solution Steps ##
+&gt; 1. if the searching-value equal to the current Node value: 
+&gt;   - (True) =&gt; return the current node. 
+&gt;   - (False) =&gt; (2.)
+&gt; 2. if the searching-value is bigger than the current Node value:
+&gt;   - (True) =&gt; search in the right Node (if the right Node not null, otherwise return null).
+&gt;   - (False) =&gt; (3.)
+&gt; 3. if the searching-value is smaller than the current Node value:
+&gt;   - (True) =&gt; search in the left Node (if the right Node not null, otherwise return null).
+## Solution Coded ## 
+
+
+    
+
+    public class Node {
+        Node left,right;
+        int value;
+        // Solution 1
+        public Node find(int v){
+            return  v==this.value ? this:v &gt; this.value ? this.right != null ? this.right.find(v) : null : this.left != null ? this.left.find(v) : null;
+        }
+        // Solution 2 like Solution 1
+        public Node find2(int v){
+            if (v == this.value){
+                return this;
+            }else if (v &gt; this.value) {
+                if (this.right != null) {
+                    return this.right.find2(v);
+                }else {
+                    return null;
+                }
+            }else
+                if (this.right != null){
+                    return this.left.find2(v);
+                }else {
+                    return null;
+                }
+        }
+        // Solution 3
+        public Node find3(int v){
+            return v==this.value ?this:v &gt; this.value &amp;&amp; this.right != null ? this.right.find3(v) : v &lt; this.value &amp;&amp; this.left != null ? this.left.find3(v) : null;
+        }
+        // Solution 4 like Solution 3
+        public Node find4(int v){
+            if (v == this.value) return this;
+            if (v &gt; this.value &amp;&amp; this.right != null) return this.right.find4(v);
+            if (v &lt; this.value &amp;&amp; this.left != null) return this.left.find4(v);
+            return null;
+        }
+        // Solution 5
+        public Node find5(int v){
+            Node node = this;
+            while (node!=null){
+                if (v == node.value)
+                    return current;
+                if (v &gt; node.value)
+                    node= node.right;
+                else
+                    node= node.left;
+            }
+            return null;
+        }
+    }
+
+",2020-11-16 00:20:51
+40,"To generate 10 random numbers between two arbitrary numbers (such as 1 and 12) which are exactly divisible by 0.05. The assumption is that the distance between consecutive numbers is varying by a random multiple of 0.05.
+```
+start = 1
+end = 12
+step = 0.05
+round ( runif ( n=10, min=start, max=end ) * step ) / step
+```
+
+A repeatable example using set seed.
+```
+set.seed(seed = 12)
+round(runif(10,min = 1,max=12)/0.05)*0.05 
+ [1]  1.75 10.00 11.35  3.95  2.85
+ [6]  1.35  2.95  8.05  1.25  1.10
+```",2020-11-16 00:20:43
+41,"Your problem is with the `isSafe` function where you are not checking fully the diagonals:
+
+    bool isSafe(vector&lt;vector&lt;int&gt;&gt;board, int row, int col){
+    //checks column for queens
+    
+    int n = board.size();
+    
+    for(int i=0; i&lt;row; i++){
+        if(board[i][col]==1){
+            return false;
+        }
+    }
+    
+    //checks right diagonal for queens(\)
+    for(int i=row, x=col; i&gt;= 0 &amp;&amp; x&gt;=0; i--, x--){
+        if(board[i][x]==1){
+            return false;
+        }
+    }
+    
+    for(int i=row, x=col; i &lt; n &amp;&amp; x&lt;n; i++, x++){
+        if(board[i][x]==1){
+            return false;
+        }
+    }
+    
+    
+    //checks left diagonal for queens(/)
+    for(int i=row, x=col; i&lt; n &amp;&amp; x&gt;=0; i++, x--){
+        if(board[i][x]==1){
+            return false;
+        }
+    }
+    
+    
+    for(int i=row, x=col; i&gt;= 0 &amp;&amp; x&lt; n; i--, x++){
+        if(board[i][x]==1){
+            return false;
+        }
+    }
+    
+    //returns true once all conditions are met for queen to be safe
+    return true;
+    }
+
+
+",2020-11-16 00:12:26
+42,"also note Ant javac task now supports this option.
+
+https://ant.apache.org/manual/Tasks/javac.html
+
+&quot;release 	Specify the value for the --release switch.
+ When set and running on JDK 9+ the source and target attributes as well as the bootclasspath will be ignored. Since Ant 1.9.8.
+ Required? No, ignored when running on JDK 8 or earlier&quot;
+
+For example, can replace source=&quot;1.8&quot; and target=&quot;1.8&quot;  entries with a single release=&quot;8&quot; entry.  Note that release attribute has different values (no prefix &quot;1.&quot; used).
+
+Note also that this will fail if Ant 1.9 (or better) isn&#39;t available.
+
+This can&#39;t be used in IDE-provided build files in the nbproject subdirectory, where build files have an explicit warning not to be edited.",2020-11-16 00:20:37
+43,"Maybe a factor of two. But only if you do not include the overhead of sending the description of the Huffman code along with the data. For 1000 bits, that overhead will dominate the problem, and determine your maximum compression ratio. I find that for that small of a sample, 125 bytes, general-purpose compressors get it down to only around 100 to 120 bytes, due to the overhead.",2020-11-16 00:04:48
+44,"I didn&#39;t check wheter or not the following compiles, but it should look like what follows. Please someone edit this answer if you find something to change and tried to compile it: 
+
+```
+class BaseDataRepository(ABC): 
+
+    @abstractmethod
+    def get_all_ids(self) -&gt; List[int]: 
+        pass
+
+    @abstractmethod
+    def get_data_from_id(self, _id: int) -&gt; object: 
+        pass
+
+class InMemoryDataRepository(BaseDataRepository): 
+    def __init__(self, ids, data): 
+        self.ids: List[int] = ids
+        self.data: Dict[int, object] = data
+
+    def get_all_ids(self) -&gt; List[int]: 
+        return list(self.ids)
+
+    def get_data_from_id(self, _id: int) -&gt; object: 
+        return self.data[_id]
+
+class ConvertIDsToLoadedData(BaseStep): 
+    def _handle_transform(self, data_container: DataContainer, context: ExecutionContext): 
+        repo: BaseDataRepository = context.get_service(BaseDataRepository)
+        ids = data_container.data_inputs
+
+        # Replace data ids by their loaded object counterpart: 
+        data_container.data_inputs = [repo.get_data_from_id(_id) for _id in ids]
+
+        return data_container, context
+
+context = ExecutionContext(&#39;caching_folder&#39;).set_service_locator({
+    BaseDataRepository: InMemoryDataRepository(ids, data)  # or insert here any other replacement class that inherits from `BaseDataRepository` when you&#39;ll change the database to a real one (e.g.: SQL) rather than a cheap &quot;InMemory&quot; stub. 
+})
+``` 
+
+For updates, see the issue I opened here for this question: https://github.com/Neuraxio/Neuraxle/issues/421",2020-11-16 00:20:27
+45,"You forgot to execute/invoke/call it.
+` return actionFunc()`
+
+    const btnActionHandle = () =&gt; {
+                if (routeName) return navigation.navigate(routeName)
+                else {
+                    return actionFunc()
+                }
+            }
+
+Also the same function can be re-written as below, no need for `else` block:
+
+    const btnActionHandle = () =&gt; {
+      if (routeName) {
+        return navigation.navigate(routeName)
+      }
+    
+      return actionFunc()
+    }",2020-11-16 00:15:34
+46,"From your script we can see that the error is du to the call to `plt.add_subplot()` with `i = 0` at the first iteration (this function only accepts positive integer arguments).
+
+## Solution 1 with `fig.add_subplots`
+
+```py
+import matplotlib.pyplot as plt
+import numpy as np
+
+# simulate data
+data = np.random.rand(50, 64)
+
+# create figure
+fig = plt.figure(figsize=(8, 8))
+
+# loop over images
+for i in range(16):
+    print(i)
+    img = np.reshape(data[i : (i + 1)], (8, 8))
+    fig.add_subplot(4, 4, i + 1)
+    plt.imshow(img)
+
+# save image
+plt.savefig(&quot;subplot_image&quot;)
+```
+
+The output image looks like:
+
+[![subplots show reshaped vectors into images][1]][1]
+
+## Solution 2 with `plt.subplots` (more pythonic)
+
+The following solution produces the same image with a direct iterations of the subplots generated the `plt.subplots()`, and the elements of the `data` matrix.
+
+```py
+# create figure
+fig, axes = plt.subplots(4, 4, figsize=(8, 8))
+
+# loop over images
+for ax, img in zip(axes.ravel(), data):
+    ax.imshow(img.reshape(8, 8))
+
+# save image
+plt.savefig(&quot;subplot_image&quot;)
+```
+
+
+
+  [1]: https://i.stack.imgur.com/plHI0.png",2020-11-16 00:19:43
+47,"The path `D:\Program Files\MinGW` is a bad idea to put MinGW in as it contains a space. Try installing MinGW to a path without spaces or special characters like `D:\Prog\MinGW`.
+
+Additionally you can try to run `g++.exe` from Python instead of just `g++`.",2020-11-16 00:19:30
+48,"You can create the producer first and pass(inject) it to your web resource or resources.
+
+Then you can use a shutdown hook to close the producer with its reference. 
+
+Even better if you can use life cycle stop hooks in your framework. 
+Example in dropwizard: 
+https://www.dropwizard.io/en/latest/manual/core.html?highlight=managed#managed-objects",2020-11-16 00:19:27
+49,"To answer your question first: Yes the `reverse` function you defined is an O(1) space operation(even though it&#39;s wrong and will never end). The reason is, when you pass in a `list` to the function in python, it does not copy the whole list, it passes it&#39;s reference(or the pointer, if you are familiar with C concepts). So no matter how long your array is, the space usage is constant. 
+
+However, your question alone may be meaningful, but in this program, it does not matter. We all know for an algorithm, the big-O for space and time is determined by the largest part of the algorithm. You actually other operations in your code that has O(N) space operation. For example, `reversed()` function generates a whole new list. 
+
+BTW, it&#39;s not the best practice to define a function that has the same name with other methods you may use(in this case, `reverse`).",2020-11-16 00:18:37
+50,"This process work for me
+
+1 - Run your Command Invite/Terminal as Administrator
+
+2 - Install the Vue CLI globally with the command :
+
+    npm install -g vue-cli
+
+3 - Create your vue project
+
+    vue init webpack your_project_name_here
+
+4 - Goto your project directory you
+
+    cd your_project_name_here
+
+5 - If you have vulnerabilities execute :
+
+    npm audit fix
+
+Now you can start the web server in development mode by using npm in the following way:
+
+    npm run dev
+
+By default it will start the server on port 8080",2020-11-16 00:18:18
+51,"NIL is a value for pointers, or reference types (interfaces,class, dyn arrays) in general. 
+
+Non reference types don&#39;t have a NIL value, the type char can take values from #0 to #255, and all are valid, though sometimes when interfacing to other languages #0 is interpreted as end of string.
+
+If you mean nullable types like in Java or .NET, there is no default support for them as they have the disadvantage of the type becoming larger than need be (iow becoming a pseudo record with added NULL boolean).
+
+There are some generics based solutions that try to implement nullable types, but I haven&#39;t used them, and they are not part of the standard distribution.",2020-11-16 00:18:13
+52,"Here are 3 different ways
+```
+declare @json           nvarchar(max)=N&#39;{
+    &quot;type&quot;: &quot;https://tools.ietf.org/html/rfc7231#section-6.5.1&quot;,
+    &quot;title&quot;: &quot;One or more validation errors occurred.&quot;,
+    &quot;status&quot;: 400,
+    &quot;traceId&quot;: &quot;|a134a743-4f46942d175af9d6.&quot;,
+    &quot;errors&quot;: {
+        &quot;$.payment[0].invoiceDate&quot;: [
+            &quot;The JSON value could not be converted to System.Nullable`1[System.Int32]. Path: $.payment[0].invoiceDate | LineNumber: 0 | BytePositionInLine: 533.&quot;
+        ]
+    }
+}&#39;;
+
+/* #1 without OPENJSON */
+select json_value(@json, &#39;$.errors.&quot;$.payment[0].invoiceDate&quot;[0]&#39;) newCol;
+
+/* #2 with OPENJSON and JSON_VALUE */
+select json_value(value, &#39;$[0]&#39;) newCol
+from openjson(@json,&#39;$.errors&#39;);
+
+/* #3 with OPENJSON */
+select value newCol
+from openjson(@json,&#39;$.errors.&quot;$.payment[0].invoiceDate&quot;&#39;);
+
+```
+Output (each is the same)
+```
+newCol
+The JSON value could not be converted to System.Nullable`1[System.Int32]. Path: $.payment[0].invoiceDate | LineNumber: 0 | BytePositionInLine: 533.",2020-11-16 00:17:45
+53,"[Khaled Zaouk][1] over on the Spark user mailing list helped me out by suggesting that the `make_keras_picklable()` be changed to a wrapper class. This worked great!
+
+    import tempfile
+    
+    import tensorflow as tf
+    
+    
+    class KerasModelWrapper:
+        &quot;&quot;&quot;Source: https://zachmoshe.com/2017/04/03/pickling-keras-models.html&quot;&quot;&quot;
+    
+        def __init__(self, model):
+            self.model = model
+    
+        def __getstate__(self):
+            model_str = &quot;&quot;
+            with tempfile.NamedTemporaryFile(suffix=&quot;.hdf5&quot;, delete=True) as fd:
+                tf.keras.models.save_model(self.model, fd.name, overwrite=True)
+                model_str = fd.read()
+            d = {&quot;model_str&quot;: model_str}
+            return d
+    
+        def __setstate__(self, state):
+            with tempfile.NamedTemporaryFile(suffix=&quot;.hdf5&quot;, delete=True) as fd:
+                fd.write(state[&quot;model_str&quot;])
+                fd.flush()
+                self.model = tf.keras.models.load_model(fd.name)
+
+Of course this could probably be made a little bit more elegant by implementing this as a subclass of Keras&#39;s Model class or maybe a PySpark.ML transformer/estimator.
+
+
+  [1]: http://apache-spark-user-list.1001560.n3.nabble.com/template/NamlServlet.jtp?macro=user_nodes&amp;user=9233
+",2018-05-08 00:11:43
+54,"probably what you could do is disable all of your accordions and everytime the user clicks on one of them enable the next one.
+
+You can see an example [here][1] hope that will solve your problem.
+
+I also have provided a code snippet to help you with the previous example.
+
+
+&lt;!-- begin snippet: js hide: false console: true babel: false --&gt;
+
+&lt;!-- language: lang-js --&gt;
+
+    // Disable #x
+    $(&#39;.accordion&#39;).on(&#39;click&#39;, function(e){
+        e.preventDefault();
+        $(this)
+        .next(&#39;.accordion-panel&#39;)
+        .not(&#39;:animated&#39;)
+        .slideToggle();
+        $( &quot;#x&quot; ).prop( &quot;disabled&quot;, false );
+    });
+
+&lt;!-- language: lang-html --&gt;
+
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;select id=&quot;x&quot; class=&quot;form-control&quot; disabled&gt;
+      &lt;option&gt;1&lt;/option&gt;
+      &lt;option&gt;2&lt;/option&gt;
+      &lt;option&gt;3&lt;/option&gt;
+      &lt;option&gt;4&lt;/option&gt;
+      &lt;option&gt;5&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;button class=&quot;accordion&quot;&gt;click me&lt;/button&gt;
+
+&lt;!-- end snippet --&gt;
+
+What you are trying to achieve is also possible with the framework bootstrap in an easy way that you can see by clicking [here][2]. Bootstrap also uses jquery so if you need to costumize anything it&#39;s possible too. To download it you can click [here][3]. Please note, in order to bootstrap code work you **need** to download it and write the right path on the head of your html or add this scripts:
+
+
+```
+&lt;script src=&quot;https://code.jquery.com/jquery-3.5.1.slim.min.js&quot; integrity=&quot;sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js&quot; integrity=&quot;sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js&quot; integrity=&quot;sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;
+
+```
+
+
+  [1]: https://learn.jquery.com/using-jquery-core/faq/how-do-i-disable-enable-a-form-element/
+  [2]: https://getbootstrap.com/docs/4.5/components/collapse/#accordion-example
+  [3]: https://getbootstrap.com/docs/4.5/getting-started/download/",2020-11-15 22:54:42
+55,"Before I answer the question, I need to say two things: first, I couldn&#39;t understand so much about your styled-components code, so I&#39;ll just transform your react/CSS code to react-typescript/styled-component. Second, I didn&#39;t get what you mean by &quot;difficulties when label size varies&quot;, so I&#39;m not focusing on this in the answer. That been said, let&#39;s go to the code.
+
+Input.tsx
+---------
+```react
+import React from &#39;react&#39;;
+import styled from &#39;styled-components&#39;;
+
+interface InputProps extends React.InputHTMLAttributes&lt;HTMLInputElement&gt;{
+    id: string;
+    label: string;
+}
+
+const InputGroup = styled.div`
+  position: relative;
+`;
+
+const InputLabel = styled.label`
+  color: #8d8d8d;
+  position: absolute;
+  top: 27px;
+  left: 55px;
+  background: #ffffff;
+  transition: 300ms;
+  transform: translate(-50%, -50%);
+`;
+
+const InputField = styled.input`
+  outline: none;
+  padding: 16px 22px;
+  border: 1px solid #dadce0;
+  font-size: 18px;
+  border-radius: 5px;
+
+  &amp;:focus
+  {
+    border: 2px solid royalblue;
+  }
+
+  &amp;:valid + ${InputLabel}
+  {
+    top: -1px;
+    padding: 0 3px;
+    font-size:14px;
+    color: #8d8d8d;
+  }
+
+  &amp;:focus + ${InputLabel}
+  {
+    top: -1px;
+    padding: 0 3px;
+    font-size:14px;
+    color: royalblue;
+    transition: 300ms;
+  }
+`;
+
+const Input: React.FC&lt;InputProps&gt; = ({ id, label, ...rest }) =&gt; {
+  return (
+    &lt;InputGroup&gt;
+      &lt;InputField id={id} {...rest} /&gt;
+      &lt;InputLabel htmlFor={id} &gt;{label}&lt;/InputLabel&gt;
+    &lt;/InputGroup&gt;
+  );
+}
+
+export default Input;
+
+```
+
+The idea here is to create an input component that already has a label inside it. Initially, I create an interface called _InputProps_ which extends all attributes from a common InputElement and forces the parent component to put an _id_ and a _label_ attribute.
+
+Them I used styled-components to copy all styles from the youtube guy. To put pseudo-classes on styled-components you have to use a sass&#39; feature called [parent selector][1]. Using the ampersand, you can refer to the parent selector. Another thing you have to use is [styled-components reference][2]. This feature will allow you to refer to the styled-label in the code.
+
+Now that you&#39;ve created the Input component, let&#39;s use it on the App.
+
+
+App.tsx
+---------
+```react
+import React from &#39;react&#39;;
+import Input from &#39;./Input&#39;;
+
+function App() {
+  return (
+    &lt;&gt;
+      &lt;Input required type=&quot;text&quot; label=&quot;First Name&quot; id=&quot;first-name&quot; /&gt;
+      &lt;Input required type=&quot;text&quot; label=&quot;Hello&quot; id=&quot;hello&quot; /&gt;
+    &lt;/&gt;
+  );
+}
+
+export default App;
+
+```
+
+[This is the final result.][3]
+
+
+  [1]: https://sass-lang.com/documentation/style-rules/parent-selector
+  [2]: https://styled-components.com/docs/advanced#refs
+  [3]: https://i.stack.imgur.com/bh6ND.png",2020-11-16 00:16:56
+56,"Been playing around with &quot;flags&quot; in chrome and found that disabling
+
+ - Cookies without SameSite must be secure
+ - Enable removing SameSite=None cookies
+ - SameSite by default cookies
+
+under chrome://flags/ did help me to show the cookie until I refreshed the page. For some reason the cookie disappears upon refresh and I am still not able to use it in my axios request.
+
+However, as long as I don&#39;t refresh the page it works as intended. In a way I found a solution. Even though it is buggy/weird. Perhaps someone can help me sort it out?",2020-11-15 23:32:57
+57,"What you are looking for is [DRF filtering](https://www.django-rest-framework.org/api-guide/filtering/).
+
+Maybe you should rename your filter to `event_filter`.
+
+Example:
+
+```python
+    def get_queryset(self):
+
+        queryset = EventDefinition.objects.all()
+
+        event_filter = self.request.query_params.get(&#39;event_filter&#39;, None)
+
+        if event_filter == &#39;last&#39;:
+            return [queryset.order_by(&quot;-event_id&quot;)[0]]
+        if event_filter == &#39;first&#39;:
+            return [queryset.order_by(&quot;event_id&quot;)[0]]
+
+        return queryset
+```
+
+URLs:
+- to get all `/api/eventdefinitions`
+- to get selected by event_id (primary key) `/api/eventdefinitions/1` &lt;- the `1` is your primary key
+- to get last: `/api/eventdefinitions/?event_filter=last`
+- to get first: `/api/eventdefinitions/?event_filter=first`
+
+BTW, I&#39;m working now on series of [tutorials on how to build SaaS application from scratch with Django and React](https://saasitive.com/django-react/boilerplate/). You may find it interesting.",2020-11-16 00:16:54
+58,"Your first mistake is thinking that ASCII encoding and Base64 encoding are interchangeable. They are not. They are used for different purposes.
+
+ * When you encode text in ASCII, you start with a text string and convert it to a sequence of bytes.
+ * When you encode data in Base64, you start with a sequence of bytes and convert it to a text string. 
+
+To understand why Base64 was necessary in the first place we need a little history of computing.
+
+---
+
+Computers communicate in binary - 0s and 1s - but people typically want to communicate with more rich forms data such as text or images. In order to transfer this data between computers it first has to be encoded into 0s and 1s, sent, then decoded again. To take text as an example - there are many different ways to perform this encoding. It would be much simpler if we could all agree on a single encoding, but sadly this is not the case.
+
+Originally a lot of different encodings were created (e.g. [Baudot code][3]) which used a different number of bits per character until eventually ASCII became a standard with 7 bits per character. However most computers store binary data in bytes consisting of 8 bits each so [ASCII][2] is unsuitable for tranferring this type of data. Some systems would even wipe the most significant bit. Furthermore the difference in line ending encodings across systems mean that the ASCII character 10 and 13 were also sometimes modified.
+
+To solve these problems [Base64][1] encoding was introduced. This allows you to encode arbitrary bytes to bytes which are known to be safe to send without getting corrupted (ASCII alphanumeric characters and a couple of symbols). The disadvantage is that encoding the message using Base64 increases its length - every 3 bytes of data is encoded to 4 ASCII characters.
+
+To send text reliably you can **first** encode to bytes using a text encoding of your choice (for example UTF-8) and then **afterwards** Base64 encode the resulting binary data into a text string that is safe to send encoded as ASCII. The receiver will have to reverse this process to recover the original message. This of course requires that the receiver knows which encodings were used, and this information often needs to be sent separately.
+
+Historically it has been used to encode binary data in email messages where the email server might modify line-endings. A more modern example is the use of Base64 encoding to [embed image data directly in HTML source code][4]. Here it is necessary to encode the data to avoid characters like &#39;&lt;&#39; and &#39;&gt;&#39; being interpreted as tags.
+
+---
+
+Here is a working example:
+
+I wish to send a text message with two lines:
+
+&lt;pre&gt;
+Hello
+world!
+&lt;/pre&gt;
+
+If I send it as ASCII (or UTF-8) it will look like this:
+
+    72 101 108 108 111 10 119 111 114 108 100 33
+
+The byte 10 is corrupted in some systems so we can base 64 encode these bytes as a Base64 string:
+
+&lt;pre&gt;SGVsbG8Kd29ybGQh&lt;/pre&gt;
+
+Which when encoded using ASCII looks like this:
+
+    83 71 86 115 98 71 56 75 100 50 57 121 98 71 81 104
+
+All the bytes here are known safe bytes, so there is very little chance that any system will corrupt this message. I can send this instead of my original message and let the receiver reverse the process to recover the original message.
+
+[1]: http://en.wikipedia.org/wiki/Base64
+[2]: http://en.wikipedia.org/wiki/ASCII
+[3]: http://en.wikipedia.org/wiki/Baudot_code
+[4]: http://www.sweeting.org/mark/blog/2005/07/12/base64-encoded-images-embedded-in-html",2010-08-21 18:44:07
+59,"Your desired output is the second text element under `id=&quot;middle&quot;`, so use `find_next()` twice:
+
+    import requests
+    from bs4 import BeautifulSoup
+    
+    URL = &#39;http://buchholterberg.ch/de/Gemeinde/Information/News/Newsmeldung?filterCategory=22&amp;newsid=909&#39;
+    soup = BeautifulSoup(requests.get(URL).content, &quot;html.parser&quot;)
+
+    print(soup.select_one(&#39;#middle&#39;).find_next(text=True).find_next(text=True).strip())
+
+Output: 
+
+    Ver&#246;ffentlicht am: 11:49:56 06.11.2020
+
+",2020-11-16 00:01:06
+60,"You can&#39;t do such thing. Variables are kept as strings. So this `script: echo &quot;##vso[task.setvariable variable=packages]@(&#39;a&#39;,&#39;b&#39;)&quot;` will produce a string `(&#39;a&#39;,&#39;b&#39;)` and not an array. You can parse is script task and treat as array but there is no way to have array served at to level as you show in your example.
+
+Please check it [here](https://developercommunity.visualstudio.com/content/problem/812728/variables-in-yaml-pipeline-are-not-allowing-to-def.html):
+
+&gt; Yaml variables have always been string: string mappings. The doc appears to be currently correct, though we may have had a bug when last you visited.
+
+We are preparing to release a feature in the near future to allow you to pass more complex structures. Stay tuned!
+",2020-11-16 00:16:06
+61,"As you say, the &quot;release&quot; process is quite different - in one case (wait) it&#39;s based on `notify()`, the other (join) it&#39;s based on the thread completing. They&#39;re entirely different calls which serve entirely different purposes.
+
+In fact, there are explicit warnings *not* to call `wait()` on `Thread` monitors (although I can&#39;t immediately find those warnings), as internal Java code acquires the locks for them (and uses `wait`/`notify` itself).
+
+But no, calling `join()` on `Thread` *doesn&#39;t* release the monitor if the currently executing thread owns it.
+
+Basically, you shouldn&#39;t think of them as similar at all - one is for waiting for a thread to terminate; the other is for waiting for co-operative coordination.",2012-01-11 13:52:10
+62,"I&#39;d suggest extracting the repeated parts into a function:
+
+```py
+def get_result_size(cond1, cond2):
+    return df.query(f&quot;{cond1} &amp; {cond2}&quot;).shape[0]
+```
+
+Then you can re-write your first example as
+
+```py
+data1=get_result_size(&quot;a &gt; 0&quot;, &#39;True&#39;)
+data2=get_result_size(&quot;a &gt; 0&quot;, &quot;d==&#39;yes&#39;&quot;)
+data3=get_result_size(&quot;a &gt; 0&quot;, &quot;d==&#39;no&#39;&quot;)
+```
+
+To produce a table of results, you can write two loops, one within the other. The outer loop loops across your rows. The inner loop loops across the columns.
+
+Note that using query() like this is not very efficient - Pandas is recomputing the same thing many times. For example, the above code evaluates `a &gt; 0` against the entire dataframe 3 times, even though it only needs to be done once. That may be ok for your application, though.",2020-11-16 00:15:48
+63,"Try `IMAGE(url,2)`
+
+&lt;hr&gt;
+
+From https://support.google.com/docs/answer/3093333?hl=en
+
+
+&gt; mode - [ OPTIONAL - 1 by default ] - The sizing mode for the image
+&gt; 
+&gt; 1 resizes the image to fit inside the cell, maintaining aspect ratio.
+&gt; 
+&gt; 2 stretches or compresses the image to fit inside the cell, ignoring aspect ratio.
+&gt; 
+&gt; 3 leaves the image at original size, which may cause cropping.
+&gt; 
+&gt; 4 allows the specification of a custom size.
+
+Note that no mode causes the cell to be resized to fit the image.",2020-11-16 00:15:42
+64,"You seem to be able to guess a lot of ideas about me from you. You are very polite, funnny, smart and adventurous like the Japanese creating an origami and launching them over the air",2020-11-16 00:15:41
+65,"As @RomanLuštrik says, this is a [hard-coded constraint in bestglm](https://github.com/cran/bestglm/blob/9a9e26a7fc41dcb3049f0a23d31812faea38e8e2/R/bestglm.R#L196), presumably because 15 predictors means there are 2^15 = 32768 candidate models, and one has to stop somewhere ...  as far as I can see there is no way around this constraint when running a GLM. (Roman&#39;s suggestion of `RequireFullEnumerationQ=FALSE` doesn&#39;t work, because the leaps-and-bound algorithm is only available for linear models, not GLMs.)
+
+One possible strategy (not fully explored here) would be to fit the linear model exhaustively with leaps-and-bounds, save a large number of the top models (say `TopModels=1000`) and then re-evaluate the top models with your preferred variance structure ... this doesn&#39;t work directly in `leaps`, but can be hacked as follows:
+
+    leaps.obj &lt;- leaps:::leaps.setup(matrix.xy.16,y=cars.df$mpg,nvmax=16,
+           nbest=10000)
+    bb &lt;- leaps:::leaps.exhaustive(leaps.obj, really.big=TRUE)
+
+but I don&#39;t know (and it seems like a lot of work) to figure out how to re-evaluate these models with a log-link Gaussian.
+
+
+You might be able to get the `glmulti` package to work (it offers both `method=&quot;h&quot;` for full enumeration and `method=&quot;g&quot;` for a genetic algorithm), but so far I haven&#39;t managed to overcome some Java errors ...
+
+Unfortunately, the [J Stat Software article describing glmulti](
+https://www.jstatsoft.org/article/view/v034i12/v34i12.pdf) shows that this method has some of the same constraints: 
+
+&gt; For  performance,  the Java classes  encode  formulas  as  compact  bit  strings.   Currently  two integers (32 bits each) are used for main effects, and two long integers (128 bits) are used for each  category  of  interaction  terms  (factor:factor,  covariate:covariate,  and  factor:covariate),to encode models.  This means that there can be at most 32 factors and 32 covariates, and, if  including  interactions,  at  most  128  interactions  of  each  category.   The  latter  constraint necessitates that, if x is the number of factors and y the number of covariates:&lt;br&gt;x &lt;16&lt;br&gt;y &lt;16&lt;br&gt;xy &lt;128
+
+",2020-11-15 23:57:00
+66,"Using JSON:
+
+    CREATE PROCEDURE my_proc(a JSON)
+    BEGIN
+      -- CREATE TABLE tab AS
+      SELECT *  
+      FROM JSON_TABLE(a ,&quot;$[*]&quot; COLUMNS(i INT PATH &quot;$&quot;)) s;
+    END
+
+Call:
+
+    CALL my_proc(&#39;[5,3,4,2]&#39;); 
+  
+
+**[db&lt;&gt;fiddle demo](https://dbfiddle.uk/?rdbms=mysql_8.0&amp;fiddle=f049d6f59a82ae164ac4372897424a74)**",2020-11-16 00:15:13
+67,"For some reason, installing Pulp using easy_install did not install default solver. I had to uninstall Pulp using `pip uninstall pulp` and then reinstalled using `pip install pulp`.  
+Use the following to see if it installed any solver.
+
+    import pulp as pl
+    solver_list = pl.listSolvers(onlyAvailable=True)",2020-11-01 17:38:36
+68,"```
+In [51]: p = Function(&#39;p&#39;)                                                                                                        
+
+In [52]: x = Symbol(&#39;x&#39;)                                                                                                          
+
+In [53]: p = Function(&#39;p&#39;)                                                                                                        
+
+In [54]: x, sigma, gamma, C1 = symbols(&#39;x, sigma, gamma, C1&#39;)                                                                     
+
+In [55]: eq = Eq(p(x).diff(x), -2/sigma**2 * (C1 + gamma*p(x)))                                                                   
+
+In [56]: eq                                                                                                                       
+Out[56]: 
+d          -2⋅(C₁ + γ⋅p(x)) 
+──(p(x)) = ─────────────────
+dx                  2       
+                   σ        
+
+In [57]: dsolve(eq, p(x))                                                                                                         
+Out[57]: 
+                ⎛     2⋅x⎞
+              γ⋅⎜C₂ - ───⎟
+                ⎜       2⎟
+                ⎝      σ ⎠
+       -C₁ + ℯ            
+p(x) = ───────────────────
+                γ 
+```
+Note that C2 is the arbitrary constant (to be given by the initial conditions).",2020-11-16 00:15:00
+69,"If you&#39;re trying to stop the caching of your web pages using PHP I use the following code
+
+	//Minimize caching so admin area always displays latest statistics
+	header(&quot;Expires: Mon, 26 Jul 1997 05:00:00 GMT&quot;);
+	header(&quot;Last-Modified: &quot; . gmdate(&quot;D, d M Y H:i:s&quot;) . &quot; GMT&quot;);
+	header(&quot;Cache-Control: no-store, no-cache, must-revalidate&quot;);
+	header(&quot;Cache-Control: post-check=0, pre-check=0&quot;, false);
+	header(&quot;Pragma: no-cache&quot;);
+
+While nothing is really full proof as many CSS and other JS files are cached independant of the PHP and require a refresh to display once updated there are other ways around this as well.
+
+One example I use is to do a hash of the file (using php):
+
+	$specific_page = &#39;/assets/javascripts/pages/javascript.js&#39;;
+    if(file_exists($specific_page)) {
+		$html .= &#39;&lt;script src=&quot;&#39;.$specific_page.&#39;?v=&#39;.hash_file(&#39;crc32&#39;,$specific_page).&#39;&quot;&gt;&lt;/script&gt;&#39;;
+	}
+
+This will keep the cached file until the file is changed.  When the file is changed it changes the hash and thus will find the new updated file (as the URL has technically changed).
+
+Again, nothing is really full proof at preventing caching on the client side.",2020-11-16 00:15:00
+70,"To give you a real life example of how often the PID may repeat itself, I&#39;m seeing around every ~2 hours on highly used Ubuntu hosts, sometimes even more often.",2020-11-16 00:14:57
+71,"Try using `Image Grid` as follows:
+
+    from mpl_toolkits.axes_grid1 import ImageGrid
+
+    def show_images(images):
+      fig = plt.figure(figsize=(12., 12.))
+      grid = ImageGrid(fig, 111, nrows_ncols=(1, len(images)),axes_pad=0.1)
+
+      for ax, im in zip(grid, images):
+        ax.axis(&#39;off&#39;)
+        ax.imshow(im, cmap=&quot;gray&quot;)
+
+    sample_negative = ~sample1
+    show_images([sample1, sample_negative])
+
+Pay close attention to the constructor. You are passing your figure, number of rows and columns how you wish to align your images. In the example above, I&#39;ve aligned all images in a single row. Here is how the output looks like:
+
+[![enter image description here][1]][1]
+
+
+  [1]: https://i.stack.imgur.com/mFjJC.png",2020-11-16 00:14:52
+72,"If the number of line will be limited you can try something like below:
+
+&lt;!-- begin snippet: js hide: false console: true babel: false --&gt;
+
+&lt;!-- language: lang-css --&gt;
+
+    code {
+        white-space: pre-wrap;
+        position:relative;
+        padding-left: 5ch; /* the space for the numbers */
+        display: block;
+        overflow:hidden; /* hide the non needed numbers */
+        border:1px solid;
+    }
+    code::before,
+    code::after{
+      content:&quot;1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14.&quot;; /* and so on*/
+      position:absolute;
+      width:0; /* force a line break */
+      top:0;
+      left:0;
+    }
+
+    code::after {
+      content:&quot;| | | | | | | | | | | | | | | | | |&quot;; /* and so on*/
+      left:3ch; /* a small offset to not overlap the numbers */
+    }
+
+&lt;!-- language: lang-html --&gt;
+
+    &lt;p&gt;Here is a basic &quot;hello world&quot; program, written in Rust:&lt;/p&gt;
+    &lt;code&gt;
+    fn main() {
+        println!(&quot;Hello, world!&quot;);
+    }
+    &lt;/code&gt;
+    another code block
+    &lt;code&gt;
+    fn main() {
+        int a = 0;
+        int b = 2;
+        println!(&quot;Hello, world!&quot;);
+        for(i = 0;i &lt; 5; i++)
+          a += b;
+        println!(&quot;%d&quot;,a);
+        exit;
+    }
+    &lt;/code&gt;
+
+&lt;!-- end snippet --&gt;
+
+",2020-11-15 23:59:16
+73,"FOR WINDOWS:
+(what has helped me)
+
+This is the link I am referring to: https://qsartoolbox.org/content/documents/ResettingPostgreSQLPassword.pdf
+
+1. Open your cmd and go to `C:\Program Files\PostgreSQL\12\data`
+This is usually the right path. You might have it stored somewhere else. Note that, if you have a different postgresql version, there will be a different number. That doesn&#39;t matter.
+2. Find a **pg_hba.conf** file and copy it to somewhere else (That way you will have an unmodified version of this file, so you will be able to look at it after we make some changes)
+3. Open **pg_hba.conf** file (not the backup, but the original)
+4. Find the multiple lines that start with host near the bottom of the file: 
+
+    host    all             all             127.0.0.1/32            md5
+
+    host    all             all             ::1/128                 md5
+
+    host    replication     all             127.0.0.1/32            md5
+
+    host    replication     all             ::1/128                 md5
+
+5. Replace **md5** with **trust**:
+
+    host    all             all             127.0.0.1/32            trust
+
+    host    all             all             ::1/128                 trust
+
+    host    replication     all             127.0.0.1/32            trust
+
+    host    replication     all             ::1/128                 trust
+
+6. Close this file
+7. Go to your search bar on windows and open **Services** app. Find postgres and restart it.
+[picture of services app][1]
+8. Write cd.. in cmd and then cd bin. Your path should be `C:\Program Files\PostgreSQL\12\bin`
+9. Enter: `psql -U postgres -h localhost` 
+10. Enter: `ALTER USER postgres with password &#39;&lt;your new password&gt;&#39;;`**Make sure that you include ; at the end** 
+“ALTER ROLE” should be displayed as an indication that the previous line was executed successfully
+11. Open original pg_hba.conf file and change back from trust to md5
+12. Restart the server with Services app as before
+
+  [1]: https://i.stack.imgur.com/jByFn.png
+
+",2020-11-16 00:14:14
+74,"Perhaps a dependency problem. The rpart.plot package depends on pkg:&#39;earth&#39; and it in turn depends on pkg:Formula. Unfortunately,  the `install.packages` function doesn&#39;t construct a search path for this situation and simply reports an error if the second-level dependency is not present. So do this:
+
+    install.packages(&quot;Formula&quot;, dependencies=TRUE)
+    Install.packages(&quot;rpart.plot&quot;,  dependencies=TRUE) ",2020-11-15 22:20:47
+75,"@hpaulj&#39;s comment is spot on. There is a clue in the error message also.
+
+MemoryError: Unable to allocate 671. GiB for an array with shape (90000000000,) and data type int64
+
+There is a reference to int64 and not float64 and a linear array of size 300,000 X 300,000. This refers to an intermediate step of random sampling in the creation of the sparse matrix, which occupies a lot of memory anyway.
+
+Note that while creating any sparse matrix (including COO format), you have to account memory for the non-zero values and for representing the position of the values in the matrix.
+
+",2020-11-15 23:54:48
+76,"dc is wrong in cygwin. The command `dc -e &quot;2i B.Cp&quot;` does a number clamping to `1.5`, which is default in `bc` but not in `dc`. The correct value would be `17`.
+
+Do not install it.",2020-11-16 00:13:21
+77,"Variables should be declared before use. This is why your program is not working.
+
+Change 
+```
+String[] favNames = new String[i];
+int i = 1;
+```
+To
+```
+int i = 1;
+String[] favNames = new String[i];
+```
+**But**, keep in mind that in this case the used can only input *1* time(because arrays have fixed size). If you want to use an arbitrary number of input, you have to use `ArrayList` or similar types.",2020-11-16 00:06:53
+78,"**Fixed**
+I fixed it by subscribing to router events on the constructor, then I get all router events.
+
+[this is a screenshot of the code.][1]
+
+
+  [1]: https://i.stack.imgur.com/bNkzx.png",2020-11-16 00:13:01
+79,"In rust [generics](https://doc.rust-lang.org/rust-by-example/generics.html) are represented as `&lt;T&gt;`. In your case, `T` must implement `DeserializeOwned` in order to be deserialized from the json response, so you can add that as a [bound](https://doc.rust-lang.org/stable/rust-by-example/generics/bounds.html) for `T`:
+```rust
+fn parse&lt;T: DeserializeOwned&gt;(response: Response) -&gt; Result&lt;T, Error&gt; {
+    response.json::&lt;T&gt;().await?
+}
+```",2020-11-15 23:50:53
+80,"I found another solution for me
+
+    t = torch.tensor(...).permute(1, 2, 0).numpy()",2020-11-16 00:12:46
+81,"You can keep track of the path to each node, and use that for ordering:
+
+	with recursive a (templid, type, parentid, enname, dename, sys, level, path) as (
+		select templid, type, parentid, enname, dename, sys, 1, templid as path
+		from template 
+		where type = :type and parentid = :parentid 
+		union all 
+		select b.templid, b.type, b.parentid, b.enname, b.dename, b.sys, a.level + 1, concat(a.path, &#39;/&#39;, b.templid)
+		from template b 
+		inner join a on b.parentid = a.templid
+	) 
+	select * from a order by path",2020-11-16 00:11:51
+82,"In PHP, I usually do these transformations with the two-arguments implementation of `strtr()`, like this:
+
+```php
+// outputs 10011100
+
+echo strtr(&quot;GCTA&quot;, array(&quot;A&quot; =&gt; &quot;00&quot;, &quot;C&quot; =&gt; &quot;01&quot;, &quot;G&quot; =&gt; &quot;10&quot;, &quot;T&quot; =&gt; &quot;11&quot;));
+```
+
+",2020-11-15 22:44:26
+83,"Though it’s hard to tell for sure, I think the issue is related to the generated GraphQlController using the wrong case for your schema class.
+
+On **line 16** of `/app/controllers/graphql_controller.rb` try making the “L” lowercase like this.
+
+    GraphQlSchema
+
+---
+
+**Update 1:** I&#39;m thinking this is an autoloader problem since the case of &quot;GraphQL&quot; breaks the [default String#camelize used by Rails/Zeitwerk][1]. I prefer &quot;GraphQL&quot; to be lower cased as &quot;graphql&quot; which requires defining a custom inflection.
+
+Cloning your repository, I was able to get it to reliably work with server and spring restarts with the following changes.
+
+1. I renamed `app/graphql/graph_ql_schema.rb` to `app/graphql/graphql_schema.org`
+2. I created `config/initializers/zeitwerk.rb` with the contents.
+
+```ruby
+Rails.autoloaders.each do |autoloader|
+  autoloader.inflector.inflect(
+    &quot;graphql_schema&quot; =&gt; &quot;GraphQLSchema&quot;,
+  )
+end
+```
+
+Another solution is to rename the `GraphQLSchema` to satisfy [String#camelize][2]. This is not my preferred solution, but it does work.
+
+1. Rename `GraphQLSchema` to `GraphQlSchema` in `app/graphql/graph_ql_schema.rb`.
+2. Rename `GraphQLSchema` to `GraphQlSchema` in `app/controllers/graphql_controller.rb`.
+
+The explanation of why this works can demonstrated with IRB.
+
+```
+:001 &gt; &#39;graph_ql_schema&#39;.camelize
+ =&gt; &quot;GraphQlSchema&quot;
+:002 &gt; &#39;GraphQlSchema&#39;.underscore
+ =&gt; &quot;graph_ql_schema&quot;
+```
+
+  [1]: https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#customizing-inflections
+  [2]: https://api.rubyonrails.org/classes/String.html#method-i-camelize",2020-11-15 15:18:58
+84,"You can use AudioImporter (https://github.com/Hello-Meow/AudioImporter), and will support mp3 in conjunction with the commercial BASS library (see the readme).
+
+It says you can begin playback of the resultant audioClip as soon as the first buffer is returned - I&#39;m just testing that myself now.",2020-11-16 00:11:36
+85,"You would probably need to modify `self.SP()` function, it just returns a row and you have to call it `number_of_rows` times with a loop as it is now. ",2020-11-16 00:11:23
+86,"The fact is, in JavaScript, there is no such thing as anything++. It does not exist as a command. However, you CAN increment by using ++anything. Try it yourself...
+
+    x=3;
+    alert (x);
+    Answer is 3.
+
+    x=3;
+    x=x++;
+    alert (x);
+    Answer is 3.
+    
+    x=3;
+    x=++x;
+    alert (x);
+    Answer is 4.
+    
+    x=3++;
+    alert (x);
+    Answer is null.
+
+This proves without a doubt that x++ does not work in this language. People who teach this don&#39;t know the language. In other programming languages x++ DOES increment by 1 but NOT JavaScript. You are better to use this instead:
+
+    x=3;
+    x=x+1;
+    alert (x);
+    Answer is 4.
+
+You don&#39;t want bugs in your code because you type in something that is not a part of the language.
+",2020-11-16 00:11:20
+87,"To test something, you need to understand what it does.
+
+`Cooling.__init__` takes two arguments. `c = Cooling(h, Ts)`.
+
+[`__call__`](https://docs.python.org/3/reference/datamodel.html#object.__call__) should not be called explicitly. It instead lets you call an object like a function: `c(T, t)`. It returns the result of a calculation.
+
+With that in mind, we can write a test to check that it returns what we expect.
+
+You&#39;d also need to test that h, Ts, T, and t are stored correctly. They&#39;re all just copies of the input except `self.T`.
+
+```
+class SampleTest(unittest.TestCase):
+    def test_Cooling(self):
+        h = 1
+        Ts = 2
+        T = 3
+        t = 4
+        newT = -1
+        expected = (newT,t)
+
+        cooling = Cooling(h, Ts)
+        self.assertEqual( cooling(T,t), expected )
+        self.assertEqual( cooling.h, h )
+        self.assertEqual( cooling.Ts, Ts )
+        self.assertEqual( cooling.t, t )
+        self.assertEqual( cooling.T, newT )
+```
+
+You&#39;ll have to pick a set of values for h, Ts, T, and t, and do the calculation for `newT` by hand. Or ask who wrote the function for some expected inputs and outputs.
+
+Note that it returns `t` back unaltered, why is it returned at ll?",2020-11-15 22:26:35
+88,"after long long research - very weird solution... but until will be fixed by Qt - please see here :
+https://stackoverflow.com/questions/64833558/apps-not-popping-up-on-macos-big-sur-11-0-1#_=_
+for me it was a life saver- hope it will help someone",2020-11-16 00:10:57
+89,"The simplest regex for what you are looking for is this: `inet6 ([^ ]+)`.  
+It captures every character up until it finds a space.
+
+You should probably use capturing parenthesis to get exactly what you need with the regex instead of replacing what doesn&#39;t match afterwards, it&#39;s cleaner and more readable in my opinion.
+```
+inetMatches = re.findall(&quot;inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})&quot;, interface) 
+if (len(inetMatches) &gt; 0):
+    info[&#39;inet&#39;] = inetMatches[0]
+
+netmaskMatches = re.findall(&quot;netmask ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})&quot;, interface)
+if (len(netmaskMatches) &gt; 0):
+    info[&#39;netmask&#39;] = netmaskMatches[0]
+
+broadcastMatches = re.findall(&quot;broadcast ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})&quot;, interface)
+if (len(broadcastMatches) &gt; 0):
+    info[&#39;broadcast&#39;] = broadcastMatches[0]
+
+inet6Matches = re.findall(&quot;inet6 ([^ ]+)&quot;, interface)
+if (len(inet6Matches) &gt; 0):
+    info[&#39;inet6&#39;] = inet6Matches[0]
+```
+You can follow the same idea to match ether and RX packets.",2020-11-16 00:10:26
+90,"This is a simple and basic query to access the data from the table.
+
+```sql
+SELECT * FROM tablename
+```
+
+`WHERE` can include a condition here.
+
+`*` is used to select each and every column.
+
+One can use the column name to access a particular column.",2020-11-15 13:58:06
+91,"`title` is the tag and you can use the [`type`][1] (tag) selector. It is not inside the `script` tag (as shown), e.g. 
+
+`soup.select_one(&#39;title&#39;)`. 
+
+With bs4 4.7.1+ you can use `:contains` to specify has &quot;`Timer`&quot; substring, or longer substring.
+
+e.g. 
+
+    soup.select_one(&#39;title:contains(&quot;Timer&quot;)&#39;)
+
+This assumes the content is not dynamically generated. In that case, you will need to determine if comes from an additional xhr found in the network tab, or the javascript generating it.
+
+
+  [1]: https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors",2020-11-16 00:09:03
+92,"You need to explicitly grant the `postgres` user the role. Eg:
+
+```
+GRANT postgres_subuser1 TO postgres;
+```",2020-11-16 00:08:59
+93,"For ES6, the multi-line syntax that @user781486 indicated is really the way to go.
+
+I like to also mention a favourite of mine, preparing multi-line strings using a string array.
+
+The typical use case if you had some business rules to turn on/off potions of the SQL.
+
+Your mileage may vary.
+
+&lt;!-- begin snippet: js hide: false console: true babel: false --&gt;
+
+&lt;!-- language: lang-js --&gt;
+
+    function buildSQL(includeAge) {
+      let arr = [];
+      arr.push( &quot;CREATE TABLE EMPLOYEE (&quot; );
+      arr.push( &quot;    FIRST_NAME  CHAR(20) NOT NULL,&quot; );
+      arr.push( &quot;    LAST_NAME   CHAR(20), &quot; );
+      if (includeAge) {
+          arr.push( &quot;    AGE         INT,&quot; );
+      }
+      arr.push( &quot;    SEX         CHAR(1),&quot; );
+      arr.push( &quot;    INCOME      FLOAT &quot; );
+      arr.push( &quot;); &quot; );
+      let sql = arr.join(&quot;\n&quot;);
+      return sql;
+    }
+
+    function refreshSQL() {
+      let includeAge = $(&quot;#includeAge&quot;).is(&#39;:checked&#39;);
+      let sql = buildSQL(includeAge);
+      $(&quot;#resultSQL&quot;).val(sql);
+    }
+
+    $(&quot;#includeAge&quot;).on(&#39;change&#39;, refreshSQL);
+
+    refreshSQL();
+
+&lt;!-- language: lang-html --&gt;
+
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+
+    &lt;p&gt;&lt;label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;includeAge&quot;/&gt;includeAge&lt;/label&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;textarea id=&quot;resultSQL&quot; style=&quot;width:400px; height:150px&quot;&gt;
+    &lt;/textarea&gt;&lt;/p&gt;
+
+&lt;!-- end snippet --&gt;
+",2019-02-11 00:04:13
+94,"Use `IN` operator.
+
+Example:
+```
+DELETE FROM `ixml_prd_map` WHERE `ixml_prd_map`.`id` IN (&quot;B14260V&quot;, &quot;B14261&quot;, &quot;B14261V&quot;)
+```",2020-11-16 00:08:47
+95,"I recommend using webbrowser instead of selenium, it&#39;s part of the python standard library so you should already have it.
+
+    import webbrowser
+    webbrowser.open(&#39;https://stackoverflow.com/&#39;)
+
+
+Here&#39;s the [doc][1] if you wan&#39;t to play around with it.
+
+
+  [1]: https://docs.python.org/3.9/library/webbrowser.html",2020-11-16 00:08:43
+96,"I&#39;m going through this solution step by step:
+
+Step 1:  `sudo su`
+
+Step 2:  `cd /media`
+
+Step 3:  `mkdir cdrom`
+
+Step 4:  `mount /dev/cdrom /media/cdrom `
+
+Step 5:  `cd cdrom`
+
+Step 6:  `sh VBoxLinux-Additions.run`
+
+Just be patient as it takes some time and remember you are ***root***
+
+
+In case it didn&#39;t work please follow this [link][1] from SuperUser, hope it helps you.
+
+
+  [1]: https://superuser.com/a/1375272/714723",2020-11-15 22:51:17
+97,"In your situation, how about retrieving the values from the columns &quot;G&quot; and &quot;H&quot; by one `getValues`? By this, the process cost will be lower and the script becomes a bit simple. When this is reflected to your script, it becomes as follows.
+
+### From:
+	var range = sheet.getRange(&#39;G3:G&#39; + sheet.getLastRow());
+	var rows = range.getValues().filter(([g]) =&gt; g.toString() != &quot;&quot;);
+	var range2 = sheet.getRange(&#39;I3:I&#39; + sheet.getLastRow());
+	var rows2 = range2.getValues().filter(([i]) =&gt; i.toString() != &quot;&quot;);
+	var fileName=&quot;exported.txt&quot;;
+	var folderName=&quot;Videos&quot;;
+	var data = rows.splice(0);
+	var data2 = rows2.splice(0);
+	var str = data.map(function(e) {return e.join()}).join(&quot;=&quot;) + &quot;=&quot; + data2.map(function(e) {return e.join()}).join(&quot;\n&quot;);
+	var content = str;
+
+### To:
+	var range = sheet.getRange(&#39;G3:I&#39; + sheet.getLastRow());
+	var rows = range.getValues().filter(([g, h]) =&gt; g.toString() != &quot;&quot; &amp;&amp; h.toString() != &quot;&quot;);
+	var fileName=&quot;exported.txt&quot;;
+	var folderName=&quot;Videos&quot;;
+	var data = rows.splice(0);
+	var str = data.map(([g, h]) =&gt; `${g}=${h}`).join(&quot;\n&quot;);
+	var content = str;
+",2020-11-16 00:08:31
+98,"I was  able to solve this by making sure that the **url** from ngrok tunnel in the  **bookmarklet.js** and  **bookmarklet_luncher.js** starts with **https** not **http**
+
+Instead of this `http://127.0.0.1:8000/static/js/bookmarklet.js?r=` it should rather be
+
+`https://127.0.0.1:8000/static/js/bookmarklet.js?r=`
+
+",2020-11-16 00:08:10
+99,    DELETE FROM ixml_prd_map WHERE id IN (...your id list...),2020-11-16 00:08:09
