@@ -5,7 +5,7 @@ from requests.auth import HTTPBasicAuth
 from datetime import datetime
 import pandas as pd
 import os
-
+from json_debugger import JsonDebugger
 
 key = 'AzNRstImwHbaQF1FLdR6DQ(('
 
@@ -21,19 +21,8 @@ for current_page in range(1):
     
     if response.status_code == requests.codes.ok:
         newData = json.loads(response.text)
-        '''
-        Identation of the json response
-        '''
-        result_json = response.json()
-        # convert our json to str type
-        json_str = json.dumps(result_json)
-
-        json_object = json.loads(json_str)    
-   
-        # Difference in the spaces  
-        # near the brackets can be seen 
-        print(json.dumps(json_object, indent = 3)) 
-
+        debugger = JsonDebugger(response)
+        debugger.debug()
         for item in newData['items']:
             question_title.append(item['title'])
             question_content.append(item['body_markdown'])
