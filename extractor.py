@@ -19,21 +19,25 @@ class Extractor:
         
 
     def extract_from(self, endpoint):
-        for current_page in range(1):
-            current_url = endpoint + str(current_page + 1)
+        for current_page in range(1000):
+            current_url = endpoint + str(current_page + 1) + '&key=' + self.key
             headers = {"Accept": "application/json"}
             auth = HTTPBasicAuth('apikey', self.key)
             response = requests.get(current_url, headers = headers, auth = auth)
     
             if response.status_code == requests.codes.ok:
-                newData = json.loads(response.text)
-                debugger = JsonDebugger(response)
-                debugger.debug()
-                for item in newData['items']:
+                new_data = json.loads(response.text)
+                if new_data['has_more'] is 'false':
+                    break
+                #debugger = JsonDebugger(response)
+                #debugger.debug()
+                for item in new_data['items']:
                     for json_key in self.json_keys_list:
                         index = self.json_keys_list.index(json_key)
                         if 'date' in json_key:
                             self.columns_list[index].append(datetime.fromtimestamp(item[json_key]))
+                        elif 'tags' in json_key:
+                            self.columns_list[index].append(' '.join(tag for tag in item[json_key]))
                         else:               
                             self.columns_list[index].append(item[json_key])
                 print("Processed page " + str(current_page + 1) + ", returned " + str(response))
@@ -55,16 +59,17 @@ class Extractor:
 
 
 if __name__ == '__main__':
-    
-    questions_extractor = Extractor(['Title', 'Content', 'Creation Date'], ['title', 'body_markdown', 'creation_date'])
+    '''
+    questions_extractor = Extractor(['Title', 'Content', 'Creation Date', 'Tags'], ['title', 'body_markdown', 'creation_date', 'tags'])
     questions_extractor.extract_from('https://api.stackexchange.com/2.2/questions?order=desc&sort=activity&site=stackoverflow&pagesize=100&filter=!9_bDDx5MI&page=')
     questions_extractor.export_to_csv('questions')
-
+    '''
+    
     answers_extractor = Extractor(['Answer', 'Creation Date'], ['body_markdown', 'creation_date'])
     answers_extractor.extract_from('https://api.stackexchange.com/2.2/answers?order=desc&sort=activity&site=stackoverflow&pagesize=100&filter=!9_bDE(S6I&page=')
     answers_extractor.export_to_csv('answers')
-
+    '''
     comments_extractor = Extractor(['Comment', 'Creation Date'], ['body', 'creation_date'])
     comments_extractor.extract_from('https://api.stackexchange.com/2.2/comments?order=desc&sort=creation&site=stackoverflow&pagesize=100&filter=!9_bDE0E4s&page=')
     comments_extractor.export_to_csv('comments')
-
+    '''
