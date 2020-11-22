@@ -19,7 +19,7 @@ class Extractor:
         
 
     def extract_from(self, endpoint):
-        for current_page in range(1000):
+        for current_page in range(500):
             current_url = endpoint + str(current_page + 1) + '&key=' + self.key
             headers = {"Accept": "application/json"}
             auth = HTTPBasicAuth('apikey', self.key)
@@ -41,10 +41,10 @@ class Extractor:
                         else:               
                             self.columns_list[index].append(item[json_key])
                 print("Processed page " + str(current_page + 1) + ", returned " + str(response))
-                # timeout not to be rate-limited
-                time.sleep(2)
             else:
-                print('Error:', response.status_code, sep = ' ')
+                print('Error:', response.status_code, response.content, sep = ' ')
+            # timeout not to be rate-limited
+            time.sleep(10)
 
     def export_to_csv(self, csv_name):
         current_directory = os.getcwd()
@@ -64,10 +64,10 @@ if __name__ == '__main__':
     questions_extractor.extract_from('https://api.stackexchange.com/2.2/questions?order=desc&sort=activity&site=stackoverflow&pagesize=100&filter=!9_bDDx5MI&page=')
     questions_extractor.export_to_csv('questions')
     '''
-    
     answers_extractor = Extractor(['Answer', 'Creation Date'], ['body_markdown', 'creation_date'])
     answers_extractor.extract_from('https://api.stackexchange.com/2.2/answers?order=desc&sort=activity&site=stackoverflow&pagesize=100&filter=!9_bDE(S6I&page=')
     answers_extractor.export_to_csv('answers')
+
     '''
     comments_extractor = Extractor(['Comment', 'Creation Date'], ['body', 'creation_date'])
     comments_extractor.extract_from('https://api.stackexchange.com/2.2/comments?order=desc&sort=creation&site=stackoverflow&pagesize=100&filter=!9_bDE0E4s&page=')
