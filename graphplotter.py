@@ -8,67 +8,59 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import BOTTOM
 import time
-
-
+import concurrent.futures
 
 class DataAnalyzor:
     
     def __init__(self):
         start = time.time()
+        # data frames
         self.df_answers = pd.read_csv(os.getcwd() + '/extracted_data/answers.csv')
         self.df_questions = pd.read_csv(os.getcwd() + '/extracted_data/questions.csv')
         self.df_comments = pd.read_csv(os.getcwd() + '/extracted_data/comments.csv')               
         end = time.time()
         print('Time to load csvs', end-start)
-        
+
+    def draw_strategy(self, root, pos_x, pos_y, title, strategy):
+        figure = plt.Figure(figsize=(6,5), dpi=100)
+        ax = figure.add_subplot(111)
+        bar = FigureCanvasTkAgg(figure, root)
+        bar.get_tk_widget().place(x = pos_x, y = pos_y)
+        ax.set_title(title)
+        strategy(ax)  
+       
     def plot(self):
         start = time.time()
         root = tk.Tk()
         root.title('Stackoverflow trends analysis')
+    
+         # info for doing concurency
+        self.strategies = [
+                            self.strategy_length_comments_per_day,
+                            self.strategy_length_answers_per_day,
+                            self.strategy_length_questions_per_day,
+
+                            self.strategy_words_per_day_in_comments,
+                            self.strategy_words_per_day_in_answers,
+                            self.strategy_words_per_day_in_questions
+                            
+                          ]
+        self.window_xposes = [0, 600, 1200, 10, 600, 1200]
+        self.window_yposes = [5, 6, 5, 500, 500, 500]
+        self.titles = ['Length of comments per days',
+                       'Length of answers per days',
+                       'Length of questions per days',
+                       'Number of words per days for comments',
+                       'Number of words per days for answers',
+                       'Number of words per days for answers']
         
-        # no. characters
-        figure1 = plt.Figure(figsize=(6,5), dpi=100)
-        ax1 = figure1.add_subplot(111)
-        bar1 = FigureCanvasTkAgg(figure1, root)
-        bar1.get_tk_widget().place(x=0, y=5)
-        ax1.set_title('Length of comments per days')
-        self.strategy_length_comments_per_day(ax1)
+        #with concurent.futures.ProcessPoolExecutor() as executor:
+        for pos_x, pos_y, title, strategy in zip(self.window_xposes,
+                                                     self.window_yposes,
+                                                     self.titles,
+                                                     self.strategies):
+            self.draw_strategy(root, pos_x, pos_y, title, strategy)
 
-        figure2 = plt.Figure(figsize=(6,5), dpi=100)
-        ax2 = figure2.add_subplot(111)
-        bar2 = FigureCanvasTkAgg(figure2, root)
-        bar2.get_tk_widget().place(x=600,y=5)
-        ax2.set_title('Length of answers per days')
-        self.strategy_length_answers_per_day(ax2)
-
-        figure3 = plt.Figure(figsize=(6,5), dpi=100)
-        ax3 = figure3.add_subplot(111)
-        bar3 = FigureCanvasTkAgg(figure3, root)
-        bar3.get_tk_widget().place(x=1200,y=5)
-        ax3.set_title('Length of questions per days')
-        self.strategy_length_questions_per_day(ax3)
-        
-        # no. words
-        figure4 = plt.Figure(figsize=(6,5), dpi=100)
-        ax4 = figure4.add_subplot(111)
-        bar4 = FigureCanvasTkAgg(figure4, root)
-        bar4.get_tk_widget().place(x = 10, y = 500) 
-        ax4.set_title('Number of words per days for comments')
-        self.strategy_words_per_day_in_comments(ax4)
-
-        figure5 = plt.Figure(figsize=(6,5), dpi=100)
-        ax5 = figure5.add_subplot(111)
-        bar5 = FigureCanvasTkAgg(figure5, root)
-        bar5.get_tk_widget().place(x = 600, y = 500) 
-        ax5.set_title('Number of words per days for answers')
-        self.strategy_words_per_day_in_answers(ax5)
-
-        figure6 = plt.Figure(figsize=(6,5), dpi=100)
-        ax6 = figure6.add_subplot(111)
-        bar6 = FigureCanvasTkAgg(figure6, root)
-        bar6.get_tk_widget().place(x = 1200, y = 500) 
-        ax6.set_title('Number of words per days for questions')
-        self.strategy_words_per_day_in_questions(ax6)
         
         end = time.time()
         print('Time to load plots:', end - start)
